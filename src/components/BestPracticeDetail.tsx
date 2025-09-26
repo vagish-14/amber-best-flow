@@ -23,12 +23,13 @@ import {
 
 interface BestPracticeDetailProps {
   userRole: "plant" | "hq";
+  practice?: any;
   onBack: () => void;
 }
 
-const BestPracticeDetail = ({ userRole, onBack }: BestPracticeDetailProps) => {
-  // Mock data for the practice
-  const practice = {
+const BestPracticeDetail = ({ userRole, practice: propPractice, onBack }: BestPracticeDetailProps) => {
+  // Use passed practice or fallback to mock data
+  const practice = propPractice || {
     id: "BP-001",
     title: "Automated Quality Inspection System Implementation",
     category: "Quality",
@@ -55,7 +56,7 @@ const BestPracticeDetail = ({ userRole, onBack }: BestPracticeDetailProps) => {
     {
       id: 1,
       askedBy: "Amit Singh",
-      plant: "Plant 1 - Gurgaon",
+      plant: "HQ",
       question: "What specific AI model did you use for the computer vision system? Can this be implemented in other manufacturing environments?",
       askedDate: "2024-01-20",
       answer: "We used a custom-trained YOLO v8 model with our specific defect dataset. Yes, it can be adapted - the key is training with your specific defect patterns. Happy to share the implementation guide.",
@@ -64,7 +65,7 @@ const BestPracticeDetail = ({ userRole, onBack }: BestPracticeDetailProps) => {
     {
       id: 2,
       askedBy: "Sneha Patel",
-      plant: "Plant 3 - Pune",
+      plant: "HQ",
       question: "What was the biggest challenge during implementation and how did you overcome it?",
       askedDate: "2024-01-22",
       answer: null
@@ -77,7 +78,7 @@ const BestPracticeDetail = ({ userRole, onBack }: BestPracticeDetailProps) => {
       <div className="flex items-center space-x-4">
         <Button variant="outline" size="sm" onClick={onBack}>
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Dashboard
+          Back to Practices
         </Button>
         
         <div className="flex-1">
@@ -310,11 +311,27 @@ const BestPracticeDetail = ({ userRole, onBack }: BestPracticeDetailProps) => {
                     </Button>
                   </div>
                 ) : (
-                  <div className="ml-11 p-3 bg-warning/5 rounded-lg border border-warning/20">
-                    <div className="flex items-center space-x-2">
-                      <Clock className="h-4 w-4 text-warning" />
-                      <p className="text-sm text-warning">Awaiting author response</p>
-                    </div>
+                  <div className="ml-11 space-y-2">
+                    {userRole === "plant" ? (
+                      <div className="space-y-2">
+                        <p className="text-sm font-medium text-primary">Reply to this question:</p>
+                        <Textarea
+                          placeholder="Provide your response to help other plants..."
+                          className="min-h-16"
+                        />
+                        <Button size="sm">
+                          <Send className="h-4 w-4 mr-2" />
+                          Reply
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="p-3 bg-warning/5 rounded-lg border border-warning/20">
+                        <div className="flex items-center space-x-2">
+                          <Clock className="h-4 w-4 text-warning" />
+                          <p className="text-sm text-warning">Awaiting author response</p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

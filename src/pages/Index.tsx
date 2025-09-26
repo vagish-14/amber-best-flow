@@ -8,12 +8,14 @@ import PlantUserDashboard from "@/components/PlantUserDashboard";
 import HQAdminDashboard from "@/components/HQAdminDashboard";
 import BestPracticeForm from "@/components/BestPracticeForm";
 import BestPracticeDetail from "@/components/BestPracticeDetail";
+import PracticeList from "@/components/PracticeList";
 import Navigation from "@/components/Navigation";
 import { Building2, Shield, LogIn } from "lucide-react";
 
 const Index = () => {
   const [currentView, setCurrentView] = useState("login");
   const [userRole, setUserRole] = useState<"plant" | "hq" | null>(null);
+  const [selectedPractice, setSelectedPractice] = useState<any>(null);
 
   const handleLogin = (role: "plant" | "hq") => {
     setUserRole(role);
@@ -105,6 +107,24 @@ const Index = () => {
           </div>
         )}
 
+        {currentView === "practice-list" && (
+          <div className="space-y-6">
+            <Navigation 
+              userRole={userRole!} 
+              currentView={currentView}
+              onViewChange={setCurrentView}
+            />
+            <PracticeList 
+              userRole={userRole!}
+              onViewPractice={(practice) => {
+                setSelectedPractice(practice);
+                setCurrentView("practice-detail");
+              }}
+              onBack={() => setCurrentView("dashboard")}
+            />
+          </div>
+        )}
+
         {currentView === "practice-detail" && (
           <div className="space-y-6">
             <Navigation 
@@ -114,7 +134,8 @@ const Index = () => {
             />
             <BestPracticeDetail 
               userRole={userRole!}
-              onBack={() => setCurrentView("dashboard")} 
+              practice={selectedPractice}
+              onBack={() => setCurrentView("practice-list")} 
             />
           </div>
         )}
@@ -163,11 +184,11 @@ const Index = () => {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setCurrentView("practice-detail")}
+                    onClick={() => setCurrentView("practice-list")}
                     disabled={!userRole}
                     className="text-xs"
                   >
-                    View Detail
+                    View Practices
                   </Button>
                 </div>
               </TabsContent>

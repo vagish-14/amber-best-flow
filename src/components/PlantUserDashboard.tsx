@@ -188,7 +188,7 @@ const PlantUserDashboard = ({ onViewChange }: PlantUserDashboardProps) => {
                 { title: "Production Line Optimization", category: "Productivity", status: "revision", date: "2024-01-08", questions: 3 }
               ].map((practice, index) => (
                 <div key={index} className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors"
-                     onClick={() => onViewChange("practice-detail")}>
+                     onClick={() => onViewChange("practice-list")}>
                   <div className="flex-1">
                     <h4 className="font-medium">{practice.title}</h4>
                     <div className="flex items-center space-x-2 mt-1">

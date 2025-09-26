@@ -284,7 +284,7 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
                 }
               ].map((activity, index) => (
                 <div key={index} className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors"
-                     onClick={() => onViewChange("practice-detail")}>
+                     onClick={() => onViewChange("practice-list")}>
                   <div className="flex-1">
                     <h4 className="font-medium">{activity.title}</h4>
                     <div className="flex items-center space-x-2 mt-1">

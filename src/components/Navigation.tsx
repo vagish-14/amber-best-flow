@@ -45,9 +45,9 @@ const Navigation = ({ userRole, currentView, onViewChange }: NavigationProps) =>
           )}
 
           <Button
-            variant={currentView === "practice-detail" ? "default" : "ghost"}
+            variant={currentView === "practice-list" ? "default" : "ghost"}
             size="sm"
-            onClick={() => onViewChange("practice-detail")}
+            onClick={() => onViewChange("practice-list")}
             className="text-sm"
           >
             <FileText className="h-4 w-4 mr-2" />

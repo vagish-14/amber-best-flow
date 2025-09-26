@@ -55,26 +55,28 @@ const Navigation = ({ userRole, currentView, onViewChange }: NavigationProps) =>
           </Button>
 
           {userRole === "hq" && (
-            <>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-sm"
-              >
-                <CheckCircle className="h-4 w-4 mr-2" />
-                Approvals
-                <Badge variant="destructive" className="ml-2">5</Badge>
-              </Button>
-              
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-sm"
-              >
-                <BarChart3 className="h-4 w-4 mr-2" />
-                Analytics
-              </Button>
-            </>
+            <Button
+              variant={currentView === "approvals" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => onViewChange("approvals")}
+              className="text-sm"
+            >
+              <CheckCircle className="h-4 w-4 mr-2" />
+              Approvals
+              <Badge variant="destructive" className="ml-2">5</Badge>
+            </Button>
+          )}
+
+          {userRole === "hq" && (
+            <Button
+              variant={currentView === "analytics" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => onViewChange("analytics")}
+              className="text-sm"
+            >
+              <BarChart3 className="h-4 w-4 mr-2" />
+              Analytics
+            </Button>
           )}
         </div>
 

@@ -1,0 +1,357 @@
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import {
+  FileCheck2,
+  Filter,
+  Search,
+  CheckCircle,
+  Clock,
+  XCircle,
+  PauseCircle,
+  Calendar,
+  Building2,
+  User,
+  FileText
+} from "lucide-react";
+
+interface Practice {
+  id: string;
+  title: string;
+  category: string;
+  status: "approved" | "pending" | "revision" | "rejected" | "on-hold";
+  submittedBy: string;
+  plant: string;
+  submittedDate: string;
+  approvedDate?: string;
+  approvedBy?: string;
+  description: string;
+  problemStatement?: string;
+  solution?: string;
+  benefits?: string[];
+  metrics?: string;
+  implementation?: string;
+  questions: number;
+}
+
+interface ApprovalsListProps {
+  userRole: "plant" | "hq";
+  onViewPractice: (practice: Practice) => void;
+  onBack: () => void;
+}
+
+const ApprovalsList = ({ userRole, onViewPractice, onBack }: ApprovalsListProps) => {
+  const hydrateForDetail = (p: Practice): Practice => ({
+    ...p,
+    problemStatement:
+      p.problemStatement ||
+      "Problem statement not provided in summary. Please refer to the full submission for context.",
+    solution:
+      p.solution ||
+      "Solution details not provided in summary. Please refer to the full submission for implementation steps.",
+    benefits: p.benefits && p.benefits.length > 0 ? p.benefits : [
+      "Benefit details will appear here when available"
+    ],
+    metrics:
+      p.metrics ||
+      "Metrics will appear here when available",
+    implementation:
+      p.implementation ||
+      "Implementation details will appear here when available",
+  });
+  // Base dataset (can be fetched later)
+  const allPractices: Practice[] = [
+    {
+      id: "BP-001",
+      title: "Automated Quality Inspection System Implementation",
+      category: "Quality",
+      status: "approved",
+      submittedBy: "Rajesh Kumar",
+      plant: "Plant 2 - Chennai",
+      submittedDate: "2024-01-15",
+      approvedDate: "2024-01-18",
+      approvedBy: "Priya Sharma (HQ Admin)",
+      description:
+        "Implementation of an automated quality inspection system using computer vision...",
+      questions: 2,
+    },
+    {
+      id: "BP-002",
+      title: "Energy Efficient Cooling Process",
+      category: "Cost",
+      status: "pending",
+      submittedBy: "Amit Singh",
+      plant: "Plant 1 - Gurgaon",
+      submittedDate: "2024-01-12",
+      description:
+        "Optimized cooling system that reduces energy consumption by 30%...",
+      questions: 0,
+    },
+    {
+      id: "BP-003",
+      title: "Safety Protocol for Chemical Handling",
+      category: "Safety",
+      status: "approved",
+      submittedBy: "Sneha Patel",
+      plant: "Plant 3 - Pune",
+      submittedDate: "2024-01-10",
+      approvedDate: "2024-01-12",
+      approvedBy: "Priya Sharma (HQ Admin)",
+      description:
+        "Comprehensive safety protocols for handling hazardous chemicals...",
+      questions: 1,
+    },
+    {
+      id: "BP-004",
+      title: "Production Line Optimization",
+      category: "Productivity",
+      status: "revision", // treat as needs changes/on-hold bucket
+      submittedBy: "Vikram Sharma",
+      plant: "Plant 4 - Kolkata",
+      submittedDate: "2024-01-08",
+      description: "Streamlined production line layout and workflow optimization...",
+      questions: 3,
+    },
+    {
+      id: "BP-005",
+      title: "IoT Sensor Implementation for Predictive Maintenance",
+      category: "Productivity",
+      status: "rejected",
+      submittedBy: "Deepak Kumar",
+      plant: "Plant 3 - Pune",
+      submittedDate: "2024-01-20",
+      description:
+        "Deployment of IoT sensors for real-time equipment monitoring...",
+      questions: 0,
+    },
+    {
+      id: "BP-006",
+      title: "Waste Heat Recovery System",
+      category: "Cost",
+      status: "on-hold",
+      submittedBy: "Priya Gupta",
+      plant: "Plant 1 - Gurgaon",
+      submittedDate: "2024-01-18",
+      description:
+        "Implementation of waste heat recovery system that captures and reuses thermal energy...",
+      questions: 1,
+    },
+  ];
+
+  // Only track items requiring action (non-approved)
+  const requiresAction = allPractices.filter(
+    (p) => p.status !== "approved"
+  );
+
+  // Role-based filtering
+  const visiblePractices =
+    userRole === "plant"
+      ? requiresAction.filter((p) => p.plant === "Plant 1 - Gurgaon")
+      : requiresAction;
+
+  const getStatusBadge = (status: Practice["status"]) => {
+    if (status === "pending")
+      return (
+        <Badge variant="outline" className="bg-warning/10 text-warning border-warning">
+          <Clock className="h-3 w-3 mr-1" /> Pending
+        </Badge>
+      );
+    if (status === "revision")
+      return (
+        <Badge variant="outline" className="bg-muted/50 text-muted-foreground">
+          <PauseCircle className="h-3 w-3 mr-1" /> Needs changes
+        </Badge>
+      );
+    if (status === "on-hold")
+      return (
+        <Badge variant="outline" className="bg-muted/50 text-muted-foreground">
+          <PauseCircle className="h-3 w-3 mr-1" /> On hold
+        </Badge>
+      );
+    if (status === "rejected")
+      return (
+        <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive">
+          <XCircle className="h-3 w-3 mr-1" /> Rejected
+        </Badge>
+      );
+    return (
+      <Badge variant="outline" className="bg-success/10 text-success border-success">
+        <CheckCircle className="h-3 w-3 mr-1" /> Approved
+      </Badge>
+    );
+  };
+
+  return (
+    <div className="max-w-6xl mx-auto space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">Approvals</h1>
+          <p className="text-muted-foreground mt-1">
+            {userRole === "plant"
+              ? "Requests from Plant 1 - Gurgaon awaiting decision"
+              : "Review practices awaiting approval, rejection, or on hold"}
+          </p>
+        </div>
+        <Button variant="outline" onClick={onBack}>
+          <FileText className="h-4 w-4 mr-2" />
+          Back
+        </Button>
+      </div>
+
+      {/* Search/Filters */}
+      <Card className="shadow-card">
+        <CardContent className="p-6">
+          <div className="flex items-center space-x-4">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input placeholder="Search practices..." className="pl-10" />
+            </div>
+            <Button variant="outline">
+              <Filter className="h-4 w-4 mr-2" />
+              Filter
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Counters */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card className="shadow-card">
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-warning">
+              {visiblePractices.filter((p) => p.status === "pending").length}
+            </div>
+            <p className="text-sm text-muted-foreground">Pending</p>
+          </CardContent>
+        </Card>
+        <Card className="shadow-card">
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-muted-foreground">
+              {visiblePractices.filter((p) => p.status === "revision" || p.status === "on-hold").length}
+            </div>
+            <p className="text-sm text-muted-foreground">On hold / Needs changes</p>
+          </CardContent>
+        </Card>
+        <Card className="shadow-card">
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-destructive">
+              {visiblePractices.filter((p) => p.status === "rejected").length}
+            </div>
+            <p className="text-sm text-muted-foreground">Rejected</p>
+          </CardContent>
+        </Card>
+        <Card className="shadow-card">
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-primary">{visiblePractices.length}</div>
+            <p className="text-sm text-muted-foreground">Total</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* List */}
+      <Card className="shadow-card">
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <FileCheck2 className="h-5 w-5 text-primary" />
+            <span>Items Requiring Decision</span>
+            <Badge variant="outline">{visiblePractices.length}</Badge>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {visiblePractices.map((practice) => (
+              <div
+                key={practice.id}
+                className="flex items-center justify-between p-6 border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors group"
+                onClick={() => onViewPractice(hydrateForDetail(practice))}
+              >
+                <div className="flex-1">
+                  <div className="flex items-start space-x-4">
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-lg group-hover:text-primary transition-colors">
+                        {practice.title}
+                      </h3>
+                      <p className="text-muted-foreground mt-1 line-clamp-2">
+                        {practice.description}
+                      </p>
+
+                      <div className="flex items-center space-x-4 mt-3">
+                        <Badge variant="outline">{practice.category}</Badge>
+
+                        <div className="flex items-center space-x-1 text-sm text-muted-foreground">
+                          <User className="h-3 w-3" />
+                          <span>{practice.submittedBy}</span>
+                        </div>
+
+                        <div className="flex items-center space-x-1 text-sm text-muted-foreground">
+                          <Building2 className="h-3 w-3" />
+                          <span>{practice.plant}</span>
+                        </div>
+
+                        <div className="flex items-center space-x-1 text-sm text-muted-foreground">
+                          <Calendar className="h-3 w-3" />
+                          <span>{practice.submittedDate}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-3">
+                  {practice.questions > 0 && (
+                    <Badge variant="outline" className="bg-primary/10 text-primary">
+                      {practice.questions} Q&A
+                    </Badge>
+                  )}
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onViewPractice(hydrateForDetail(practice));
+                    }}
+                  >
+                    View Details
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="bg-success text-success-foreground"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                  >
+                    Approve
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                  >
+                    Reject
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                  >
+                    Put on hold
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+export default ApprovalsList;
+
+

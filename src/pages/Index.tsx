@@ -8,6 +8,8 @@ import PlantUserDashboard from "@/components/PlantUserDashboard";
 import HQAdminDashboard from "@/components/HQAdminDashboard";
 import BestPracticeForm from "@/components/BestPracticeForm";
 import BestPracticeDetail from "@/components/BestPracticeDetail";
+import ApprovalsList from "@/components/ApprovalsList";
+import Analytics from "@/components/Analytics";
 import PracticeList from "@/components/PracticeList";
 import Navigation from "@/components/Navigation";
 import { Building2, Shield, LogIn } from "lucide-react";
@@ -136,6 +138,38 @@ const Index = () => {
               userRole={userRole!}
               practice={selectedPractice}
               onBack={() => setCurrentView("practice-list")} 
+            />
+          </div>
+        )}
+
+        {currentView === "approvals" && (
+          <div className="space-y-6">
+            <Navigation 
+              userRole={userRole!} 
+              currentView={currentView}
+              onViewChange={setCurrentView}
+            />
+            <ApprovalsList
+              userRole={userRole!}
+              onViewPractice={(practice) => {
+                setSelectedPractice(practice);
+                setCurrentView("practice-detail");
+              }}
+              onBack={() => setCurrentView("dashboard")}
+            />
+          </div>
+        )}
+
+        {currentView === "analytics" && (
+          <div className="space-y-6">
+            <Navigation 
+              userRole={userRole!} 
+              currentView={currentView}
+              onViewChange={setCurrentView}
+            />
+            <Analytics
+              userRole={userRole!}
+              onBack={() => setCurrentView("dashboard")}
             />
           </div>
         )}

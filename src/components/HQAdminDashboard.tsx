@@ -2,6 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { cn } from "@/lib/utils";
+import { useState, useMemo } from "react";
 import { 
   Building2, 
   TrendingUp, 
@@ -23,12 +25,52 @@ interface HQAdminDashboardProps {
 }
 
 const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
+  const [showDivisionSelector, setShowDivisionSelector] = useState(false);
+  const [division, setDivision] = useState<"all" | "rac" | "component">("all");
+
   const plantData = [
     { name: "Plant 1 - Gurgaon", submitted: 23, approved: 19, pending: 3, rejected: 1 },
     { name: "Plant 2 - Chennai", submitted: 18, approved: 15, pending: 2, rejected: 1 },
     { name: "Plant 3 - Pune", submitted: 31, approved: 28, pending: 2, rejected: 1 },
     { name: "Plant 4 - Kolkata", submitted: 15, approved: 12, pending: 1, rejected: 2 }
   ];
+
+  // Division datasets (mocked per requirements)
+  const [racPlants, setRacPlants] = useState<{ name: string; active: boolean }[]>([
+    { name: "RAC - Plant A", active: true },
+    { name: "RAC - Plant B", active: true },
+    { name: "RAC - Plant C", active: true },
+    { name: "RAC - Plant D", active: true },
+    { name: "RAC - Plant E", active: true },
+    { name: "RAC - Plant F", active: false },
+    { name: "RAC - Plant G", active: false },
+    { name: "RAC - Plant H", active: false },
+  ]);
+  const [componentPlants, setComponentPlants] = useState<{ name: string; active: boolean }[]>([
+    { name: "Component - Plant 1", active: true },
+    { name: "Component - Plant 2", active: true },
+    { name: "Component - Plant 3", active: true },
+    { name: "Component - Plant 4", active: true },
+    { name: "Component - Plant 5", active: false },
+    { name: "Component - Plant 6", active: false },
+    { name: "Component - Plant 7", active: false },
+  ]);
+
+  const { activeCount, inactiveCount, visiblePlants } = useMemo(() => {
+    const dataset = division === "rac" ? racPlants : division === "component" ? componentPlants : [...racPlants, ...componentPlants];
+    const active = dataset.filter((p) => p.active);
+    const inactive = dataset.filter((p) => !p.active);
+    return { activeCount: active.length, inactiveCount: inactive.length, visiblePlants: dataset };
+  }, [division, racPlants, componentPlants]);
+
+  const togglePlantActive = (name: string) => {
+    if (division === "rac" || division === "all") {
+      setRacPlants((prev) => prev.map((p) => (p.name === name ? { ...p, active: !p.active } : p)));
+    }
+    if (division === "component" || division === "all") {
+      setComponentPlants((prev) => prev.map((p) => (p.name === name ? { ...p, active: !p.active } : p)));
+    }
+  };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -53,11 +95,90 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
                   <CheckCircle className="h-5 w-5 mr-2" />
                   Review Queue
                 </Button>
+                <Button 
+                  size="lg"
+                  variant="outline"
+                  className="bg-white/10 hover:bg-white/20 text-white border-white/30"
+                  onClick={() => setShowDivisionSelector((v) => !v)}
+                >
+                  Active
+                </Button>
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
+
+      {/* Division Selector */}
+      {showDivisionSelector && (
+        <div className="lg:col-span-4">
+          <Card className="shadow-card">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant={division === "all" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setDivision("all")}
+                  >
+                    All
+                  </Button>
+                  <Button
+                    variant={division === "rac" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setDivision("rac")}
+                  >
+                    RAC
+                  </Button>
+                  <Button
+                    variant={division === "component" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setDivision("component")}
+                  >
+                    Component
+                  </Button>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="bg-success/10 text-success">Active: {activeCount}</Badge>
+                  <Badge variant="outline" className="bg-muted/50 text-muted-foreground">Inactive: {inactiveCount}</Badge>
+                </div>
+              </div>
+
+              {/* Active / Inactive lists */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div className="p-4 border rounded-lg">
+                  <p className="font-medium mb-2">Active Plants</p>
+                  <div className="space-y-2">
+                    {visiblePlants.filter(p => p.active).map((p) => (
+                      <div key={p.name} className="flex items-center justify-between">
+                        <span>{p.name}</span>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline" className="bg-success/10 text-success">Active</Badge>
+                          <Button size="sm" variant="outline" onClick={() => togglePlantActive(p.name)}>Inactive</Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="p-4 border rounded-lg">
+                  <p className="font-medium mb-2">Inactive Plants</p>
+                  <div className="space-y-2">
+                    {visiblePlants.filter(p => !p.active).map((p) => (
+                      <div key={p.name} className="flex items-center justify-between">
+                        <span>{p.name}</span>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline" className="bg-muted/50 text-muted-foreground">Inactive</Badge>
+                          <Button size="sm" className="bg-success text-success-foreground" onClick={() => togglePlantActive(p.name)}>Active</Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       {/* Key Metrics */}
       <Card className="shadow-card">

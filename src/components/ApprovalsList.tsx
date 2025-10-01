@@ -39,9 +39,11 @@ interface ApprovalsListProps {
   userRole: "plant" | "hq";
   onViewPractice: (practice: Practice) => void;
   onBack: () => void;
+  isBenchmarked?: (id?: string) => boolean;
+  onToggleBenchmark?: (practice: Practice) => void;
 }
 
-const ApprovalsList = ({ userRole, onViewPractice, onBack }: ApprovalsListProps) => {
+const ApprovalsList = ({ userRole, onViewPractice, onBack, isBenchmarked, onToggleBenchmark }: ApprovalsListProps) => {
   const hydrateForDetail = (p: Practice): Practice => ({
     ...p,
     problemStatement:
@@ -305,6 +307,9 @@ const ApprovalsList = ({ userRole, onViewPractice, onBack }: ApprovalsListProps)
                       {practice.questions} Q&A
                     </Badge>
                   )}
+                  {isBenchmarked?.(practice.id) && (
+                    <Badge variant="outline" className="bg-blue-100 text-blue-700 border-blue-200">Benchmarked</Badge>
+                  )}
                   <Button
                     size="sm"
                     variant="outline"
@@ -314,6 +319,15 @@ const ApprovalsList = ({ userRole, onViewPractice, onBack }: ApprovalsListProps)
                     }}
                   >
                     View Details
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onToggleBenchmark?.(practice);
+                    }}
+                  >
+                    {isBenchmarked?.(practice.id) ? "Unbenchmark" : "Benchmark"}
                   </Button>
                   <Button
                     size="sm"

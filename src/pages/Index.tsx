@@ -10,6 +10,7 @@ import BestPracticeForm from "@/components/BestPracticeForm";
 import BestPracticeDetail from "@/components/BestPracticeDetail";
 import ApprovalsList from "@/components/ApprovalsList";
 import Analytics from "@/components/Analytics";
+import BenchmarkedList from "@/components/BenchmarkedList";
 import PracticeList from "@/components/PracticeList";
 import Navigation from "@/components/Navigation";
 import { Building2, Shield, LogIn } from "lucide-react";
@@ -18,6 +19,25 @@ const Index = () => {
   const [currentView, setCurrentView] = useState("login");
   const [userRole, setUserRole] = useState<"plant" | "hq" | null>(null);
   const [selectedPractice, setSelectedPractice] = useState<any>(null);
+  const [benchmarkedIds, setBenchmarkedIds] = useState<string[]>([]);
+  const [benchmarkedById, setBenchmarkedById] = useState<Record<string, any>>({});
+
+  const isBenchmarked = (id?: string) => (id ? benchmarkedIds.includes(id) : false);
+  const toggleBenchmark = (practiceOrId?: any) => {
+    const id = typeof practiceOrId === "string" ? practiceOrId : practiceOrId?.id;
+    if (!id) return;
+    setBenchmarkedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+    setBenchmarkedById((prev) => {
+      if (prev[id]) {
+        const copy = { ...prev };
+        delete copy[id];
+        return copy;
+      }
+      return typeof practiceOrId === "object" && practiceOrId
+        ? { ...prev, [id]: practiceOrId }
+        : prev;
+    });
+  };
 
   const handleLogin = (role: "plant" | "hq") => {
     setUserRole(role);
@@ -118,6 +138,8 @@ const Index = () => {
             />
             <PracticeList 
               userRole={userRole!}
+              isBenchmarked={isBenchmarked}
+              onToggleBenchmark={(practice) => toggleBenchmark(practice.id)}
               onViewPractice={(practice) => {
                 setSelectedPractice(practice);
                 setCurrentView("practice-detail");
@@ -137,6 +159,8 @@ const Index = () => {
             <BestPracticeDetail 
               userRole={userRole!}
               practice={selectedPractice}
+              isBenchmarked={isBenchmarked(selectedPractice?.id)}
+              onToggleBenchmark={() => toggleBenchmark(selectedPractice?.id)}
               onBack={() => setCurrentView("practice-list")} 
             />
           </div>
@@ -151,6 +175,8 @@ const Index = () => {
             />
             <ApprovalsList
               userRole={userRole!}
+              isBenchmarked={isBenchmarked}
+              onToggleBenchmark={(practice) => toggleBenchmark(practice.id)}
               onViewPractice={(practice) => {
                 setSelectedPractice(practice);
                 setCurrentView("practice-detail");
@@ -169,6 +195,22 @@ const Index = () => {
             />
             <Analytics
               userRole={userRole!}
+              onBack={() => setCurrentView("dashboard")}
+            />
+          </div>
+        )}
+
+        {currentView === "profile" && (
+          <div className="space-y-6">
+            <Navigation 
+              userRole={userRole!} 
+              currentView={currentView}
+              onViewChange={setCurrentView}
+            />
+            <BenchmarkedList
+              items={Object.values(benchmarkedById)}
+              onViewPractice={(practice) => { setSelectedPractice(practice); setCurrentView("practice-detail"); }}
+              onUnbenchmark={(practice) => toggleBenchmark(practice)}
               onBack={() => setCurrentView("dashboard")}
             />
           </div>

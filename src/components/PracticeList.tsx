@@ -37,9 +37,11 @@ interface PracticeListProps {
   userRole: "plant" | "hq";
   onViewPractice: (practice: Practice) => void;
   onBack: () => void;
+  isBenchmarked?: (id?: string) => boolean;
+  onToggleBenchmark?: (practice: Practice) => void;
 }
 
-const PracticeList = ({ userRole, onViewPractice, onBack }: PracticeListProps) => {
+const PracticeList = ({ userRole, onViewPractice, onBack, isBenchmarked, onToggleBenchmark }: PracticeListProps) => {
   // Mock data for practices
   const allPractices: Practice[] = [
     {
@@ -351,6 +353,9 @@ const PracticeList = ({ userRole, onViewPractice, onBack }: PracticeListProps) =
                       {practice.questions} Q&A
                     </Badge>
                   )}
+                  {isBenchmarked?.(practice.id) && (
+                    <Badge variant="outline" className="bg-blue-100 text-blue-700 border-blue-200">Benchmarked</Badge>
+                  )}
                   
                   <Badge 
                     variant="outline" 
@@ -360,8 +365,11 @@ const PracticeList = ({ userRole, onViewPractice, onBack }: PracticeListProps) =
                     {practice.status.charAt(0).toUpperCase() + practice.status.slice(1)}
                   </Badge>
                   
-                  <Button size="sm" variant="outline" className="opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Button size="sm" variant="outline" className="opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); onViewPractice(practice); }}>
                     View Details
+                  </Button>
+                  <Button size="sm" onClick={(e) => { e.stopPropagation(); onToggleBenchmark?.(practice); }}>
+                    {isBenchmarked?.(practice.id) ? "Unbenchmark" : "Benchmark"}
                   </Button>
                 </div>
               </div>

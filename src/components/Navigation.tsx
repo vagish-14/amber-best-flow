@@ -10,6 +10,7 @@ import {
   Users,
   BarChart3
 } from "lucide-react";
+import { User as UserIcon } from "lucide-react";
 
 interface NavigationProps {
   userRole: "plant" | "hq";
@@ -53,6 +54,18 @@ const Navigation = ({ userRole, currentView, onViewChange }: NavigationProps) =>
             <FileText className="h-4 w-4 mr-2" />
             View Practices
           </Button>
+
+          {userRole === "plant" && (
+            <Button
+              variant={currentView === "profile" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => onViewChange("profile")}
+              className="text-sm"
+            >
+              <UserIcon className="h-4 w-4 mr-2" />
+              Benchmark
+            </Button>
+          )}
 
           {userRole === "hq" && (
             <Button

@@ -17,8 +17,17 @@ import {
   Settings,
   Users,
   BarChart3,
-  AlertTriangle
+  AlertTriangle,
+  Star
 } from "lucide-react";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+} from "@/components/ui/chart";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
 
 interface HQAdminDashboardProps {
   onViewChange: (view: string) => void;
@@ -362,6 +371,200 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
                 </div>
               ))}
             </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Yearly Cost Savings (Company-wide) */}
+      <div className="lg:col-span-4">
+        <Card className="shadow-card">
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <DollarSign className="h-5 w-5 text-primary" />
+              <span>Yearly Cost Savings</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {(() => {
+              // Plant-wise YTD savings (in ₹ lakhs) - demo values
+              const plantSavings = [
+                { plant: "Plant 1 - Gurgaon", savings: 112 },
+                { plant: "Plant 2 - Chennai", savings: 205 },
+                { plant: "Plant 3 - Pune", savings: 72 },
+                { plant: "Plant 4 - Kolkata", savings: 48 },
+              ];
+              const totalYtd = plantSavings.reduce((a, b) => a + b.savings, 0);
+              return (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between text-sm text-muted-foreground">
+                    <span>Plant-wise YTD savings • ₹ lakhs</span>
+                    <span className="font-medium text-foreground">Company YTD: ₹{totalYtd.toFixed(0)}L</span>
+                  </div>
+                  <ChartContainer config={{ savings: { label: "YTD Savings", color: "hsl(var(--success))" } }}>
+                    <BarChart data={plantSavings}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="plant" />
+                      <YAxis />
+                      <ChartTooltip content={<ChartTooltipContent />} />
+                      <ChartLegend content={<ChartLegendContent />} />
+                      <Bar dataKey="savings" fill="var(--color-savings)" />
+                    </BarChart>
+                  </ChartContainer>
+                </div>
+              );
+            })()}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Benchmark Points - This Month */}
+      <div className="lg:col-span-4">
+        <Card className="shadow-card">
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <BarChart3 className="h-5 w-5 text-primary" />
+              <span>Benchmark Points - This Month</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {(() => {
+              // Mock points following rule: originator = 2, copier = 1
+              const benchmarkPoints = [
+                { plant: "Plant 2 - Chennai", originator: 2, copier: 1 },
+                { plant: "Plant 1 - Gurgaon", originator: 1, copier: 2 },
+                { plant: "Plant 3 - Pune", originator: 2, copier: 0 },
+                { plant: "Plant 4 - Kolkata", originator: 0, copier: 1 },
+              ];
+              const totals = benchmarkPoints.reduce(
+                (acc, p) => {
+                  acc.originator += p.originator;
+                  acc.copier += p.copier;
+                  return acc;
+                },
+                { originator: 0, copier: 0 }
+              );
+              return (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="bg-success/10 text-success">Originator (benchmark) = 2 points</Badge>
+                    <Badge variant="outline" className="bg-primary/10 text-primary">Copier (adopter) = 1 point</Badge>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="text-left text-muted-foreground">
+                          <th className="py-2">Plant</th>
+                          <th className="py-2">Originator Points</th>
+                          <th className="py-2">Copier Points</th>
+                          <th className="py-2">Total Points</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y">
+                        {benchmarkPoints.map((p) => (
+                          <tr key={p.plant} className="hover:bg-accent/50">
+                            <td className="py-2 font-medium">{p.plant}</td>
+                            <td className="py-2">
+                              <Badge variant="outline" className="bg-success/10 text-success border-success">{p.originator}</Badge>
+                            </td>
+                            <td className="py-2">
+                              <Badge variant="outline" className="bg-primary/10 text-primary border-primary">{p.copier}</Badge>
+                            </td>
+                            <td className="py-2">
+                              <Badge variant="outline">{p.originator + p.copier}</Badge>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              );
+            })()}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Recent Activity Feed */}
+      {/* Star Ratings - Savings based (Monthly & YTD) */}
+      <div className="lg:col-span-4">
+        <Card className="shadow-card">
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <Star className="h-5 w-5 text-primary" />
+              <span>Star Ratings (Savings)</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {(() => {
+              // Demo savings data (in lakhs ₹)
+              const savings = [
+                { name: "Plant 1 - Gurgaon", monthly: 9.2, ytd: 112.5 },
+                { name: "Plant 2 - Chennai", monthly: 17.8, ytd: 205.0 },
+                { name: "Plant 3 - Pune", monthly: 6.5, ytd: 72.0 },
+                { name: "Plant 4 - Kolkata", monthly: 3.2, ytd: 48.0 },
+              ];
+
+              const getStars = (monthly: number, ytd: number) => {
+                // Both monthly and yearly thresholds must be met for a band
+                if (ytd > 200 && monthly > 16) return 5;
+                if (ytd > 150 && ytd < 200 && monthly > 12 && monthly < 16) return 4;
+                if (ytd > 100 && ytd < 150 && monthly > 8 && monthly < 12) return 3;
+                if (ytd > 50 && ytd < 100 && monthly > 4 && monthly < 8) return 2;
+                if (ytd > 50 && monthly > 4) return 1;
+                return 0;
+              };
+
+              const StarRow = ({ count }: { count: number }) => (
+                <div className="flex items-center gap-1">
+                  {[1,2,3,4,5].map(i => (
+                    <Star key={i} className={i <= count ? "h-4 w-4 text-yellow-500" : "h-4 w-4 text-muted-foreground/40"} fill={i <= count ? "currentColor" : "none"} />
+                  ))}
+                </div>
+              );
+
+              // Precompute stars and determine top total
+              const ratings = savings.map((p) => {
+                const monthStars = getStars(p.monthly, p.ytd);
+                const ytdOnlyStars = getStars(17, p.ytd);
+                const totalStars = monthStars + ytdOnlyStars;
+                return { ...p, monthStars, ytdOnlyStars, totalStars };
+              });
+              const maxTotal = Math.max(...ratings.map(r => r.totalStars));
+
+              return (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="text-left text-muted-foreground">
+                        <th className="py-2">Plant</th>
+                        <th className="py-2">Monthly Savings</th>
+                        <th className="py-2">YTD Savings</th>
+                        <th className="py-2">Stars (Month)</th>
+                        <th className="py-2">Stars (YTD)</th>
+                        <th className="py-2">Total Stars</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y">
+                      {ratings.map((r) => (
+                        <tr key={r.name} className="hover:bg-accent/50">
+                          <td className="py-2 font-medium flex items-center gap-2">
+                            {r.name}
+                            {r.totalStars === maxTotal && (
+                              <Badge variant="outline" className="bg-primary/10 text-primary">Top</Badge>
+                            )}
+                          </td>
+                          <td className="py-2">₹{r.monthly.toFixed(1)}L</td>
+                          <td className="py-2">₹{r.ytd.toFixed(1)}L</td>
+                          <td className="py-2">{r.monthStars}</td>
+                          <td className="py-2">{r.ytdOnlyStars}</td>
+                          <td className="py-2">{r.totalStars}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              );
+            })()}
           </CardContent>
         </Card>
       </div>

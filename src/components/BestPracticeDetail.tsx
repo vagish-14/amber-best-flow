@@ -25,9 +25,11 @@ interface BestPracticeDetailProps {
   userRole: "plant" | "hq";
   practice?: any;
   onBack: () => void;
+  isBenchmarked?: boolean;
+  onToggleBenchmark?: () => void;
 }
 
-const BestPracticeDetail = ({ userRole, practice: propPractice, onBack }: BestPracticeDetailProps) => {
+const BestPracticeDetail = ({ userRole, practice: propPractice, onBack, isBenchmarked, onToggleBenchmark }: BestPracticeDetailProps) => {
   // Use passed practice or fallback to mock data
   const practice = propPractice || {
     id: "BP-001",
@@ -39,6 +41,10 @@ const BestPracticeDetail = ({ userRole, practice: propPractice, onBack }: BestPr
     submittedDate: "2024-01-15",
     approvedDate: "2024-01-18",
     approvedBy: "Priya Sharma (HQ Admin)",
+    copiedToPlants: [
+      "Plant 1 - Gurgaon",
+      "Plant 3 - Pune"
+    ],
     description: "Implementation of an automated quality inspection system using computer vision to detect defects in manufactured components, reducing manual inspection time and improving accuracy.",
     problemStatement: "Manual quality inspection was time-consuming, prone to human error, and created bottlenecks in the production line. Inspectors were spending 3-4 hours daily on repetitive visual checks.",
     solution: "Deployed AI-powered computer vision system with high-resolution cameras at key inspection points. The system uses machine learning algorithms trained on defect patterns to automatically identify and classify defects.",
@@ -104,6 +110,9 @@ const BestPracticeDetail = ({ userRole, practice: propPractice, onBack }: BestPr
             <ThumbsUp className="h-4 w-4 mr-2" />
             Helpful (12)
           </Button>
+          <Button size="sm" onClick={onToggleBenchmark}>
+            {isBenchmarked ? "Unbenchmark" : "Benchmark"}
+          </Button>
         </div>
       </div>
 
@@ -157,6 +166,26 @@ const BestPracticeDetail = ({ userRole, practice: propPractice, onBack }: BestPr
                 <p className="text-sm text-muted-foreground">{practice.submittedDate}</p>
               </div>
             </div>
+          </div>
+
+          {/* Horizontal Deployment Status */}
+          <div className="p-4 bg-primary/5 rounded-lg border border-primary/20">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Building2 className="h-4 w-4 text-primary" />
+                <h4 className="font-medium">Horizontal Deployment</h4>
+              </div>
+              <Badge variant="outline" className="bg-primary/10 text-primary">
+                Copied to {(practice as any).copiedToPlants?.length ?? 0} plant{(((practice as any).copiedToPlants?.length ?? 0) === 1 ? "" : "s")}
+              </Badge>
+            </div>
+            {((practice as any).copiedToPlants?.length ?? 0) > 0 && (
+              <div className="flex flex-wrap gap-2 mt-3">
+                {(practice as any).copiedToPlants.map((pl: string) => (
+                  <Badge key={pl} variant="outline" className="bg-muted/50">{pl}</Badge>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Description */}

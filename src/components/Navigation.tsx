@@ -55,17 +55,6 @@ const Navigation = ({ userRole, currentView, onViewChange }: NavigationProps) =>
             View Practices
           </Button>
 
-          {userRole === "plant" && (
-            <Button
-              variant={currentView === "profile" ? "default" : "ghost"}
-              size="sm"
-              onClick={() => onViewChange("profile")}
-              className="text-sm"
-            >
-              <UserIcon className="h-4 w-4 mr-2" />
-              Benchmark
-            </Button>
-          )}
 
           {userRole === "hq" && (
             <Button

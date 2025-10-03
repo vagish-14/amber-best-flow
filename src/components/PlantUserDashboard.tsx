@@ -12,14 +12,53 @@ import {
   Zap,
   Target,
   DollarSign,
-  Settings
+  Settings,
+  Copy,
+  Star,
+  BarChart3
 } from "lucide-react";
+import { useState } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+} from "@/components/ui/chart";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
 
 interface PlantUserDashboardProps {
   onViewChange: (view: string) => void;
 }
 
 const PlantUserDashboard = ({ onViewChange }: PlantUserDashboardProps) => {
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [selectedBP, setSelectedBP] = useState<any>(null);
+
+  const handleCopyImplement = (bp: any) => {
+    setSelectedBP(bp);
+    setShowConfirmDialog(true);
+  };
+
+  const confirmCopyImplement = () => {
+    // Here you would implement the actual copy logic
+    // For now, we'll just show a success message
+    console.log(`Copying BP: ${selectedBP?.title} from ${selectedBP?.plant}`);
+    setShowConfirmDialog(false);
+    setSelectedBP(null);
+    // You could add a toast notification here
+  };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Quick Actions */}
@@ -173,6 +212,199 @@ const PlantUserDashboard = ({ onViewChange }: PlantUserDashboardProps) => {
         </Card>
       </div>
 
+      {/* Monthly Cost Savings & Stars */}
+      <div className="lg:col-span-3">
+        <Card className="shadow-card">
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <BarChart3 className="h-5 w-5 text-primary" />
+              <span>Monthly Cost Savings & Stars</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {(() => {
+              // Mock data for monthly cost savings and stars
+              const monthlyData = [
+                { month: "Jan", costSavings: 12.5, stars: 2 },
+                { month: "Feb", costSavings: 15.2, stars: 3 },
+                { month: "Mar", costSavings: 18.7, stars: 4 },
+                { month: "Apr", costSavings: 14.3, stars: 2 },
+                { month: "May", costSavings: 16.8, stars: 3 },
+                { month: "Jun", costSavings: 20.1, stars: 4 },
+                { month: "Jul", costSavings: 17.5, stars: 3 },
+                { month: "Aug", costSavings: 19.2, stars: 4 },
+                { month: "Sep", costSavings: 22.4, stars: 5 },
+                { month: "Oct", costSavings: 18.9, stars: 3 },
+                { month: "Nov", costSavings: 21.3, stars: 4 },
+                { month: "Dec", costSavings: 24.7, stars: 5 },
+              ];
+
+              const currentMonth = monthlyData[monthlyData.length - 1];
+              const ytdSavings = monthlyData.reduce((sum, month) => sum + month.costSavings, 0);
+              const ytdStars = monthlyData.reduce((sum, month) => sum + month.stars, 0);
+
+              return (
+                <div className="space-y-4">
+                  {/* Summary Cards */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+                      <CardContent className="p-4 text-center">
+                        <div className="text-2xl font-bold text-green-700">₹{currentMonth.costSavings}L</div>
+                        <p className="text-sm text-green-600">This Month Savings</p>
+                      </CardContent>
+                    </Card>
+                    <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+                      <CardContent className="p-4 text-center">
+                        <div className="text-2xl font-bold text-blue-700">₹{ytdSavings.toFixed(1)}L</div>
+                        <p className="text-sm text-blue-600">YTD Savings</p>
+                      </CardContent>
+                    </Card>
+                    <Card className="bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200">
+                      <CardContent className="p-4 text-center">
+                        <div className="text-2xl font-bold text-yellow-700">{ytdStars}</div>
+                        <p className="text-sm text-yellow-600">Total Stars Earned</p>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* Chart */}
+                  <ChartContainer
+                    config={{
+                      costSavings: { label: "Cost Savings (₹L)", color: "hsl(var(--success))" },
+                      stars: { label: "Stars Earned", color: "hsl(var(--warning))" },
+                    }}
+                    className="h-[300px] w-full"
+                  >
+                    <BarChart data={monthlyData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="month" />
+                      <YAxis yAxisId="left" />
+                      <YAxis yAxisId="right" orientation="right" />
+                      <ChartTooltip 
+                        content={({ active, payload, label }) => {
+                          if (active && payload && payload.length) {
+                            return (
+                              <div className="rounded-lg border bg-background p-2 shadow-md">
+                                <div className="grid gap-2">
+                                  <div className="flex flex-col">
+                                    <span className="text-[0.70rem] uppercase text-muted-foreground">
+                                      {label}
+                                    </span>
+                                  </div>
+                                  {payload.map((entry, index) => (
+                                    <div key={index} className="flex items-center gap-2">
+                                      <div 
+                                        className="h-2 w-2 rounded-full" 
+                                        style={{ backgroundColor: entry.color }}
+                                      />
+                                      <span className="text-[0.70rem] text-muted-foreground">
+                                        {entry.dataKey === 'costSavings' ? 'Cost Savings' : 'Stars'}: {entry.value}
+                                        {entry.dataKey === 'costSavings' ? 'L' : ''}
+                                      </span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            );
+                          }
+                          return null;
+                        }}
+                      />
+                      <ChartLegend content={<ChartLegendContent />} />
+                      <Bar yAxisId="left" dataKey="costSavings" fill="var(--color-costSavings)" />
+                      <Bar yAxisId="right" dataKey="stars" fill="var(--color-stars)" />
+                    </BarChart>
+                  </ChartContainer>
+                </div>
+              );
+            })()}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Recent Benchmark BPs */}
+      <div className="lg:col-span-3">
+        <Card className="shadow-card">
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <Star className="h-5 w-5 text-primary" />
+              <span>Recent Benchmark BPs</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {[
+                { 
+                  title: "Energy Efficient Cooling Process", 
+                  plant: "Plant 1 - Gurgaon", 
+                  category: "Cost", 
+                  benchmarked: "4 hours ago",
+                  priority: "medium",
+                  savings: "₹1.2L annually"
+                },
+                { 
+                  title: "Production Line Optimization", 
+                  plant: "Plant 3 - Pune", 
+                  category: "Productivity", 
+                  benchmarked: "2 days ago",
+                  priority: "low",
+                  savings: "25% throughput increase"
+                },
+                { 
+                  title: "Waste Reduction Initiative", 
+                  plant: "Plant 5 - Mumbai", 
+                  category: "Cost", 
+                  benchmarked: "3 days ago",
+                  priority: "medium",
+                  savings: "35% heating cost reduction"
+                }
+              ].map((bp, index) => (
+                <div key={index} className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors">
+                  <div className="flex-1">
+                    <h4 className="font-medium">{bp.title}</h4>
+                    <div className="flex items-center space-x-2 mt-1">
+                      <Badge variant="outline" className="text-xs">
+                        {bp.category}
+                      </Badge>
+                      <span className="text-xs text-muted-foreground">{bp.plant}</span>
+                      <span className="text-xs text-muted-foreground">• {bp.benchmarked}</span>
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      Expected Savings: {bp.savings}
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Badge 
+                      variant="outline" 
+                      className={
+                        bp.priority === "high" 
+                          ? "bg-destructive/10 text-destructive border-destructive"
+                          : bp.priority === "medium"
+                          ? "bg-warning/10 text-warning border-warning"
+                          : "bg-muted/50 text-muted-foreground"
+                      }
+                    >
+                      {bp.priority} priority
+                    </Badge>
+                    <Button size="sm" variant="outline" onClick={() => onViewChange("practice-list")}>
+                      View Details
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      onClick={() => handleCopyImplement(bp)}
+                      className="bg-primary text-primary-foreground hover:bg-primary/90"
+                    >
+                      <Copy className="h-3 w-3 mr-1" />
+                      Copy & Implement
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Recent Submissions */}
       <div className="lg:col-span-3">
         <Card className="shadow-card">
@@ -226,6 +458,165 @@ const PlantUserDashboard = ({ onViewChange }: PlantUserDashboardProps) => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Benchmark BP Leaderboard */}
+      <div className="lg:col-span-3">
+        <Card className="shadow-card">
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <Target className="h-5 w-5 text-primary" />
+              <span>Benchmark BP Leaderboard</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {(() => {
+              // Mock leaderboard data with point breakdown
+              const leaderboardData = [
+                { 
+                  plant: "Plant 2 - Chennai", 
+                  totalPoints: 15, 
+                  breakdown: [
+                    { type: "Originator", points: 8, date: "2024-01-15", bpTitle: "Automated Quality Control" },
+                    { type: "Copier", points: 4, date: "2024-01-12", bpTitle: "Energy Efficient Process" },
+                    { type: "Originator", points: 2, date: "2024-01-10", bpTitle: "Safety Enhancement" },
+                    { type: "Copier", points: 1, date: "2024-01-08", bpTitle: "Production Optimization" }
+                  ]
+                },
+                { 
+                  plant: "Plant 1 - Gurgaon", 
+                  totalPoints: 12, 
+                  breakdown: [
+                    { type: "Originator", points: 6, date: "2024-01-14", bpTitle: "Cost Reduction Initiative" },
+                    { type: "Copier", points: 3, date: "2024-01-11", bpTitle: "Quality Improvement" },
+                    { type: "Originator", points: 2, date: "2024-01-09", bpTitle: "Waste Management" },
+                    { type: "Copier", points: 1, date: "2024-01-07", bpTitle: "Safety Protocol" }
+                  ]
+                },
+                { 
+                  plant: "Plant 7 - Bangalore", 
+                  totalPoints: 10, 
+                  breakdown: [
+                    { type: "Originator", points: 4, date: "2024-01-13", bpTitle: "Productivity Boost" },
+                    { type: "Copier", points: 3, date: "2024-01-10", bpTitle: "Cost Optimization" },
+                    { type: "Originator", points: 2, date: "2024-01-08", bpTitle: "Quality Enhancement" },
+                    { type: "Copier", points: 1, date: "2024-01-06", bpTitle: "Safety Improvement" }
+                  ]
+                },
+                { 
+                  plant: "Plant 3 - Pune", 
+                  totalPoints: 8, 
+                  breakdown: [
+                    { type: "Originator", points: 4, date: "2024-01-12", bpTitle: "Process Innovation" },
+                    { type: "Copier", points: 2, date: "2024-01-09", bpTitle: "Efficiency Gain" },
+                    { type: "Originator", points: 2, date: "2024-01-07", bpTitle: "Cost Savings" }
+                  ]
+                },
+                { 
+                  plant: "Plant 5 - Mumbai", 
+                  totalPoints: 6, 
+                  breakdown: [
+                    { type: "Originator", points: 2, date: "2024-01-11", bpTitle: "Quality Control" },
+                    { type: "Copier", points: 2, date: "2024-01-08", bpTitle: "Safety Enhancement" },
+                    { type: "Copier", points: 2, date: "2024-01-05", bpTitle: "Productivity Gain" }
+                  ]
+                }
+              ];
+              
+              return (
+                <div className="space-y-4">
+                  <div className="text-sm text-muted-foreground">
+                    Total points earned through benchmark BPs (Originator: 2 points, Copier: 1 point)
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="text-left text-muted-foreground">
+                          <th className="py-2">Rank</th>
+                          <th className="py-2">Plant</th>
+                          <th className="py-2">Total Points</th>
+                          <th className="py-2">Breakdown</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y">
+                        {leaderboardData.map((entry, index) => (
+                          <tr key={entry.plant} className="hover:bg-accent/50">
+                            <td className="py-2 font-medium">
+                              {index === 0 && <Badge variant="outline" className="bg-primary/10 text-primary">#1</Badge>}
+                              {index === 1 && <Badge variant="outline" className="bg-secondary/10 text-secondary">#2</Badge>}
+                              {index === 2 && <Badge variant="outline" className="bg-accent/10 text-accent-foreground">#3</Badge>}
+                              {index > 2 && <span className="text-muted-foreground">#{index + 1}</span>}
+                            </td>
+                            <td className="py-2 font-medium cursor-pointer" 
+                                onClick={() => {
+                                  // In a real app, this would show a modal with detailed breakdown
+                                  console.log("Breakdown for", entry.plant, entry.breakdown);
+                                }}>
+                              {entry.plant}
+                            </td>
+                            <td className="py-2">
+                              <Badge variant="outline" className="bg-primary/10 text-primary border-primary">
+                                {entry.totalPoints}
+                              </Badge>
+                            </td>
+                            <td className="py-2">
+                              <div className="text-xs text-muted-foreground">
+                                {entry.breakdown.length} entries
+                                <div className="mt-1 space-y-1">
+                                  {entry.breakdown.slice(0, 2).map((item, idx) => (
+                                    <div key={idx} className="flex items-center gap-2">
+                                      <Badge variant="outline" className={
+                                        item.type === "Originator" 
+                                          ? "bg-success/10 text-success border-success" 
+                                          : "bg-primary/10 text-primary border-primary"
+                                      }>
+                                        {item.type}: {item.points}
+                                      </Badge>
+                                      <span className="text-xs">{item.bpTitle}</span>
+                                    </div>
+                                  ))}
+                                  {entry.breakdown.length > 2 && (
+                                    <div className="text-xs text-muted-foreground">
+                                      +{entry.breakdown.length - 2} more...
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              );
+            })()}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Confirmation Dialog */}
+      <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Copy & Implement Best Practice</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to copy and implement "{selectedBP?.title}" from {selectedBP?.plant}?
+              <br /><br />
+              <strong>Points System:</strong>
+              <br />• {selectedBP?.plant} will receive 2 points (originator)
+              <br />• Your plant will receive 1 point (copier)
+              <br /><br />
+              This action will add this practice to your plant's implementation list.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmCopyImplement}>
+              Copy & Implement
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

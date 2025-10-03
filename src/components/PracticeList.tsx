@@ -368,9 +368,11 @@ const PracticeList = ({ userRole, onViewPractice, onBack, isBenchmarked, onToggl
                   <Button size="sm" variant="outline" className="opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); onViewPractice(practice); }}>
                     View Details
                   </Button>
-                  <Button size="sm" onClick={(e) => { e.stopPropagation(); onToggleBenchmark?.(practice); }}>
-                    {isBenchmarked?.(practice.id) ? "Unbenchmark" : "Benchmark"}
-                  </Button>
+                  {userRole === "hq" && (
+                    <Button size="sm" onClick={(e) => { e.stopPropagation(); onToggleBenchmark?.(practice); }}>
+                      {isBenchmarked?.(practice.id) ? "Unbenchmark" : "Benchmark"}
+                    </Button>
+                  )}
                 </div>
               </div>
             ))}

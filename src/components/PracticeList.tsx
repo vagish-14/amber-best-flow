@@ -155,7 +155,7 @@ const PracticeList = ({ userRole, onViewPractice, onBack, isBenchmarked, onToggl
     },
     {
       id: "BP-006",
-      title: "Waste Heat Recovery System",
+      title: "Waste Reduction Initiative",
       category: "Cost",
       status: "pending",
       submittedBy: "Priya Gupta",

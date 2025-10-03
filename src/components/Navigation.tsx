@@ -111,18 +111,6 @@ const Navigation = ({ userRole, currentView, onViewChange }: NavigationProps) =>
             </div>
           )}
 
-          {userRole === "hq" && (
-            <div className="flex items-center space-x-2 text-sm">
-              <Badge variant="outline" className="bg-primary/10 text-primary border-primary">
-                <Users className="h-3 w-3 mr-1" />
-                4 Plants Active
-              </Badge>
-              <Badge variant="outline" className="bg-warning/10 text-warning border-warning">
-                <Clock className="h-3 w-3 mr-1" />
-                5 Pending Review
-              </Badge>
-            </div>
-          )}
         </div>
       </div>
     </div>

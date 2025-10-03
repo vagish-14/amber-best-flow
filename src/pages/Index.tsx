@@ -19,8 +19,72 @@ const Index = () => {
   const [currentView, setCurrentView] = useState("login");
   const [userRole, setUserRole] = useState<"plant" | "hq" | null>(null);
   const [selectedPractice, setSelectedPractice] = useState<any>(null);
-  const [benchmarkedIds, setBenchmarkedIds] = useState<string[]>([]);
-  const [benchmarkedById, setBenchmarkedById] = useState<Record<string, any>>({});
+  const [benchmarkedIds, setBenchmarkedIds] = useState<string[]>(["BP-002", "BP-004", "BP-006"]);
+  const [benchmarkedById, setBenchmarkedById] = useState<Record<string, any>>({
+    "BP-002": {
+      id: "BP-002",
+      title: "Energy Efficient Cooling Process",
+      category: "Cost",
+      status: "pending",
+      submittedBy: "Amit Singh",
+      plant: "Plant 1 - Gurgaon",
+      submittedDate: "2024-01-12",
+      description: "Optimized cooling system that reduces energy consumption by 30% while maintaining optimal temperature control in production areas.",
+      problemStatement: "High energy consumption from cooling systems was increasing operational costs. Traditional cooling methods were inefficient and consumed excessive electricity during peak production hours.",
+      solution: "Implemented variable frequency drive (VFD) cooling system with smart temperature sensors and automated controls. Added thermal insulation and optimized airflow patterns.",
+      benefits: [
+        "30% reduction in energy consumption",
+        "₹1.2L annual cost savings",
+        "Improved temperature consistency",
+        "Reduced maintenance requirements"
+      ],
+      metrics: "Energy savings: 30%, Cost reduction: ₹1.2L annually, Temperature variance reduced by 40%",
+      implementation: "Implementation took 4 weeks with electrical team. Investment: ₹3L with 8-month payback period.",
+      questions: 0
+    },
+    "BP-004": {
+      id: "BP-004",
+      title: "Production Line Optimization",
+      category: "Productivity",
+      status: "revision",
+      submittedBy: "Vikram Sharma",
+      plant: "Plant 4 - Kolkata",
+      submittedDate: "2024-01-08",
+      description: "Streamlined production line layout and workflow optimization that increased throughput by 25%.",
+      problemStatement: "Production bottlenecks were causing delays and reducing overall efficiency. Workflow was not optimized for current production requirements.",
+      solution: "Redesigned production line layout with lean manufacturing principles, implemented kanban system, and optimized material flow patterns.",
+      benefits: [
+        "25% increase in throughput",
+        "Reduced material handling time",
+        "Improved worker efficiency",
+        "Better space utilization"
+      ],
+      metrics: "Throughput increase: 25%, Material handling time reduced by 40%, Space utilization improved by 30%",
+      implementation: "Implementation ongoing - Phase 1 completed in 8 weeks. Total investment: ₹5L with expected 12-month ROI.",
+      questions: 3
+    },
+    "BP-006": {
+      id: "BP-006",
+      title: "Waste Reduction Initiative",
+      category: "Cost",
+      status: "pending",
+      submittedBy: "Priya Gupta",
+      plant: "Plant 1 - Gurgaon",
+      submittedDate: "2024-01-18",
+      description: "Implementation of waste heat recovery system that captures and reuses thermal energy from production processes.",
+      problemStatement: "Significant thermal energy was being wasted from production processes, leading to high energy costs and environmental impact.",
+      solution: "Installed heat recovery units to capture waste heat from exhaust systems and reuse it for heating processes and facility heating.",
+      benefits: [
+        "35% reduction in heating costs",
+        "Reduced carbon footprint",
+        "Improved energy efficiency",
+        "Lower operational costs"
+      ],
+      metrics: "Heating cost reduction: 35%, Energy efficiency improvement: 25%, Carbon footprint reduction: 30%",
+      implementation: "Installation completed in 5 weeks with engineering team. Investment: ₹6L with 15-month payback period.",
+      questions: 1
+    }
+  });
 
   const isBenchmarked = (id?: string) => (id ? benchmarkedIds.includes(id) : false);
   const toggleBenchmark = (practiceOrId?: any) => {

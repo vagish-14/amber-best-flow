@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { BarChart3, TrendingUp, CheckCircle, Clock, XCircle, Factory } from "lucide-react";
+import { BarChart3, TrendingUp, CheckCircle, Clock, XCircle, Factory, DollarSign } from "lucide-react";
 import {
   ChartContainer,
   ChartTooltip,
@@ -21,6 +21,17 @@ const plantStats = [
   { name: "Plant 2 - Chennai", submitted: 18, approved: 15, pending: 2, rejected: 1 },
   { name: "Plant 3 - Pune", submitted: 31, approved: 28, pending: 2, rejected: 1 },
   { name: "Plant 4 - Kolkata", submitted: 15, approved: 12, pending: 1, rejected: 2 },
+  { name: "Plant 5 - Mumbai", submitted: 22, approved: 18, pending: 3, rejected: 1 },
+  { name: "Plant 6 - Delhi", submitted: 19, approved: 16, pending: 2, rejected: 1 },
+  { name: "Plant 7 - Bangalore", submitted: 25, approved: 21, pending: 3, rejected: 1 },
+  { name: "Plant 8 - Hyderabad", submitted: 17, approved: 14, pending: 2, rejected: 1 },
+  { name: "Plant 9 - Ahmedabad", submitted: 20, approved: 17, pending: 2, rejected: 1 },
+  { name: "Plant 10 - Jaipur", submitted: 16, approved: 13, pending: 2, rejected: 1 },
+  { name: "Plant 11 - Lucknow", submitted: 21, approved: 18, pending: 2, rejected: 1 },
+  { name: "Plant 12 - Indore", submitted: 18, approved: 15, pending: 2, rejected: 1 },
+  { name: "Plant 13 - Bhopal", submitted: 14, approved: 12, pending: 1, rejected: 1 },
+  { name: "Plant 14 - Patna", submitted: 19, approved: 16, pending: 2, rejected: 1 },
+  { name: "Plant 15 - Bhubaneswar", submitted: 17, approved: 14, pending: 2, rejected: 1 },
 ];
 
 const total = plantStats.reduce(
@@ -79,61 +90,6 @@ const Analytics = ({ userRole, onBack }: AnalyticsProps) => {
         </Card>
       )}
 
-      {/* Per-plant breakdown */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {plantsToShow.map((p) => (
-          <Card key={p.name} className="shadow-card">
-            <CardHeader>
-              <CardTitle className="flex items-center"><Factory className="h-5 w-5 text-primary mr-2" /> {p.name}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <MetricBadge label="Submitted" value={p.submitted} />
-                <MetricBadge label="Approved" value={p.approved} tone="success" />
-                <MetricBadge label="Pending" value={p.pending} tone="warning" />
-                <MetricBadge label="Rejected" value={p.rejected} tone="destructive" />
-              </div>
-
-              {/* Pie chart for plant distribution */}
-              <ChartContainer
-                config={{
-                  approved: { label: "Approved", color: "hsl(var(--success))" },
-                  pending: { label: "Pending", color: "hsl(var(--warning))" },
-                  rejected: { label: "Rejected", color: "hsl(var(--destructive))" },
-                }}
-                className="w-full aspect-[2/1]"
-              >
-                <PieChart>
-                  <Pie
-                    data={[
-                      { name: "approved", value: p.approved, fill: "var(--color-approved)" },
-                      { name: "pending", value: p.pending, fill: "var(--color-pending)" },
-                      { name: "rejected", value: p.rejected, fill: "var(--color-rejected)" },
-                    ]}
-                    dataKey="value"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={40}
-                    outerRadius={70}
-                    strokeWidth={2}
-                  >
-                    {[
-                      { name: "approved", color: "var(--color-approved)" },
-                      { name: "pending", color: "var(--color-pending)" },
-                      { name: "rejected", color: "var(--color-rejected)" },
-                    ].map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <ChartLegend content={<ChartLegendContent />} />
-                </PieChart>
-              </ChartContainer>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
 
       {/* Company-wide yearly bar chart */}
       <Card className="shadow-card">
@@ -148,6 +104,7 @@ const Analytics = ({ userRole, onBack }: AnalyticsProps) => {
               pending: { label: "Pending", color: "hsl(var(--warning))" },
               rejected: { label: "Rejected", color: "hsl(var(--destructive))" },
             }}
+            className="h-[300px] w-full"
           >
             <BarChart data={monthlyData}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -161,6 +118,93 @@ const Analytics = ({ userRole, onBack }: AnalyticsProps) => {
               <Bar dataKey="rejected" fill="var(--color-rejected)" />
             </BarChart>
           </ChartContainer>
+        </CardContent>
+      </Card>
+
+      {/* Yearly Cost Savings (Company-wide) */}
+      <Card className="shadow-card">
+        <CardHeader>
+          <CardTitle className="flex items-center"><DollarSign className="h-5 w-5 text-primary mr-2" /> Yearly Cost Savings</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {(() => {
+            // Plant-wise YTD savings (in ₹ lakhs) - demo values for all 15 plants
+            const plantSavings = [
+              { plant: "Plant 1 - Gurgaon", savings: 112 },
+              { plant: "Plant 2 - Chennai", savings: 205 },
+              { plant: "Plant 3 - Pune", savings: 72 },
+              { plant: "Plant 4 - Kolkata", savings: 48 },
+              { plant: "Plant 5 - Mumbai", savings: 89 },
+              { plant: "Plant 6 - Delhi", savings: 156 },
+              { plant: "Plant 7 - Bangalore", savings: 134 },
+              { plant: "Plant 8 - Hyderabad", savings: 67 },
+              { plant: "Plant 9 - Ahmedabad", savings: 98 },
+              { plant: "Plant 10 - Jaipur", savings: 45 },
+              { plant: "Plant 11 - Lucknow", savings: 78 },
+              { plant: "Plant 12 - Indore", savings: 123 },
+              { plant: "Plant 13 - Bhopal", savings: 56 },
+              { plant: "Plant 14 - Patna", savings: 87 },
+              { plant: "Plant 15 - Bhubaneswar", savings: 92 },
+            ];
+            const totalYtd = plantSavings.reduce((a, b) => a + b.savings, 0);
+            return (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between text-sm text-muted-foreground">
+                  <span>Plant-wise YTD savings • ₹ lakhs</span>
+                  <span className="font-medium text-foreground">Company YTD: ₹{totalYtd.toFixed(0)}L</span>
+                </div>
+                <ChartContainer 
+                  config={{ savings: { label: "YTD Savings", color: "hsl(var(--success))" } }}
+                  className="h-[300px] w-full"
+                >
+                  <BarChart data={plantSavings.map(p => ({ 
+                    plant: p.plant.replace("Plant ", "P").replace(" - Gurgaon", "").replace(" - Chennai", "").replace(" - Pune", "").replace(" - Kolkata", "").replace(" - Mumbai", "").replace(" - Delhi", "").replace(" - Bangalore", "").replace(" - Hyderabad", "").replace(" - Ahmedabad", "").replace(" - Jaipur", "").replace(" - Lucknow", "").replace(" - Indore", "").replace(" - Bhopal", "").replace(" - Patna", "").replace(" - Bhubaneswar", ""),
+                    fullName: p.plant,
+                    savings: p.savings 
+                  }))}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="plant" />
+                    <YAxis />
+                    <ChartTooltip 
+                      content={({ active, payload, label }) => {
+                        if (active && payload && payload.length) {
+                          const data = payload[0].payload;
+                          return (
+                            <div className="rounded-lg border bg-background p-2 shadow-md">
+                              <div className="grid gap-2">
+                                <div className="flex flex-col">
+                                  <span className="text-[0.70rem] uppercase text-muted-foreground">
+                                    {data.fullName || label}
+                                  </span>
+                                  <span className="font-bold text-muted-foreground">
+                                    {label}
+                                  </span>
+                                </div>
+                                {payload.map((entry, index) => (
+                                  <div key={index} className="flex items-center gap-2">
+                                    <div 
+                                      className="h-2 w-2 rounded-full" 
+                                      style={{ backgroundColor: entry.color }}
+                                    />
+                                    <span className="text-[0.70rem] text-muted-foreground">
+                                      {entry.dataKey}: {entry.value}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          );
+                        }
+                        return null;
+                      }}
+                    />
+                    <ChartLegend content={<ChartLegendContent />} />
+                    <Bar dataKey="savings" fill="var(--color-savings)" />
+                  </BarChart>
+                </ChartContainer>
+              </div>
+            );
+          })()}
         </CardContent>
       </Card>
 
@@ -218,6 +262,17 @@ const plantCostData: PlantCost[] = [
   { name: "Plant 2 - Chennai", division: "Component", lastMonth: 9.0, currentMonth: 9.8, ytdTillLastMonth: 65.5 },
   { name: "Plant 3 - Pune", division: "RAC", lastMonth: 15.2, currentMonth: 16.0, ytdTillLastMonth: 88.7 },
   { name: "Plant 4 - Kolkata", division: "Component", lastMonth: 7.3, currentMonth: 8.1, ytdTillLastMonth: 54.2 },
+  { name: "Plant 5 - Mumbai", division: "RAC", lastMonth: 11.8, currentMonth: 12.5, ytdTillLastMonth: 72.3 },
+  { name: "Plant 6 - Delhi", division: "Component", lastMonth: 13.2, currentMonth: 14.1, ytdTillLastMonth: 81.5 },
+  { name: "Plant 7 - Bangalore", division: "RAC", lastMonth: 10.5, currentMonth: 11.2, ytdTillLastMonth: 68.9 },
+  { name: "Plant 8 - Hyderabad", division: "Component", lastMonth: 8.7, currentMonth: 9.3, ytdTillLastMonth: 56.7 },
+  { name: "Plant 9 - Ahmedabad", division: "RAC", lastMonth: 14.1, currentMonth: 15.0, ytdTillLastMonth: 85.2 },
+  { name: "Plant 10 - Jaipur", division: "Component", lastMonth: 6.8, currentMonth: 7.4, ytdTillLastMonth: 48.9 },
+  { name: "Plant 11 - Lucknow", division: "RAC", lastMonth: 9.9, currentMonth: 10.6, ytdTillLastMonth: 63.4 },
+  { name: "Plant 12 - Indore", division: "Component", lastMonth: 12.3, currentMonth: 13.1, ytdTillLastMonth: 76.8 },
+  { name: "Plant 13 - Bhopal", division: "RAC", lastMonth: 7.6, currentMonth: 8.2, ytdTillLastMonth: 52.1 },
+  { name: "Plant 14 - Patna", division: "Component", lastMonth: 10.4, currentMonth: 11.1, ytdTillLastMonth: 67.3 },
+  { name: "Plant 15 - Bhubaneswar", division: "RAC", lastMonth: 11.1, currentMonth: 11.8, ytdTillLastMonth: 69.7 },
 ];
 
 const formatLakh = (n: number) => `₹${n.toFixed(1)}L`;

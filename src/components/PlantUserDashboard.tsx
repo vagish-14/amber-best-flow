@@ -528,46 +528,46 @@ const PlantUserDashboard = ({ onViewChange }: PlantUserDashboardProps) => {
                     Total points earned through benchmark BPs (Originator: 2 points, Copier: 1 point)
                   </div>
                   <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
+                    <table className="w-full text-xs">
                       <thead>
                         <tr className="text-left text-muted-foreground">
-                          <th className="py-2">Rank</th>
-                          <th className="py-2">Plant</th>
-                          <th className="py-2">Total Points</th>
-                          <th className="py-2">Breakdown</th>
+                          <th className="py-1">Rank</th>
+                          <th className="py-1">Plant</th>
+                          <th className="py-1 text-center pl-2">Total Points</th>
+                          <th className="py-1 text-center pl-1">Breakdown</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y">
                         {leaderboardData.map((entry, index) => (
                           <tr key={entry.plant} className="hover:bg-accent/50">
-                            <td className="py-2 font-medium">
-                              {index === 0 && <Badge variant="outline" className="bg-primary/10 text-primary">#1</Badge>}
-                              {index === 1 && <Badge variant="outline" className="bg-secondary/10 text-secondary">#2</Badge>}
-                              {index === 2 && <Badge variant="outline" className="bg-accent/10 text-accent-foreground">#3</Badge>}
-                              {index > 2 && <span className="text-muted-foreground">#{index + 1}</span>}
+                            <td className="py-1 font-medium">
+                              {index === 0 && <Badge variant="outline" className="bg-primary/10 text-primary text-xs px-1 py-0">#1</Badge>}
+                              {index === 1 && <Badge variant="outline" className="bg-secondary/10 text-secondary text-xs px-1 py-0">#2</Badge>}
+                              {index === 2 && <Badge variant="outline" className="bg-accent/10 text-accent-foreground text-xs px-1 py-0">#3</Badge>}
+                              {index > 2 && <span className="text-muted-foreground text-xs">#{index + 1}</span>}
                             </td>
-                            <td className="py-2 font-medium cursor-pointer" 
+                            <td className="py-1 font-medium cursor-pointer text-xs" 
                                 onClick={() => {
                                   // In a real app, this would show a modal with detailed breakdown
                                   console.log("Breakdown for", entry.plant, entry.breakdown);
                                 }}>
                               {entry.plant}
                             </td>
-                            <td className="py-2">
-                              <Badge variant="outline" className="bg-primary/10 text-primary border-primary">
+                            <td className="py-1 text-center pl-2">
+                              <Badge variant="outline" className="bg-primary/10 text-primary border-primary text-xs px-1 py-0">
                                 {entry.totalPoints}
                               </Badge>
                             </td>
-                            <td className="py-2">
+                            <td className="py-1 text-center pl-1">
                               <div className="text-xs text-muted-foreground">
-                                {entry.breakdown.length} entries
-                                <div className="mt-1 space-y-1">
+                                <div className="text-xs">{entry.breakdown.length} entries</div>
+                                <div className="mt-0.5 space-y-0.5">
                                   {entry.breakdown.slice(0, 2).map((item, idx) => (
-                                    <div key={idx} className="flex items-center gap-2">
+                                    <div key={idx} className="flex items-center justify-center gap-1">
                                       <Badge variant="outline" className={
                                         item.type === "Originator" 
-                                          ? "bg-success/10 text-success border-success" 
-                                          : "bg-primary/10 text-primary border-primary"
+                                          ? "bg-success/10 text-success border-success text-xs px-1 py-0" 
+                                          : "bg-primary/10 text-primary border-primary text-xs px-1 py-0"
                                       }>
                                         {item.type}: {item.points}
                                       </Badge>
@@ -575,7 +575,7 @@ const PlantUserDashboard = ({ onViewChange }: PlantUserDashboardProps) => {
                                     </div>
                                   ))}
                                   {entry.breakdown.length > 2 && (
-                                    <div className="text-xs text-muted-foreground">
+                                    <div className="text-xs text-muted-foreground text-center">
                                       +{entry.breakdown.length - 2} more...
                                     </div>
                                   )}

@@ -4,6 +4,17 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { useState, useMemo } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+
 import { 
   Building2, 
   TrendingUp, 
@@ -36,6 +47,21 @@ interface HQAdminDashboardProps {
 const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
   const [showDivisionSelector, setShowDivisionSelector] = useState(false);
   const [division, setDivision] = useState<"all" | "rac" | "component">("all");
+  const [lbDrillOpen, setLbDrillOpen] = useState(false);
+  const [lbDrillPlant, setLbDrillPlant] = useState<string | null>(null);
+  const [lbDrillData, setLbDrillData] = useState<{
+    copiedByCount: number;
+    copiedByPoints: number;
+    benchmarkedBPsCount: number;
+    benchmarkedBPsPoints: number;
+    perBP: { title: string; copies: number; points: number }[];
+  } | null>(null);
+  const [bpSpreadOpen, setBpSpreadOpen] = useState(false);
+  const [bpSpreadBP, setBpSpreadBP] = useState<string | null>(null);
+  const [bpSpreadRows, setBpSpreadRows] = useState<{ plant: string; date: string }[]>([]);
+  const [starDrillOpen, setStarDrillOpen] = useState(false);
+  const [starDrillPlant, setStarDrillPlant] = useState<string | null>(null);
+  const [starDrillData, setStarDrillData] = useState<{ month: string; savings: number; stars: number }[]>([]);
 
   const plantData = [
     { name: "Plant 1 - Gurgaon", submitted: 23, approved: 19, pending: 3, rejected: 1 },
@@ -600,7 +626,7 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
         </Card>
       </div>
 
-      {/* Star Ratings - Savings based (Monthly & YTD) */}
+      {/* Star Ratings - Savings based (Monthly) with drilldown */}
       <div className="lg:col-span-4">
         <Card className="shadow-card">
           <CardHeader>
@@ -629,40 +655,20 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
                 return 0;
               };
 
-              // Calculate YTD stars: (sum of stars earned in each month ytd) / (total no. of months ytd)
-              const calculateYTDStars = (monthlySavings: number, ytdSavings: number) => {
-                const currentMonth = new Date().getMonth() + 1; // 1-12
-                const monthlyStars = getStars(monthlySavings, ytdSavings);
-                
-                // Mock monthly star data for YTD calculation
-                const monthlyStarData = [
-                  { month: 1, stars: Math.floor(Math.random() * 3) + 1 },
-                  { month: 2, stars: Math.floor(Math.random() * 3) + 1 },
-                  { month: 3, stars: Math.floor(Math.random() * 3) + 1 },
-                  { month: 4, stars: Math.floor(Math.random() * 3) + 1 },
-                  { month: 5, stars: Math.floor(Math.random() * 3) + 1 },
-                  { month: 6, stars: Math.floor(Math.random() * 3) + 1 },
-                  { month: 7, stars: Math.floor(Math.random() * 3) + 1 },
-                  { month: 8, stars: Math.floor(Math.random() * 3) + 1 },
-                  { month: 9, stars: Math.floor(Math.random() * 3) + 1 },
-                  { month: 10, stars: Math.floor(Math.random() * 3) + 1 },
-                  { month: 11, stars: Math.floor(Math.random() * 3) + 1 },
-                  { month: 12, stars: Math.floor(Math.random() * 3) + 1 },
-                ];
-                
-                const ytdMonths = monthlyStarData.slice(0, currentMonth);
-                const sumOfStars = ytdMonths.reduce((sum, month) => sum + month.stars, 0);
-                const averageYTDStars = sumOfStars / currentMonth;
-                
-                return Math.round(averageYTDStars * 10) / 10; // Round to 1 decimal place
-              };
-
               // Precompute stars
               const ratings = savings.map((p) => {
                 const monthStars = getStars(p.monthly, p.ytd);
-                const ytdStars = calculateYTDStars(p.monthly, p.ytd);
-                return { ...p, monthStars, ytdStars };
+                return { ...p, monthStars };
               });
+
+              const generateMonthlyData = (baseMonthly: number, ytd: number) => {
+                const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                return months.map((m, idx) => {
+                  const savings = Math.max(0, baseMonthly + Math.sin(idx) * 2 + (idx % 3 === 0 ? 1 : 0));
+                  const stars = getStars(savings, ytd);
+                  return { month: m, savings: Number(savings.toFixed(1)), stars };
+                });
+              };
 
               return (
                 <div className="overflow-x-auto">
@@ -673,17 +679,24 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
                         <th className="py-2">Monthly Savings</th>
                         <th className="py-2">YTD Savings</th>
                         <th className="py-2">Stars (Month)</th>
-                        <th className="py-2">Stars (YTD)</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y">
                       {ratings.map((r) => (
                         <tr key={r.name} className="hover:bg-accent/50">
-                          <td className="py-2 font-medium">{r.name}</td>
+                          <td
+                            className="py-2 font-medium cursor-pointer"
+                            onClick={() => {
+                              setStarDrillPlant(r.name);
+                              setStarDrillData(generateMonthlyData(r.monthly, r.ytd));
+                              setStarDrillOpen(true);
+                            }}
+                          >
+                            {r.name}
+                          </td>
                           <td className="py-2">₹{r.monthly.toFixed(1)}L</td>
                           <td className="py-2">₹{r.ytd.toFixed(1)}L</td>
                           <td className="py-2">{r.monthStars}</td>
-                          <td className="py-2">{r.ytdStars}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -691,6 +704,158 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
                 </div>
               );
             })()}
+
+            {/* Drilldown: Monthly Savings & Stars */}
+            <AlertDialog open={starDrillOpen} onOpenChange={setStarDrillOpen}>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>
+                    {starDrillPlant ? `${starDrillPlant} - Monthly Savings & Stars` : "Monthly Savings & Stars"}
+                  </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Savings are in ₹ lakhs; stars are computed per monthly savings criteria.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="text-left text-muted-foreground">
+                        <th className="py-1">Month</th>
+                        <th className="py-1">Savings (₹L)</th>
+                        <th className="py-1">Stars</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y">
+                      {starDrillData.map((row) => (
+                        <tr key={row.month}>
+                          <td className="py-1">{row.month}</td>
+                          <td className="py-1">₹{row.savings.toFixed(1)}L</td>
+                          <td className="py-1">{row.stars}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Close</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => setStarDrillOpen(false)}>OK</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* KPI: BP Copy Spread */}
+      <div className="lg:col-span-4">
+        <Card className="shadow-card">
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <Target className="h-5 w-5 text-primary" />
+              <span>Benchmark BP Copy Spread</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {(() => {
+              // Demo dataset of benchmarked BPs, originator, and copies
+              const copySpread = [
+                {
+                  bp: "Energy Efficient Cooling Process",
+                  originator: "Plant 1 - Gurgaon",
+                  copies: [
+                    { plant: "Plant 2 - Chennai", date: "2024-01-12" },
+                    { plant: "Plant 7 - Bangalore", date: "2024-01-16" },
+                  ],
+                },
+                {
+                  bp: "Production Line Optimization",
+                  originator: "Plant 3 - Pune",
+                  copies: [
+                    { plant: "Plant 5 - Mumbai", date: "2024-01-11" },
+                  ],
+                },
+                {
+                  bp: "Waste Reduction Initiative",
+                  originator: "Plant 5 - Mumbai",
+                  copies: [
+                    { plant: "Plant 1 - Gurgaon", date: "2024-01-20" },
+                    { plant: "Plant 4 - Kolkata", date: "2024-01-22" },
+                    { plant: "Plant 9 - Ahmedabad", date: "2024-01-25" },
+                  ],
+                },
+              ];
+
+              return (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="text-left text-muted-foreground">
+                        <th className="py-2">BP Name</th>
+                        <th className="py-2">Originator Plant</th>
+                        <th className="py-2">Copied To</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y">
+                      {copySpread.map((row) => (
+                        <tr
+                          key={row.bp}
+                          className="hover:bg-accent/50 cursor-pointer"
+                          onClick={() => {
+                            setBpSpreadBP(row.bp);
+                            setBpSpreadRows(row.copies);
+                            setBpSpreadOpen(true);
+                          }}
+                        >
+                          <td className="py-2 font-medium">{row.bp}</td>
+                          <td className="py-2">{row.originator}</td>
+                          <td className="py-2">{row.copies.length}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              );
+            })()}
+
+            <AlertDialog open={bpSpreadOpen} onOpenChange={setBpSpreadOpen}>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>
+                    {bpSpreadBP ? `${bpSpreadBP} - Copied by Plants` : "Copied by Plants"}
+                  </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Only benchmarked BPs can be copied. List shows plants and dates of copy.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="text-left text-muted-foreground">
+                        <th className="py-1">Plant</th>
+                        <th className="py-1">Date</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y">
+                      {bpSpreadRows.map((r, idx) => (
+                        <tr key={idx}>
+                          <td className="py-1">{r.plant}</td>
+                          <td className="py-1">{r.date}</td>
+                        </tr>
+                      ))}
+                      {bpSpreadRows.length === 0 && (
+                        <tr>
+                          <td className="py-1 text-muted-foreground" colSpan={2}>No copies yet</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Close</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => setBpSpreadOpen(false)}>OK</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </CardContent>
         </Card>
       </div>
@@ -784,8 +949,30 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
                             </td>
                             <td className="py-1 font-medium cursor-pointer text-xs" 
                                 onClick={() => {
-                                  // In a real app, this would show a modal with detailed breakdown
-                                  console.log("Breakdown for", entry.plant, entry.breakdown);
+                                  // Aggregate originator-based metrics (only benchmarked BPs can be copied)
+                                  const originatorItems = entry.breakdown.filter((b) => b.type === "Originator");
+                                  const copiedByCount = originatorItems.length;
+                                  const copiedByPoints = originatorItems.reduce((s, b) => s + (b.points || 0), 0);
+                                  const perBPMap = new Map<string, { title: string; copies: number; points: number }>();
+                                  originatorItems.forEach((b) => {
+                                    const key = b.bpTitle;
+                                    const prev = perBPMap.get(key) || { title: b.bpTitle, copies: 0, points: 0 };
+                                    prev.copies += 1;
+                                    prev.points += b.points || 0;
+                                    perBPMap.set(key, prev);
+                                  });
+                                  const perBP = Array.from(perBPMap.values());
+                                  const benchmarkedBPsCount = perBP.length;
+                                  const benchmarkedBPsPoints = perBP.reduce((s, r) => s + r.points, 0);
+                                  setLbDrillPlant(entry.plant);
+                                  setLbDrillData({
+                                    copiedByCount,
+                                    copiedByPoints,
+                                    benchmarkedBPsCount,
+                                    benchmarkedBPsPoints,
+                                    perBP,
+                                  });
+                                  setLbDrillOpen(true);
                                 }}>
                               {entry.plant}
                             </td>
@@ -826,6 +1013,66 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
                 </div>
               );
             })()}
+            {/* Leaderboard Drilldown: Originator impact */}
+            <AlertDialog open={lbDrillOpen} onOpenChange={setLbDrillOpen}>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>
+                    {lbDrillPlant ? `${lbDrillPlant} - Benchmark Points Breakdown` : "Benchmark Points Breakdown"}
+                  </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Only benchmarked BPs can be copied. Summary below reflects originator points earned when other plants copied.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <div className="space-y-4 text-sm">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="p-3 border rounded-lg">
+                      <div className="font-medium mb-1">Copied by Other Plants</div>
+                      <div>Copies: <span className="font-semibold">{lbDrillData?.copiedByCount ?? 0}</span></div>
+                      <div>Points: <span className="font-semibold">{lbDrillData?.copiedByPoints ?? 0}</span></div>
+                    </div>
+                    <div className="p-3 border rounded-lg">
+                      <div className="font-medium mb-1">Benchmarked BPs (Originated)</div>
+                      <div>Count: <span className="font-semibold">{lbDrillData?.benchmarkedBPsCount ?? 0}</span></div>
+                      <div>Points: <span className="font-semibold">{lbDrillData?.benchmarkedBPsPoints ?? 0}</span></div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="font-medium mb-2">Per-BP Breakdown</div>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-xs">
+                        <thead>
+                          <tr className="text-left text-muted-foreground">
+                            <th className="py-1">BP Title</th>
+                            <th className="py-1">Copies</th>
+                            <th className="py-1">Points</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y">
+                          {(lbDrillData?.perBP ?? []).map((row) => (
+                            <tr key={row.title}>
+                              <td className="py-1">{row.title}</td>
+                              <td className="py-1">{row.copies}</td>
+                              <td className="py-1">{row.points}</td>
+                            </tr>
+                          ))}
+                          {(!lbDrillData || lbDrillData.perBP.length === 0) && (
+                            <tr>
+                              <td className="py-1 text-muted-foreground" colSpan={3}>No benchmarked BPs copied yet</td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Close</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => setLbDrillOpen(false)}>OK</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </CardContent>
         </Card>
       </div>

@@ -47,18 +47,27 @@ interface HQAdminDashboardProps {
 const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
   const [showDivisionSelector, setShowDivisionSelector] = useState(false);
   const [division, setDivision] = useState<"all" | "rac" | "component">("all");
+  // Leaderboard drilldown (legacy shape kept for compatibility)
   const [lbDrillOpen, setLbDrillOpen] = useState(false);
   const [lbDrillPlant, setLbDrillPlant] = useState<string | null>(null);
   const [lbDrillData, setLbDrillData] = useState<{
-    copiedByCount: number;
-    copiedByPoints: number;
-    benchmarkedBPsCount: number;
-    benchmarkedBPsPoints: number;
-    perBP: { title: string; copies: number; points: number }[];
+    copied?: { title: string; points: number; date: string }[];
+    copiedCount?: number;
+    copiedPoints?: number;
+    originated?: { title: string; copies: number; points: number }[];
+    originatedCount?: number;
+    originatedPoints?: number;
+    // legacy fields
+    copiedByCount?: number;
+    copiedByPoints?: number;
+    benchmarkedBPsCount?: number;
+    benchmarkedBPsPoints?: number;
+    perBP?: { title: string; copies: number; points: number }[];
   } | null>(null);
   const [bpSpreadOpen, setBpSpreadOpen] = useState(false);
   const [bpSpreadBP, setBpSpreadBP] = useState<string | null>(null);
   const [bpSpreadRows, setBpSpreadRows] = useState<{ plant: string; date: string }[]>([]);
+  // star drilldown
   const [starDrillOpen, setStarDrillOpen] = useState(false);
   const [starDrillPlant, setStarDrillPlant] = useState<string | null>(null);
   const [starDrillData, setStarDrillData] = useState<{ month: string; savings: number; stars: number }[]>([]);
@@ -683,17 +692,16 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
                     </thead>
                     <tbody className="divide-y">
                       {ratings.map((r) => (
-                        <tr key={r.name} className="hover:bg-accent/50">
-                          <td
-                            className="py-2 font-medium cursor-pointer"
-                            onClick={() => {
-                              setStarDrillPlant(r.name);
-                              setStarDrillData(generateMonthlyData(r.monthly, r.ytd));
-                              setStarDrillOpen(true);
-                            }}
-                          >
-                            {r.name}
-                          </td>
+                        <tr
+                          key={r.name}
+                          className="hover:bg-accent/50 cursor-pointer"
+                          onClick={() => {
+                            setStarDrillPlant(r.name);
+                            setStarDrillData(generateMonthlyData(r.monthly, r.ytd));
+                            setStarDrillOpen(true);
+                          }}
+                        >
+                          <td className="py-2 font-medium">{r.name}</td>
                           <td className="py-2">₹{r.monthly.toFixed(1)}L</td>
                           <td className="py-2">₹{r.ytd.toFixed(1)}L</td>
                           <td className="py-2">{r.monthStars}</td>
@@ -940,40 +948,46 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
                       </thead>
                       <tbody className="divide-y">
                         {leaderboardData.map((entry, index) => (
-                          <tr key={entry.plant} className="hover:bg-accent/50">
+                          <tr
+                            key={entry.plant}
+                            className="hover:bg-accent/50 cursor-pointer"
+                            onClick={() => {
+                              // Aggregate both copier and originator sides (only benchmarked BPs can be copied)
+                              const asCopier = entry.breakdown.filter((b) => b.type === "Copier");
+                              const copiedCount = asCopier.length;
+                              const copiedPoints = asCopier.reduce((s, b) => s + (b.points || 0), 0);
+
+                              const asOriginator = entry.breakdown.filter((b) => b.type === "Originator");
+                              const perBPMap = new Map<string, { title: string; copies: number; points: number }>();
+                              asOriginator.forEach((b) => {
+                                const prev = perBPMap.get(b.bpTitle) || { title: b.bpTitle, copies: 0, points: 0 };
+                                prev.copies += 1;
+                                prev.points += b.points || 0;
+                                perBPMap.set(b.bpTitle, prev);
+                              });
+                              const originated = Array.from(perBPMap.values());
+                              const originatedCount = originated.length;
+                              const originatedPoints = originated.reduce((s, r) => s + r.points, 0);
+
+                              setLbDrillPlant(entry.plant);
+                              setLbDrillData({
+                                copied: asCopier.map((c) => ({ title: c.bpTitle, points: c.points, date: c.date })),
+                                copiedCount,
+                                copiedPoints,
+                                originated,
+                                originatedCount,
+                                originatedPoints,
+                              });
+                              setLbDrillOpen(true);
+                            }}
+                          >
                             <td className="py-1 font-medium">
                               {index === 0 && <Badge variant="outline" className="bg-primary/10 text-primary text-xs px-1 py-0">#1</Badge>}
                               {index === 1 && <Badge variant="outline" className="bg-secondary/10 text-secondary text-xs px-1 py-0">#2</Badge>}
                               {index === 2 && <Badge variant="outline" className="bg-accent/10 text-accent-foreground text-xs px-1 py-0">#3</Badge>}
                               {index > 2 && <span className="text-muted-foreground text-xs">#{index + 1}</span>}
                             </td>
-                            <td className="py-1 font-medium cursor-pointer text-xs" 
-                                onClick={() => {
-                                  // Aggregate originator-based metrics (only benchmarked BPs can be copied)
-                                  const originatorItems = entry.breakdown.filter((b) => b.type === "Originator");
-                                  const copiedByCount = originatorItems.length;
-                                  const copiedByPoints = originatorItems.reduce((s, b) => s + (b.points || 0), 0);
-                                  const perBPMap = new Map<string, { title: string; copies: number; points: number }>();
-                                  originatorItems.forEach((b) => {
-                                    const key = b.bpTitle;
-                                    const prev = perBPMap.get(key) || { title: b.bpTitle, copies: 0, points: 0 };
-                                    prev.copies += 1;
-                                    prev.points += b.points || 0;
-                                    perBPMap.set(key, prev);
-                                  });
-                                  const perBP = Array.from(perBPMap.values());
-                                  const benchmarkedBPsCount = perBP.length;
-                                  const benchmarkedBPsPoints = perBP.reduce((s, r) => s + r.points, 0);
-                                  setLbDrillPlant(entry.plant);
-                                  setLbDrillData({
-                                    copiedByCount,
-                                    copiedByPoints,
-                                    benchmarkedBPsCount,
-                                    benchmarkedBPsPoints,
-                                    perBP,
-                                  });
-                                  setLbDrillOpen(true);
-                                }}>
+                            <td className="py-1 font-medium text-xs">
                               {entry.plant}
                             </td>
                             <td className="py-1 text-center pl-2">
@@ -1027,43 +1041,73 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
                 <div className="space-y-4 text-sm">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div className="p-3 border rounded-lg">
-                      <div className="font-medium mb-1">Copied by Other Plants</div>
-                      <div>Copies: <span className="font-semibold">{lbDrillData?.copiedByCount ?? 0}</span></div>
-                      <div>Points: <span className="font-semibold">{lbDrillData?.copiedByPoints ?? 0}</span></div>
+                      <div className="font-medium mb-1">BPs Copied by This Plant</div>
+                      <div>Count: <span className="font-semibold">{lbDrillData?.copiedCount ?? lbDrillData?.copiedByCount ?? 0}</span></div>
+                      <div>Points: <span className="font-semibold">{lbDrillData?.copiedPoints ?? lbDrillData?.copiedByPoints ?? 0}</span></div>
                     </div>
                     <div className="p-3 border rounded-lg">
-                      <div className="font-medium mb-1">Benchmarked BPs (Originated)</div>
-                      <div>Count: <span className="font-semibold">{lbDrillData?.benchmarkedBPsCount ?? 0}</span></div>
-                      <div>Points: <span className="font-semibold">{lbDrillData?.benchmarkedBPsPoints ?? 0}</span></div>
+                      <div className="font-medium mb-1">Originated BPs (Benchmarked)</div>
+                      <div>Count: <span className="font-semibold">{lbDrillData?.originatedCount ?? lbDrillData?.benchmarkedBPsCount ?? 0}</span></div>
+                      <div>Points: <span className="font-semibold">{lbDrillData?.originatedPoints ?? lbDrillData?.benchmarkedBPsPoints ?? 0}</span></div>
                     </div>
                   </div>
 
-                  <div>
-                    <div className="font-medium mb-2">Per-BP Breakdown</div>
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-xs">
-                        <thead>
-                          <tr className="text-left text-muted-foreground">
-                            <th className="py-1">BP Title</th>
-                            <th className="py-1">Copies</th>
-                            <th className="py-1">Points</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y">
-                          {(lbDrillData?.perBP ?? []).map((row) => (
-                            <tr key={row.title}>
-                              <td className="py-1">{row.title}</td>
-                              <td className="py-1">{row.copies}</td>
-                              <td className="py-1">{row.points}</td>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <div className="font-medium mb-2">Copied by This Plant (Details)</div>
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-xs">
+                          <thead>
+                            <tr className="text-left text-muted-foreground">
+                              <th className="py-1">BP Title</th>
+                              <th className="py-1">Points</th>
+                              <th className="py-1">Date</th>
                             </tr>
-                          ))}
-                          {(!lbDrillData || lbDrillData.perBP.length === 0) && (
-                            <tr>
-                              <td className="py-1 text-muted-foreground" colSpan={3}>No benchmarked BPs copied yet</td>
+                          </thead>
+                          <tbody className="divide-y">
+                            {(lbDrillData?.copied ?? []).map((row, idx) => (
+                              <tr key={idx}>
+                                <td className="py-1">{row.title}</td>
+                                <td className="py-1">{row.points}</td>
+                                <td className="py-1">{row.date}</td>
+                              </tr>
+                            ))}
+                            {(!lbDrillData || (lbDrillData.copied && lbDrillData.copied.length === 0)) && (
+                              <tr>
+                                <td className="py-1 text-muted-foreground" colSpan={3}>No copied entries</td>
+                              </tr>
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="font-medium mb-2">Benchmarked BPs (Details)</div>
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-xs">
+                          <thead>
+                            <tr className="text-left text-muted-foreground">
+                              <th className="py-1">BP Title</th>
+                              <th className="py-1">Copies</th>
+                              <th className="py-1">Points</th>
                             </tr>
-                          )}
-                        </tbody>
-                      </table>
+                          </thead>
+                          <tbody className="divide-y">
+                            {(lbDrillData?.originated ?? lbDrillData?.perBP ?? []).map((row: any) => (
+                              <tr key={row.title}>
+                                <td className="py-1">{row.title}</td>
+                                <td className="py-1">{row.copies}</td>
+                                <td className="py-1">{row.points}</td>
+                              </tr>
+                            ))}
+                            {(!lbDrillData || ((lbDrillData.originated && lbDrillData.originated.length === 0) || (!lbDrillData.originated && (!lbDrillData.perBP || lbDrillData.perBP.length === 0)))) && (
+                              <tr>
+                                <td className="py-1 text-muted-foreground" colSpan={3}>No originated benchmarked BPs</td>
+                              </tr>
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
                   </div>
                 </div>

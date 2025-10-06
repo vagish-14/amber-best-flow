@@ -44,6 +44,19 @@ interface PlantUserDashboardProps {
 const PlantUserDashboard = ({ onViewChange }: PlantUserDashboardProps) => {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [selectedBP, setSelectedBP] = useState<any>(null);
+  const [bpSpreadOpen, setBpSpreadOpen] = useState(false);
+  const [bpSpreadBP, setBpSpreadBP] = useState<string | null>(null);
+  const [bpSpreadRows, setBpSpreadRows] = useState<{ plant: string; date: string }[]>([]);
+  const [lbDrillOpen, setLbDrillOpen] = useState(false);
+  const [lbDrillPlant, setLbDrillPlant] = useState<string | null>(null);
+  const [lbDrillData, setLbDrillData] = useState<{
+    copied: { title: string; points: number; date: string }[];
+    copiedCount: number;
+    copiedPoints: number;
+    originated: { title: string; copies: number; points: number }[];
+    originatedCount: number;
+    originatedPoints: number;
+  } | null>(null);
 
   const handleCopyImplement = (bp: any) => {
     setSelectedBP(bp);
@@ -82,6 +95,119 @@ const PlantUserDashboard = ({ onViewChange }: PlantUserDashboardProps) => {
           </CardContent>
         </Card>
       </div>
+
+    {/* KPI: BP Copy Spread */}
+    <div className="lg:col-span-3">
+      <Card className="shadow-card">
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Target className="h-5 w-5 text-primary" />
+            <span>Benchmark BP Copy Spread</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {(() => {
+            const copySpread = [
+              {
+                bp: "Energy Efficient Cooling Process",
+                originator: "Plant 1 - Gurgaon",
+                copies: [
+                  { plant: "Plant 2 - Chennai", date: "2024-01-12" },
+                  { plant: "Plant 7 - Bangalore", date: "2024-01-16" },
+                ],
+              },
+              {
+                bp: "Production Line Optimization",
+                originator: "Plant 3 - Pune",
+                copies: [
+                  { plant: "Plant 5 - Mumbai", date: "2024-01-11" },
+                ],
+              },
+              {
+                bp: "Waste Reduction Initiative",
+                originator: "Plant 5 - Mumbai",
+                copies: [
+                  { plant: "Plant 1 - Gurgaon", date: "2024-01-20" },
+                  { plant: "Plant 4 - Kolkata", date: "2024-01-22" },
+                  { plant: "Plant 9 - Ahmedabad", date: "2024-01-25" },
+                ],
+              },
+            ];
+
+            return (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="text-left text-muted-foreground">
+                      <th className="py-2">BP Name</th>
+                      <th className="py-2">Originator Plant</th>
+                      <th className="py-2">Copied To</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y">
+                    {copySpread.map((row) => (
+                      <tr
+                        key={row.bp}
+                        className="hover:bg-accent/50 cursor-pointer"
+                        onClick={() => {
+                          setBpSpreadBP(row.bp);
+                          setBpSpreadRows(row.copies);
+                          setBpSpreadOpen(true);
+                        }}
+                      >
+                        <td className="py-2 font-medium">{row.bp}</td>
+                        <td className="py-2">{row.originator}</td>
+                        <td className="py-2">{row.copies.length}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            );
+          })()}
+
+          <AlertDialog open={bpSpreadOpen} onOpenChange={setBpSpreadOpen}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  {bpSpreadBP ? `${bpSpreadBP} - Copied by Plants` : "Copied by Plants"}
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  Only benchmarked BPs can be copied. List shows plants and dates of copy.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="text-left text-muted-foreground">
+                      <th className="py-1">Plant</th>
+                      <th className="py-1">Date</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y">
+                    {bpSpreadRows.map((r, idx) => (
+                      <tr key={idx}>
+                        <td className="py-1">{r.plant}</td>
+                        <td className="py-1">{r.date}</td>
+                      </tr>
+                    ))}
+                    {bpSpreadRows.length === 0 && (
+                      <tr>
+                        <td className="py-1 text-muted-foreground" colSpan={2}>No copies yet</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Close</AlertDialogCancel>
+                <AlertDialogAction onClick={() => setBpSpreadOpen(false)}>OK</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </CardContent>
+      </Card>
+    </div>
 
       {/* Statistics Overview */}
       <Card className="shadow-card">
@@ -386,7 +512,7 @@ const PlantUserDashboard = ({ onViewChange }: PlantUserDashboardProps) => {
                     >
                       {bp.priority} priority
                     </Badge>
-                    <Button size="sm" variant="outline" onClick={() => onViewChange("practice-list")}>
+                    <Button size="sm" variant="outline" onClick={() => onViewChange("profile")}>
                       View Details
                     </Button>
                     <Button 
@@ -539,20 +665,45 @@ const PlantUserDashboard = ({ onViewChange }: PlantUserDashboardProps) => {
                       </thead>
                       <tbody className="divide-y">
                         {leaderboardData.map((entry, index) => (
-                          <tr key={entry.plant} className="hover:bg-accent/50">
+                          <tr
+                            key={entry.plant}
+                            className="hover:bg-accent/50 cursor-pointer"
+                            onClick={() => {
+                              const asCopier = entry.breakdown.filter((b) => b.type === "Copier");
+                              const copiedCount = asCopier.length;
+                              const copiedPoints = asCopier.reduce((s, b) => s + (b.points || 0), 0);
+
+                              const asOriginator = entry.breakdown.filter((b) => b.type === "Originator");
+                              const perBPMap = new Map<string, { title: string; copies: number; points: number }>();
+                              asOriginator.forEach((b) => {
+                                const prev = perBPMap.get(b.bpTitle) || { title: b.bpTitle, copies: 0, points: 0 };
+                                prev.copies += 1;
+                                prev.points += b.points || 0;
+                                perBPMap.set(b.bpTitle, prev);
+                              });
+                              const originated = Array.from(perBPMap.values());
+                              const originatedCount = originated.length;
+                              const originatedPoints = originated.reduce((s, r) => s + r.points, 0);
+
+                              setLbDrillPlant(entry.plant);
+                              setLbDrillData({
+                                copied: asCopier.map((c) => ({ title: c.bpTitle, points: c.points, date: c.date })),
+                                copiedCount,
+                                copiedPoints,
+                                originated,
+                                originatedCount,
+                                originatedPoints,
+                              });
+                              setLbDrillOpen(true);
+                            }}
+                          >
                             <td className="py-1 font-medium">
                               {index === 0 && <Badge variant="outline" className="bg-primary/10 text-primary text-xs px-1 py-0">#1</Badge>}
                               {index === 1 && <Badge variant="outline" className="bg-secondary/10 text-secondary text-xs px-1 py-0">#2</Badge>}
                               {index === 2 && <Badge variant="outline" className="bg-accent/10 text-accent-foreground text-xs px-1 py-0">#3</Badge>}
                               {index > 2 && <span className="text-muted-foreground text-xs">#{index + 1}</span>}
                             </td>
-                            <td className="py-1 font-medium cursor-pointer text-xs" 
-                                onClick={() => {
-                                  // In a real app, this would show a modal with detailed breakdown
-                                  console.log("Breakdown for", entry.plant, entry.breakdown);
-                                }}>
-                              {entry.plant}
-                            </td>
+                            <td className="py-1 font-medium text-xs">{entry.plant}</td>
                             <td className="py-1 text-center pl-2">
                               <Badge variant="outline" className="bg-primary/10 text-primary border-primary text-xs px-1 py-0">
                                 {entry.totalPoints}
@@ -594,6 +745,96 @@ const PlantUserDashboard = ({ onViewChange }: PlantUserDashboardProps) => {
         </Card>
       </div>
 
+      {/* Leaderboard Drilldown */}
+      <AlertDialog open={lbDrillOpen} onOpenChange={setLbDrillOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {lbDrillPlant ? `${lbDrillPlant} - Benchmark Points Breakdown` : "Benchmark Points Breakdown"}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Only benchmarked BPs can be copied. Summary below reflects copies and originated benchmarked BPs.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="space-y-4 text-sm">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="p-3 border rounded-lg">
+                <div className="font-medium mb-1">BPs Copied by This Plant</div>
+                <div>Count: <span className="font-semibold">{lbDrillData?.copiedCount ?? 0}</span></div>
+                <div>Points: <span className="font-semibold">{lbDrillData?.copiedPoints ?? 0}</span></div>
+              </div>
+              <div className="p-3 border rounded-lg">
+                <div className="font-medium mb-1">Benchmarked BPs (Originated)</div>
+                <div>Count: <span className="font-semibold">{lbDrillData?.originatedCount ?? 0}</span></div>
+                <div>Points: <span className="font-semibold">{lbDrillData?.originatedPoints ?? 0}</span></div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <div className="font-medium mb-2">Copied by This Plant (Details)</div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-xs">
+                    <thead>
+                      <tr className="text-left text-muted-foreground">
+                        <th className="py-1">BP Title</th>
+                        <th className="py-1">Points</th>
+                        <th className="py-1">Date</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y">
+                      {(lbDrillData?.copied ?? []).map((row, idx) => (
+                        <tr key={idx}>
+                          <td className="py-1">{row.title}</td>
+                          <td className="py-1">{row.points}</td>
+                          <td className="py-1">{row.date}</td>
+                        </tr>
+                      ))}
+                      {(!lbDrillData || lbDrillData.copied.length === 0) && (
+                        <tr>
+                          <td className="py-1 text-muted-foreground" colSpan={3}>No copied entries</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div>
+                <div className="font-medium mb-2">Benchmarked BPs (Details)</div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-xs">
+                    <thead>
+                      <tr className="text-left text-muted-foreground">
+                        <th className="py-1">BP Title</th>
+                        <th className="py-1">Copies</th>
+                        <th className="py-1">Points</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y">
+                      {(lbDrillData?.originated ?? []).map((row) => (
+                        <tr key={row.title}>
+                          <td className="py-1">{row.title}</td>
+                          <td className="py-1">{row.copies}</td>
+                          <td className="py-1">{row.points}</td>
+                        </tr>
+                      ))}
+                      {(!lbDrillData || lbDrillData.originated.length === 0) && (
+                        <tr>
+                          <td className="py-1 text-muted-foreground" colSpan={3}>No originated benchmarked BPs</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Close</AlertDialogCancel>
+            <AlertDialogAction onClick={() => setLbDrillOpen(false)}>OK</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       {/* Confirmation Dialog */}
       <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
         <AlertDialogContent>

@@ -55,6 +55,11 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
     { name: "Plant 15 - Bhubaneswar", submitted: 17, approved: 14, pending: 2, rejected: 1 }
   ];
 
+  // Submission-derived active plants KPI
+  const totalPlantCount = 25;
+  const activeBySubmission = useMemo(() => plantData.filter((p) => p.submitted > 0), [plantData]);
+  const activeBySubmissionCount = activeBySubmission.length;
+
   // Division datasets (mocked per requirements)
   const [racPlants, setRacPlants] = useState<{ name: string; active: boolean }[]>([
     { name: "RAC - P1 Gurugram", active: true },
@@ -76,12 +81,50 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
     { name: "Component - P 15 bhubaneswar", active: false },
   ]);
 
-  const { activeCount, inactiveCount, visiblePlants } = useMemo(() => {
-    const dataset = division === "rac" ? racPlants : division === "component" ? componentPlants : [...racPlants, ...componentPlants];
-    const active = dataset.filter((p) => p.active);
-    const inactive = dataset.filter((p) => !p.active);
-    return { activeCount: active.length, inactiveCount: inactive.length, visiblePlants: dataset };
-  }, [division, racPlants, componentPlants]);
+  const { activeCount, inactiveCount } = useMemo(() => {
+    const activeCount = activeBySubmissionCount;
+    const inactiveCount = Math.max(totalPlantCount - activeBySubmissionCount, 0);
+    return { activeCount, inactiveCount };
+  }, [activeBySubmissionCount, totalPlantCount]);
+
+  // Division-wise derivation based on submissions
+  const racNames = useMemo(() => plantData.slice(0, 8).map((p) => p.name), [plantData]);
+  const componentNames = useMemo(() => plantData.slice(8).map((p) => p.name), [plantData]);
+  const activeNameSet = useMemo(() => new Set(activeBySubmission.map((p) => p.name)), [activeBySubmission]);
+
+  // Extra inactive placeholders: 4 for RAC, 6 for Component
+  const extraRacInactiveNames = useMemo(() => {
+    return Array.from({ length: 4 }).map((_, i) => `RAC - P${9 + i} (Inactive)`);
+  }, []);
+  const extraComponentInactiveNames = useMemo(() => {
+    return Array.from({ length: 6 }).map((_, i) => `Component - P${16 + i} (Inactive)`);
+  }, []);
+
+  const divisionActiveNames = useMemo(() => {
+    if (division === "rac") return racNames.filter((n) => activeNameSet.has(n));
+    if (division === "component") return componentNames.filter((n) => activeNameSet.has(n));
+    return [...racNames, ...componentNames].filter((n) => activeNameSet.has(n));
+  }, [division, racNames, componentNames, activeNameSet]);
+
+  const divisionInactiveNames = useMemo(() => {
+    if (division === "rac") {
+      return [
+        ...racNames.filter((n) => !activeNameSet.has(n)),
+        ...extraRacInactiveNames,
+      ];
+    }
+    if (division === "component") {
+      return [
+        ...componentNames.filter((n) => !activeNameSet.has(n)),
+        ...extraComponentInactiveNames,
+      ];
+    }
+    return [
+      ...[...racNames, ...componentNames].filter((n) => !activeNameSet.has(n)),
+      ...extraRacInactiveNames,
+      ...extraComponentInactiveNames,
+    ];
+  }, [division, racNames, componentNames, activeNameSet, extraRacInactiveNames, extraComponentInactiveNames]);
 
   const togglePlantActive = (name: string) => {
     if (division === "rac" || division === "all") {
@@ -148,8 +191,8 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
                   </Button>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="bg-success/10 text-success">Active: {activeCount}</Badge>
-                  <Badge variant="outline" className="bg-muted/50 text-muted-foreground">Inactive: {inactiveCount}</Badge>
+                  <Badge variant="outline" className="bg-success/10 text-success">Active: {divisionActiveNames.length}</Badge>
+                  <Badge variant="outline" className="bg-muted/50 text-muted-foreground">Inactive: {divisionInactiveNames.length}</Badge>
                 </div>
               </div>
 
@@ -158,12 +201,11 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
                 <div className="p-4 border rounded-lg">
                   <p className="font-medium mb-2">Active Plants</p>
                   <div className="space-y-2">
-                    {visiblePlants.filter(p => p.active).map((p) => (
-                      <div key={p.name} className="flex items-center justify-between">
-                        <span>{p.name}</span>
+                    {divisionActiveNames.map((name) => (
+                      <div key={name} className="flex items-center justify-between">
+                        <span>{name}</span>
                         <div className="flex items-center gap-2">
                           <Badge variant="outline" className="bg-success/10 text-success">Active</Badge>
-                          <Button size="sm" variant="outline" onClick={() => togglePlantActive(p.name)}>Inactive</Button>
                         </div>
                       </div>
                     ))}
@@ -172,15 +214,18 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
                 <div className="p-4 border rounded-lg">
                   <p className="font-medium mb-2">Inactive Plants</p>
                   <div className="space-y-2">
-                    {visiblePlants.filter(p => !p.active).map((p) => (
-                      <div key={p.name} className="flex items-center justify-between">
-                        <span>{p.name}</span>
-                        <div className="flex items-center gap-2">
-                          <Badge variant="outline" className="bg-muted/50 text-muted-foreground">Inactive</Badge>
-                          <Button size="sm" className="bg-success text-success-foreground" onClick={() => togglePlantActive(p.name)}>Active</Button>
+                    {divisionInactiveNames.length === 0 ? (
+                      <div className="text-sm text-muted-foreground">No inactive plants</div>
+                    ) : (
+                      divisionInactiveNames.map((name) => (
+                        <div key={name} className="flex items-center justify-between">
+                          <span>{name}</span>
+                          <div className="flex items-center gap-2">
+                            <Badge variant="outline" className="bg-muted/50 text-muted-foreground">Inactive</Badge>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))
+                    )}
                   </div>
                 </div>
               </div>
@@ -231,8 +276,8 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
           </CardTitle>
         </CardHeader>
         <CardContent className="text-center">
-          <div className="text-3xl font-bold text-primary">15</div>
-          <p className="text-sm text-muted-foreground">Contributing This Month</p>
+          <div className="text-3xl font-bold text-primary">{activeBySubmissionCount}/{totalPlantCount} plants</div>
+          <p className="text-sm text-muted-foreground">Contributing this month (submission-based)</p>
           <div className="mt-2">
             <Badge variant="outline" className="bg-primary/10 text-primary">
               100% Participation

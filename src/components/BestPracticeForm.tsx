@@ -43,6 +43,12 @@ const BestPracticeForm = ({ onCancel, preFillData }: BestPracticeFormProps) => {
       setCategory(preFillData.category?.toLowerCase() || "");
       setProblemStatement(preFillData.problemStatement || "");
       setSolution(preFillData.solution || "");
+    } else {
+      // Clear all fields when preFillData is null (normal add-practice flow)
+      setTitle("");
+      setCategory("");
+      setProblemStatement("");
+      setSolution("");
     }
   }, [preFillData]);
   const categories = [

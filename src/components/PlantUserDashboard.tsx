@@ -92,7 +92,10 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement }: PlantUserDashb
               <Button 
                 size="lg" 
                 className="bg-white/20 hover:bg-white/30 text-white border-white/30"
-                onClick={() => onViewChange("add-practice")}
+                onClick={() => {
+                  // This will trigger handleViewChange in Index.tsx which clears formPreFillData
+                  onViewChange("add-practice");
+                }}
               >
                 <Plus className="h-5 w-5 mr-2" />
                 Add Best Practice

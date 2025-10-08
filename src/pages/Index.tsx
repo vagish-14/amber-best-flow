@@ -129,6 +129,14 @@ const Index = () => {
     setCurrentView("add-practice");
   };
 
+  const handleViewChange = (view: string) => {
+    // Clear pre-fill data when navigating to add-practice normally (not from copy & implement)
+    if (view === "add-practice") {
+      setFormPreFillData(null);
+    }
+    setCurrentView(view);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-accent to-muted">
       {/* Header */}
@@ -187,16 +195,16 @@ const Index = () => {
             <Navigation 
               userRole={userRole} 
               currentView={currentView}
-              onViewChange={setCurrentView}
+              onViewChange={handleViewChange}
             />
             
             {userRole === "plant" ? (
               <PlantUserDashboard 
-                onViewChange={setCurrentView} 
+                onViewChange={handleViewChange} 
                 onCopyAndImplement={handleCopyAndImplement}
               />
             ) : (
-              <HQAdminDashboard onViewChange={setCurrentView} />
+              <HQAdminDashboard onViewChange={handleViewChange} />
             )}
           </div>
         )}
@@ -206,7 +214,7 @@ const Index = () => {
             <Navigation 
               userRole={userRole!} 
               currentView={currentView}
-              onViewChange={setCurrentView}
+              onViewChange={handleViewChange}
             />
             <BestPracticeForm 
               onCancel={() => {
@@ -223,7 +231,7 @@ const Index = () => {
             <Navigation 
               userRole={userRole!} 
               currentView={currentView}
-              onViewChange={setCurrentView}
+              onViewChange={handleViewChange}
             />
             <PracticeList 
               userRole={userRole!}
@@ -243,7 +251,7 @@ const Index = () => {
             <Navigation 
               userRole={userRole!} 
               currentView={currentView}
-              onViewChange={setCurrentView}
+              onViewChange={handleViewChange}
             />
             <BestPracticeDetail 
               userRole={userRole!}
@@ -260,7 +268,7 @@ const Index = () => {
             <Navigation 
               userRole={userRole!} 
               currentView={currentView}
-              onViewChange={setCurrentView}
+              onViewChange={handleViewChange}
             />
             <ApprovalsList
               userRole={userRole!}
@@ -280,7 +288,7 @@ const Index = () => {
             <Navigation 
               userRole={userRole!} 
               currentView={currentView}
-              onViewChange={setCurrentView}
+              onViewChange={handleViewChange}
             />
             <Analytics
               userRole={userRole!}
@@ -294,7 +302,7 @@ const Index = () => {
             <Navigation 
               userRole={userRole!} 
               currentView={currentView}
-              onViewChange={setCurrentView}
+              onViewChange={handleViewChange}
             />
             <BenchmarkedList
               items={Object.values(benchmarkedById)}

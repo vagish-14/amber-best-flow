@@ -39,9 +39,10 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
 
 interface PlantUserDashboardProps {
   onViewChange: (view: string) => void;
+  onCopyAndImplement?: (bpData: any) => void;
 }
 
-const PlantUserDashboard = ({ onViewChange }: PlantUserDashboardProps) => {
+const PlantUserDashboard = ({ onViewChange, onCopyAndImplement }: PlantUserDashboardProps) => {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [selectedBP, setSelectedBP] = useState<any>(null);
   const [bpSpreadOpen, setBpSpreadOpen] = useState(false);
@@ -64,12 +65,17 @@ const PlantUserDashboard = ({ onViewChange }: PlantUserDashboardProps) => {
   };
 
   const confirmCopyImplement = () => {
-    // Here you would implement the actual copy logic
-    // For now, we'll just show a success message
-    console.log(`Copying BP: ${selectedBP?.title} from ${selectedBP?.plant}`);
+    // Prepare the data for pre-filling the form
+    if (selectedBP && onCopyAndImplement) {
+      onCopyAndImplement({
+        title: selectedBP.title,
+        category: selectedBP.category,
+        problemStatement: selectedBP.problemStatement || "",
+        solution: selectedBP.solution || "",
+      });
+    }
     setShowConfirmDialog(false);
     setSelectedBP(null);
-    // You could add a toast notification here
   };
 
   return (
@@ -466,7 +472,9 @@ const PlantUserDashboard = ({ onViewChange }: PlantUserDashboardProps) => {
                   category: "Cost", 
                   benchmarked: "4 hours ago",
                   priority: "medium",
-                  savings: "₹1.2L annually"
+                  savings: "₹1.2L annually",
+                  problemStatement: "High energy consumption from cooling systems was increasing operational costs. Traditional cooling methods were inefficient and consumed excessive electricity during peak production hours.",
+                  solution: "Implemented variable frequency drive (VFD) cooling system with smart temperature sensors and automated controls. Added thermal insulation and optimized airflow patterns."
                 },
                 { 
                   title: "Production Line Optimization", 
@@ -474,7 +482,9 @@ const PlantUserDashboard = ({ onViewChange }: PlantUserDashboardProps) => {
                   category: "Productivity", 
                   benchmarked: "2 days ago",
                   priority: "low",
-                  savings: "25% throughput increase"
+                  savings: "25% throughput increase",
+                  problemStatement: "Production bottlenecks were causing delays and reducing overall efficiency. Workflow was not optimized for current production requirements.",
+                  solution: "Redesigned production line layout with lean manufacturing principles, implemented kanban system, and optimized material flow patterns."
                 },
                 { 
                   title: "Waste Reduction Initiative", 
@@ -482,7 +492,9 @@ const PlantUserDashboard = ({ onViewChange }: PlantUserDashboardProps) => {
                   category: "Cost", 
                   benchmarked: "3 days ago",
                   priority: "medium",
-                  savings: "35% heating cost reduction"
+                  savings: "35% heating cost reduction",
+                  problemStatement: "Significant thermal energy was being wasted from production processes, leading to high energy costs and environmental impact.",
+                  solution: "Installed heat recovery units to capture waste heat from exhaust systems and reuse it for heating processes and facility heating."
                 }
               ].map((bp, index) => (
                 <div key={index} className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors">

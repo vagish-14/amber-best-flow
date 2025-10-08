@@ -20,6 +20,12 @@ const Index = () => {
   const [userRole, setUserRole] = useState<"plant" | "hq" | null>(null);
   const [selectedPractice, setSelectedPractice] = useState<any>(null);
   const [benchmarkedIds, setBenchmarkedIds] = useState<string[]>(["BP-002", "BP-004", "BP-006"]);
+  const [formPreFillData, setFormPreFillData] = useState<{
+    title?: string;
+    category?: string;
+    problemStatement?: string;
+    solution?: string;
+  } | null>(null);
   const [benchmarkedById, setBenchmarkedById] = useState<Record<string, any>>({
     "BP-002": {
       id: "BP-002",
@@ -113,6 +119,16 @@ const Index = () => {
     setCurrentView("login");
   };
 
+  const handleCopyAndImplement = (bpData: any) => {
+    setFormPreFillData({
+      title: bpData.title,
+      category: bpData.category,
+      problemStatement: bpData.problemStatement || bpData.problem || "",
+      solution: bpData.solution || bpData.description || "",
+    });
+    setCurrentView("add-practice");
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-accent to-muted">
       {/* Header */}
@@ -175,7 +191,10 @@ const Index = () => {
             />
             
             {userRole === "plant" ? (
-              <PlantUserDashboard onViewChange={setCurrentView} />
+              <PlantUserDashboard 
+                onViewChange={setCurrentView} 
+                onCopyAndImplement={handleCopyAndImplement}
+              />
             ) : (
               <HQAdminDashboard onViewChange={setCurrentView} />
             )}
@@ -189,7 +208,13 @@ const Index = () => {
               currentView={currentView}
               onViewChange={setCurrentView}
             />
-            <BestPracticeForm onCancel={() => setCurrentView("dashboard")} />
+            <BestPracticeForm 
+              onCancel={() => {
+                setFormPreFillData(null);
+                setCurrentView("dashboard");
+              }}
+              preFillData={formPreFillData}
+            />
           </div>
         )}
 
@@ -276,6 +301,7 @@ const Index = () => {
               onViewPractice={(practice) => { setSelectedPractice(practice); setCurrentView("practice-detail"); }}
               onUnbenchmark={(practice) => toggleBenchmark(practice)}
               onBack={() => setCurrentView("dashboard")}
+              onCopyAndImplement={handleCopyAndImplement}
             />
           </div>
         )}

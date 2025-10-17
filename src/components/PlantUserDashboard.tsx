@@ -611,52 +611,52 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement }: PlantUserDashb
           </CardHeader>
           <CardContent>
             {(() => {
-              // Mock leaderboard data with point breakdown
+              // Mock leaderboard data with point breakdown (Originator: 10, Copier: 2)
               const leaderboardData = [
                 { 
                   plant: "Plant 2 - Chennai", 
-                  totalPoints: 15, 
+                  totalPoints: 24, 
                   breakdown: [
-                    { type: "Originator", points: 8, date: "2024-01-15", bpTitle: "Automated Quality Control" },
-                    { type: "Copier", points: 4, date: "2024-01-12", bpTitle: "Energy Efficient Process" },
-                    { type: "Originator", points: 2, date: "2024-01-10", bpTitle: "Safety Enhancement" },
-                    { type: "Copier", points: 1, date: "2024-01-08", bpTitle: "Production Optimization" }
+                    { type: "Originator", points: 10, date: "2024-01-15", bpTitle: "Automated Quality Control" },
+                    { type: "Copier", points: 2, date: "2024-01-12", bpTitle: "Energy Efficient Process" },
+                    { type: "Originator", points: 10, date: "2024-01-10", bpTitle: "Safety Enhancement" },
+                    { type: "Copier", points: 2, date: "2024-01-08", bpTitle: "Production Optimization" }
                   ]
                 },
                 { 
                   plant: "Plant 1 - Gurgaon", 
-                  totalPoints: 12, 
+                  totalPoints: 24, 
                   breakdown: [
-                    { type: "Originator", points: 6, date: "2024-01-14", bpTitle: "Cost Reduction Initiative" },
-                    { type: "Copier", points: 3, date: "2024-01-11", bpTitle: "Quality Improvement" },
-                    { type: "Originator", points: 2, date: "2024-01-09", bpTitle: "Waste Management" },
-                    { type: "Copier", points: 1, date: "2024-01-07", bpTitle: "Safety Protocol" }
+                    { type: "Originator", points: 10, date: "2024-01-14", bpTitle: "Cost Reduction Initiative" },
+                    { type: "Copier", points: 2, date: "2024-01-11", bpTitle: "Quality Improvement" },
+                    { type: "Originator", points: 10, date: "2024-01-09", bpTitle: "Waste Management" },
+                    { type: "Copier", points: 2, date: "2024-01-07", bpTitle: "Safety Protocol" }
                   ]
                 },
                 { 
                   plant: "Plant 7 - Bangalore", 
-                  totalPoints: 10, 
+                  totalPoints: 24, 
                   breakdown: [
-                    { type: "Originator", points: 4, date: "2024-01-13", bpTitle: "Productivity Boost" },
-                    { type: "Copier", points: 3, date: "2024-01-10", bpTitle: "Cost Optimization" },
-                    { type: "Originator", points: 2, date: "2024-01-08", bpTitle: "Quality Enhancement" },
-                    { type: "Copier", points: 1, date: "2024-01-06", bpTitle: "Safety Improvement" }
+                    { type: "Originator", points: 10, date: "2024-01-13", bpTitle: "Productivity Boost" },
+                    { type: "Copier", points: 2, date: "2024-01-10", bpTitle: "Cost Optimization" },
+                    { type: "Originator", points: 10, date: "2024-01-08", bpTitle: "Quality Enhancement" },
+                    { type: "Copier", points: 2, date: "2024-01-06", bpTitle: "Safety Improvement" }
                   ]
                 },
                 { 
                   plant: "Plant 3 - Pune", 
-                  totalPoints: 8, 
+                  totalPoints: 22, 
                   breakdown: [
-                    { type: "Originator", points: 4, date: "2024-01-12", bpTitle: "Process Innovation" },
+                    { type: "Originator", points: 10, date: "2024-01-12", bpTitle: "Process Innovation" },
                     { type: "Copier", points: 2, date: "2024-01-09", bpTitle: "Efficiency Gain" },
-                    { type: "Originator", points: 2, date: "2024-01-07", bpTitle: "Cost Savings" }
+                    { type: "Originator", points: 10, date: "2024-01-07", bpTitle: "Cost Savings" }
                   ]
                 },
                 { 
                   plant: "Plant 5 - Mumbai", 
-                  totalPoints: 6, 
+                  totalPoints: 14, 
                   breakdown: [
-                    { type: "Originator", points: 2, date: "2024-01-11", bpTitle: "Quality Control" },
+                    { type: "Originator", points: 10, date: "2024-01-11", bpTitle: "Quality Control" },
                     { type: "Copier", points: 2, date: "2024-01-08", bpTitle: "Safety Enhancement" },
                     { type: "Copier", points: 2, date: "2024-01-05", bpTitle: "Productivity Gain" }
                   ]
@@ -666,7 +666,7 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement }: PlantUserDashb
               return (
                 <div className="space-y-4">
                   <div className="text-sm text-muted-foreground">
-                    Total points earned through benchmark BPs (Originator: 2 points, Copier: 1 point)
+                    Total points earned through benchmark BPs (Originator: 10 points, Copier: 2 points)
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-xs">
@@ -859,8 +859,8 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement }: PlantUserDashb
               Are you sure you want to copy and implement "{selectedBP?.title}" from {selectedBP?.plant}?
               <br /><br />
               <strong>Points System:</strong>
-              <br />• {selectedBP?.plant} will receive 2 points (originator)
-              <br />• Your plant will receive 1 point (copier)
+              <br />• {selectedBP?.plant} will receive 10 points (originator)
+              <br />• Your plant will receive 2 points (copier)
               <br /><br />
               This action will add this practice to your plant's implementation list.
             </AlertDialogDescription>

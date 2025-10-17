@@ -5,9 +5,6 @@ import { Input } from "@/components/ui/input";
 import { 
   Search,
   Filter,
-  CheckCircle,
-  Clock,
-  XCircle,
   FileText,
   Calendar,
   Building2,
@@ -18,12 +15,9 @@ interface Practice {
   id: string;
   title: string;
   category: string;
-  status: "approved" | "pending" | "revision";
   submittedBy: string;
   plant: string;
   submittedDate: string;
-  approvedDate?: string;
-  approvedBy?: string;
   description: string;
   problemStatement: string;
   solution: string;
@@ -48,12 +42,9 @@ const PracticeList = ({ userRole, onViewPractice, onBack, isBenchmarked, onToggl
       id: "BP-001",
       title: "Automated Quality Inspection System Implementation",
       category: "Quality",
-      status: "approved",
       submittedBy: "Rajesh Kumar",
       plant: "Plant 2 - Chennai",
       submittedDate: "2024-01-15",
-      approvedDate: "2024-01-18",
-      approvedBy: "Priya Sharma (HQ Admin)",
       description: "Implementation of an automated quality inspection system using computer vision to detect defects in manufactured components, reducing manual inspection time and improving accuracy.",
       problemStatement: "Manual quality inspection was time-consuming, prone to human error, and created bottlenecks in the production line. Inspectors were spending 3-4 hours daily on repetitive visual checks.",
       solution: "Deployed AI-powered computer vision system with high-resolution cameras at key inspection points. The system uses machine learning algorithms trained on defect patterns to automatically identify and classify defects.",
@@ -71,7 +62,6 @@ const PracticeList = ({ userRole, onViewPractice, onBack, isBenchmarked, onToggl
       id: "BP-002",
       title: "Energy Efficient Cooling Process",
       category: "Cost",
-      status: "pending",
       submittedBy: "Amit Singh",
       plant: "Plant 1 - Gurgaon",
       submittedDate: "2024-01-12",
@@ -92,12 +82,9 @@ const PracticeList = ({ userRole, onViewPractice, onBack, isBenchmarked, onToggl
       id: "BP-003",
       title: "Safety Protocol for Chemical Handling",
       category: "Safety",
-      status: "approved",
       submittedBy: "Sneha Patel",
       plant: "Plant 3 - Pune",
       submittedDate: "2024-01-10",
-      approvedDate: "2024-01-12",
-      approvedBy: "Priya Sharma (HQ Admin)",
       description: "Comprehensive safety protocols for handling hazardous chemicals with automated monitoring and emergency response procedures.",
       problemStatement: "Chemical handling incidents were increasing due to lack of standardized procedures and inadequate safety monitoring systems.",
       solution: "Developed comprehensive safety protocols with automated monitoring systems, emergency response procedures, and mandatory training programs for all chemical handlers.",
@@ -115,7 +102,6 @@ const PracticeList = ({ userRole, onViewPractice, onBack, isBenchmarked, onToggl
       id: "BP-004",
       title: "Production Line Optimization",
       category: "Productivity",
-      status: "revision",
       submittedBy: "Vikram Sharma",
       plant: "Plant 4 - Kolkata",
       submittedDate: "2024-01-08",
@@ -136,7 +122,6 @@ const PracticeList = ({ userRole, onViewPractice, onBack, isBenchmarked, onToggl
       id: "BP-005",
       title: "IoT Sensor Implementation for Predictive Maintenance",
       category: "Productivity",
-      status: "pending",
       submittedBy: "Deepak Kumar",
       plant: "Plant 3 - Pune",
       submittedDate: "2024-01-20",
@@ -181,31 +166,7 @@ const PracticeList = ({ userRole, onViewPractice, onBack, isBenchmarked, onToggl
     ? allPractices.filter(practice => practice.plant === "Plant 1 - Gurgaon")
     : allPractices;
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "approved":
-        return <CheckCircle className="h-3 w-3 mr-1" />;
-      case "pending":
-        return <Clock className="h-3 w-3 mr-1" />;
-      case "revision":
-        return <XCircle className="h-3 w-3 mr-1" />;
-      default:
-        return null;
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "approved":
-        return "bg-success/10 text-success border-success";
-      case "pending":
-        return "bg-warning/10 text-warning border-warning";
-      case "revision":
-        return "bg-destructive/10 text-destructive border-destructive";
-      default:
-        return "";
-    }
-  };
+  // Removed status concept (approved/revision/pending)
 
   const getCategoryColor = (category: string) => {
     switch (category.toLowerCase()) {
@@ -231,7 +192,7 @@ const PracticeList = ({ userRole, onViewPractice, onBack, isBenchmarked, onToggl
           <p className="text-muted-foreground mt-1">
             {userRole === "plant" 
               ? "Browse practices from Plant 1 - Gurgaon" 
-              : "Browse and explore approved best practices from across all plants"
+              : "Browse and explore best practices from across all plants"
             }
           </p>
         </div>
@@ -261,35 +222,24 @@ const PracticeList = ({ userRole, onViewPractice, onBack, isBenchmarked, onToggl
       </Card>
 
       {/* Statistics */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card className="shadow-card">
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-primary">{practices.length}</div>
-            <p className="text-sm text-muted-foreground">Total Practices</p>
+          <CardContent className="p-4">
+            <div className="flex items-baseline justify-between">
+              <p className="text-sm text-muted-foreground">Total Practices</p>
+              <div className="text-2xl font-bold text-primary">{practices.length}</div>
+            </div>
           </CardContent>
         </Card>
+        {/* Removed Approved/Pending cards */}
         <Card className="shadow-card">
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-success">
-              {practices.filter(p => p.status === "approved").length}
+          <CardContent className="p-4">
+            <div className="flex items-baseline justify-between">
+              <p className="text-sm text-muted-foreground">Total Q&A</p>
+              <div className="text-2xl font-bold text-primary">
+                {practices.reduce((sum, p) => sum + p.questions, 0)}
+              </div>
             </div>
-            <p className="text-sm text-muted-foreground">Approved</p>
-          </CardContent>
-        </Card>
-        <Card className="shadow-card">
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-warning">
-              {practices.filter(p => p.status === "pending").length}
-            </div>
-            <p className="text-sm text-muted-foreground">Pending</p>
-          </CardContent>
-        </Card>
-        <Card className="shadow-card">
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-primary">
-              {practices.reduce((sum, p) => sum + p.questions, 0)}
-            </div>
-            <p className="text-sm text-muted-foreground">Total Q&A</p>
           </CardContent>
         </Card>
       </div>
@@ -357,13 +307,7 @@ const PracticeList = ({ userRole, onViewPractice, onBack, isBenchmarked, onToggl
                     <Badge variant="outline" className="bg-blue-100 text-blue-700 border-blue-200">Benchmarked</Badge>
                   )}
                   
-                  <Badge 
-                    variant="outline" 
-                    className={getStatusColor(practice.status)}
-                  >
-                    {getStatusIcon(practice.status)}
-                    {practice.status.charAt(0).toUpperCase() + practice.status.slice(1)}
-                  </Badge>
+                  {/* Status badge removed */}
                   
                   <Button size="sm" variant="outline" className="opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); onViewPractice(practice); }}>
                     View Details

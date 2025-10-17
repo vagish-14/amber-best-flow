@@ -106,8 +106,8 @@ const BenchmarkedList = ({ items, onViewPractice, onUnbenchmark, onBack, onCopyA
               Are you sure you want to copy and implement "{selectedBP?.title}" from {selectedBP?.plant}?
               <br /><br />
               <strong>Points System:</strong>
-              <br />• {selectedBP?.plant} will receive 2 points (originator)
-              <br />• Your plant will receive 1 point (copier)
+              <br />• {selectedBP?.plant} will receive 10 points (originator)
+              <br />• Your plant will receive 2 points (copier)
               <br /><br />
               This will open the form with pre-filled information. You'll need to complete the remaining fields.
             </AlertDialogDescription>

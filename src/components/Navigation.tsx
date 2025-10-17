@@ -75,8 +75,7 @@ const Navigation = ({ userRole, currentView, onViewChange }: NavigationProps) =>
               className="text-sm"
             >
               <CheckCircle className="h-4 w-4 mr-2" />
-              Approvals
-              <Badge variant="destructive" className="ml-2">5</Badge>
+              Benchmark BP's
             </Button>
           )}
 

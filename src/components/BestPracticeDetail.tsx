@@ -35,7 +35,7 @@ const BestPracticeDetail = ({ userRole, practice: propPractice, onBack, isBenchm
     id: "BP-001",
     title: "Automated Quality Inspection System Implementation",
     category: "Quality",
-    status: "approved",
+    // removed approval status concept
     submittedBy: "Rajesh Kumar",
     plant: "Plant 2 - Chennai",
     submittedDate: "2024-01-15",
@@ -93,10 +93,7 @@ const BestPracticeDetail = ({ userRole, practice: propPractice, onBack, isBenchm
             <Badge variant="outline" className="bg-category-quality/10 text-category-quality border-category-quality">
               {practice.category}
             </Badge>
-            <Badge variant="outline" className="bg-success/10 text-success border-success">
-              <CheckCircle className="h-3 w-3 mr-1" />
-              Approved
-            </Badge>
+            {/* Approval badge removed */}
             <span className="text-sm text-muted-foreground">ID: {practice.id}</span>
           </div>
         </div>
@@ -125,18 +122,7 @@ const BestPracticeDetail = ({ userRole, practice: propPractice, onBack, isBenchm
               <span>Practice Details</span>
             </CardTitle>
             
-            {userRole === "hq" && practice.status === "pending" && (
-              <div className="flex space-x-2">
-                <Button variant="outline" size="sm" className="text-destructive border-destructive">
-                  <AlertCircle className="h-4 w-4 mr-2" />
-                  Request Changes
-                </Button>
-                <Button size="sm" className="bg-success text-success-foreground">
-                  <CheckCircle className="h-4 w-4 mr-2" />
-                  Approve
-                </Button>
-              </div>
-            )}
+            {/* Approval actions removed */}
           </div>
         </CardHeader>
         
@@ -257,17 +243,7 @@ const BestPracticeDetail = ({ userRole, practice: propPractice, onBack, isBenchm
             <p className="text-muted-foreground">{practice.implementation}</p>
           </div>
 
-          {practice.status === "approved" && (
-            <div className="p-4 bg-success/5 rounded-lg border border-success/20">
-              <div className="flex items-center space-x-2">
-                <CheckCircle className="h-5 w-5 text-success" />
-                <div>
-                  <p className="font-medium text-success">Approved by {practice.approvedBy}</p>
-                  <p className="text-sm text-muted-foreground">Approved on {practice.approvedDate}</p>
-                </div>
-              </div>
-            </div>
-          )}
+          {/* Approved info removed */}
         </CardContent>
       </Card>
 

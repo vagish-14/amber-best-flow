@@ -38,7 +38,7 @@ import {
   ChartLegend,
   ChartLegendContent,
 } from "@/components/ui/chart";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, LabelList } from "recharts";
 
 interface HQAdminDashboardProps {
   onViewChange: (view: string) => void;
@@ -67,6 +67,7 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
   const [bpSpreadOpen, setBpSpreadOpen] = useState(false);
   const [bpSpreadBP, setBpSpreadBP] = useState<string | null>(null);
   const [bpSpreadRows, setBpSpreadRows] = useState<{ plant: string; date: string }[]>([]);
+  const [benchmarkedOpen, setBenchmarkedOpen] = useState(false);
   // star drilldown
   const [starDrillOpen, setStarDrillOpen] = useState(false);
   const [starDrillPlant, setStarDrillPlant] = useState<string | null>(null);
@@ -90,10 +91,44 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
     { name: "Plant 15 - Bhubaneswar", submitted: 17, approved: 14, pending: 2, rejected: 1 }
   ];
 
+  // Demo dataset of benchmarked BPs (used for KPI count and drilldown)
+  const benchmarkedBPs = [
+    {
+      bp: "Energy Efficient Cooling Process",
+      originator: "Plant 1 - Gurgaon",
+      copies: [
+        { plant: "Plant 2 - Chennai", date: "2024-01-12" },
+        { plant: "Plant 7 - Bangalore", date: "2024-01-16" },
+      ],
+    },
+    {
+      bp: "Production Line Optimization",
+      originator: "Plant 3 - Pune",
+      copies: [
+        { plant: "Plant 5 - Mumbai", date: "2024-01-11" },
+      ],
+    },
+    {
+      bp: "Waste Reduction Initiative",
+      originator: "Plant 5 - Mumbai",
+      copies: [
+        { plant: "Plant 1 - Gurgaon", date: "2024-01-20" },
+        { plant: "Plant 4 - Kolkata", date: "2024-01-22" },
+        { plant: "Plant 9 - Ahmedabad", date: "2024-01-25" },
+      ],
+    },
+    {
+      bp: "Automated Quality Control System",
+      originator: "Plant 2 - Chennai",
+      copies: [],
+    },
+  ];
+
   // Submission-derived active plants KPI
   const totalPlantCount = 25;
   const activeBySubmission = useMemo(() => plantData.filter((p) => p.submitted > 0), [plantData]);
   const activeBySubmissionCount = activeBySubmission.length;
+  const ytdSubmissions = useMemo(() => plantData.reduce((sum, p) => sum + (p.submitted || 0), 0), [plantData]);
 
   // Division datasets (mocked per requirements)
   const [racPlants, setRacPlants] = useState<{ name: string; active: boolean }[]>([
@@ -277,10 +312,18 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
             <span>Total Submissions</span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="text-center">
+        <CardContent>
+          <div className="grid grid-cols-2 gap-4 text-center">
+            <div>
           <div className="text-3xl font-bold text-primary">87</div>
           <p className="text-sm text-muted-foreground">This Month</p>
-          <div className="mt-2">
+            </div>
+            <div>
+              <div className="text-3xl font-bold text-primary">{ytdSubmissions}</div>
+              <p className="text-sm text-muted-foreground">This Year</p>
+            </div>
+          </div>
+          <div className="mt-2 text-center">
             <Badge variant="outline" className="bg-success/10 text-success">
               <TrendingUp className="h-3 w-3 mr-1" />
               +23% vs last month
@@ -293,7 +336,7 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <CheckCircle className="h-5 w-5 text-success" />
-            <span>Approval Rate</span>
+            <span>Upload Rate</span>
           </CardTitle>
         </CardHeader>
         <CardContent className="text-center">
@@ -302,6 +345,71 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
           <Progress value={89} className="mt-3" />
         </CardContent>
       </Card>
+
+      {/* New KPI: Total Benchmarked BPs */}
+      <Card className="shadow-card">
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Star className="h-5 w-5 text-primary" />
+            <span>Total Benchmarked BPs</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="text-center">
+          <div className="text-3xl font-bold text-primary cursor-pointer" onClick={() => setBenchmarkedOpen(true)}>
+            {benchmarkedBPs.length}
+          </div>
+          <p className="text-sm text-muted-foreground">Tap to view details</p>
+        </CardContent>
+      </Card>
+
+      {/* Drilldown: Benchmarked BPs */}
+      <AlertDialog open={benchmarkedOpen} onOpenChange={setBenchmarkedOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Benchmarked BPs - Copy Spread</AlertDialogTitle>
+            <AlertDialogDescription>
+              Shows originator plant, which plants copied each BP, and dates. If none copied, you'll see a notice.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="space-y-4">
+            {benchmarkedBPs.map((row) => (
+              <div key={row.bp} className="p-3 border rounded-lg">
+                <div className="flex items-center justify-between">
+                  <div className="font-medium">{row.bp}</div>
+                  <Badge variant="outline" className="text-xs">Originator: {row.originator}</Badge>
+                </div>
+                <div className="mt-2 overflow-x-auto">
+                  <table className="w-full text-xs">
+                    <thead>
+                      <tr className="text-left text-muted-foreground">
+                        <th className="py-1">Copied By Plant</th>
+                        <th className="py-1">Date</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y">
+                      {row.copies.map((c, idx) => (
+                        <tr key={idx}>
+                          <td className="py-1">{c.plant}</td>
+                          <td className="py-1">{c.date}</td>
+                        </tr>
+                      ))}
+                      {row.copies.length === 0 && (
+                        <tr>
+                          <td className="py-1 text-muted-foreground" colSpan={2}>This benchmarked BP has not been copied to any plant</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ))}
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Close</AlertDialogCancel>
+            <AlertDialogAction onClick={() => setBenchmarkedOpen(false)}>OK</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <Card className="shadow-card">
         <CardHeader>
@@ -321,21 +429,7 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
         </CardContent>
       </Card>
 
-      <Card className="shadow-card">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Clock className="h-5 w-5 text-warning" />
-            <span>Pending Review</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="text-center">
-          <div className="text-3xl font-bold text-warning">5</div>
-          <p className="text-sm text-muted-foreground">Awaiting Approval</p>
-          <Button size="sm" className="mt-2 w-full">
-            Review Now
-          </Button>
-        </CardContent>
-      </Card>
+      {/* Pending Review card removed per requirement */}
 
       {/* Category Breakdown - Group Wide */}
       <div className="lg:col-span-4">
@@ -416,20 +510,18 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
           <CardContent>
             <ChartContainer
               config={{
-                approved: { label: "Approved", color: "hsl(var(--success))" },
-                rejected: { label: "Rejected", color: "hsl(var(--destructive))" },
+                approved: { label: "Uploaded", color: "hsl(var(--success))" },
               }}
               className="h-[400px] w-full"
             >
               <BarChart data={plantData.map(p => ({ 
                 plant: p.name.replace("Plant ", "P").replace(" - Gurgaon", "").replace(" - Chennai", "").replace(" - Pune", "").replace(" - Kolkata", "").replace(" - Mumbai", "").replace(" - Delhi", "").replace(" - Bangalore", "").replace(" - Hyderabad", "").replace(" - Ahmedabad", "").replace(" - Jaipur", "").replace(" - Lucknow", "").replace(" - Indore", "").replace(" - Bhopal", "").replace(" - Patna", "").replace(" - Bhubaneswar", ""),
                 fullName: p.name,
-                approved: p.approved, 
-                rejected: p.rejected 
-              }))}>
+                approved: p.approved
+              }))} margin={{ top: 24, right: 16, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="plant" />
-                <YAxis />
+                <YAxis domain={[0, 'dataMax + 1']} allowDecimals={false} />
                 <ChartTooltip 
                   content={({ active, payload, label }) => {
                     if (active && payload && payload.length) {
@@ -464,8 +556,9 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
                   }}
                 />
                 <ChartLegend content={<ChartLegendContent />} />
-                <Bar dataKey="approved" fill="var(--color-approved)" />
-                <Bar dataKey="rejected" fill="var(--color-rejected)" />
+                <Bar dataKey="approved" fill="var(--color-approved)">
+                  <LabelList dataKey="approved" position="top" className="text-xs fill-current" />
+                </Bar>
               </BarChart>
             </ChartContainer>
           </CardContent>
@@ -502,10 +595,16 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
                 { plant: "Plant 14 - Patna", benchmarkedBPs: 4 },
                 { plant: "Plant 15 - Bhubaneswar", benchmarkedBPs: 3 },
               ];
+              const totalThisMonth = benchmarkBPs.reduce((sum, p) => sum + p.benchmarkedBPs, 0);
               return (
-                <div className="space-y-4">
-                  <div className="text-sm text-muted-foreground">
-                    Number of benchmarked BPs per plant this month
+            <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm text-muted-foreground">
+                      Number of benchmarked BPs per plant this month
+                    </div>
+                    <Badge variant="outline" className="bg-primary/10 text-primary">
+                      Total: {totalThisMonth}
+                    </Badge>
                   </div>
                   <ChartContainer
                     config={{
@@ -517,10 +616,10 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
                       plant: p.plant.replace("Plant ", "P").replace(" - Gurgaon", "").replace(" - Chennai", "").replace(" - Pune", "").replace(" - Kolkata", "").replace(" - Mumbai", "").replace(" - Delhi", "").replace(" - Bangalore", "").replace(" - Hyderabad", "").replace(" - Ahmedabad", "").replace(" - Jaipur", "").replace(" - Lucknow", "").replace(" - Indore", "").replace(" - Bhopal", "").replace(" - Patna", "").replace(" - Bhubaneswar", ""),
                       fullName: p.plant,
                       benchmarkedBPs: p.benchmarkedBPs 
-                    }))}>
+                    }))} margin={{ top: 24, right: 16, left: 0, bottom: 0 }}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="plant" />
-                      <YAxis />
+                      <YAxis domain={[0, 'dataMax + 1']} allowDecimals={false} />
                       <ChartTooltip 
                         content={({ active, payload, label }) => {
                           if (active && payload && payload.length) {
@@ -548,22 +647,24 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
                                     </div>
                                   ))}
                                 </div>
-                              </div>
+                    </div>
                             );
                           }
                           return null;
                         }}
                       />
                       <ChartLegend content={<ChartLegendContent />} />
-                      <Bar dataKey="benchmarkedBPs" fill="var(--color-benchmarkedBPs)" />
+                    <Bar dataKey="benchmarkedBPs" fill="var(--color-benchmarkedBPs)">
+                      <LabelList dataKey="benchmarkedBPs" position="top" className="text-xs fill-current" />
+                    </Bar>
                     </BarChart>
                   </ChartContainer>
-                </div>
+                    </div>
               );
             })()}
           </CardContent>
         </Card>
-      </div>
+                    </div>
 
       {/* Recent Benchmark BPs */}
       <div className="lg:col-span-4">
@@ -879,52 +980,52 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
           </CardHeader>
           <CardContent>
             {(() => {
-              // Mock leaderboard data with point breakdown
+              // Mock leaderboard data with point breakdown (Originator: 10, Copier: 2)
               const leaderboardData = [
                 { 
                   plant: "Plant 2 - Chennai", 
-                  totalPoints: 15, 
+                  totalPoints: 24, 
                   breakdown: [
-                    { type: "Originator", points: 8, date: "2024-01-15", bpTitle: "Automated Quality Control" },
-                    { type: "Copier", points: 4, date: "2024-01-12", bpTitle: "Energy Efficient Process" },
-                    { type: "Originator", points: 2, date: "2024-01-10", bpTitle: "Safety Enhancement" },
-                    { type: "Copier", points: 1, date: "2024-01-08", bpTitle: "Production Optimization" }
+                    { type: "Originator", points: 10, date: "2024-01-15", bpTitle: "Automated Quality Control" },
+                    { type: "Copier", points: 2, date: "2024-01-12", bpTitle: "Energy Efficient Process" },
+                    { type: "Originator", points: 10, date: "2024-01-10", bpTitle: "Safety Enhancement" },
+                    { type: "Copier", points: 2, date: "2024-01-08", bpTitle: "Production Optimization" }
                   ]
                 },
                 { 
                   plant: "Plant 1 - Gurgaon", 
-                  totalPoints: 12, 
+                  totalPoints: 24, 
                   breakdown: [
-                    { type: "Originator", points: 6, date: "2024-01-14", bpTitle: "Cost Reduction Initiative" },
-                    { type: "Copier", points: 3, date: "2024-01-11", bpTitle: "Quality Improvement" },
-                    { type: "Originator", points: 2, date: "2024-01-09", bpTitle: "Waste Management" },
-                    { type: "Copier", points: 1, date: "2024-01-07", bpTitle: "Safety Protocol" }
+                    { type: "Originator", points: 10, date: "2024-01-14", bpTitle: "Cost Reduction Initiative" },
+                    { type: "Copier", points: 2, date: "2024-01-11", bpTitle: "Quality Improvement" },
+                    { type: "Originator", points: 10, date: "2024-01-09", bpTitle: "Waste Management" },
+                    { type: "Copier", points: 2, date: "2024-01-07", bpTitle: "Safety Protocol" }
                   ]
                 },
                 { 
                   plant: "Plant 7 - Bangalore", 
-                  totalPoints: 10, 
+                  totalPoints: 24, 
                   breakdown: [
-                    { type: "Originator", points: 4, date: "2024-01-13", bpTitle: "Productivity Boost" },
-                    { type: "Copier", points: 3, date: "2024-01-10", bpTitle: "Cost Optimization" },
-                    { type: "Originator", points: 2, date: "2024-01-08", bpTitle: "Quality Enhancement" },
-                    { type: "Copier", points: 1, date: "2024-01-06", bpTitle: "Safety Improvement" }
+                    { type: "Originator", points: 10, date: "2024-01-13", bpTitle: "Productivity Boost" },
+                    { type: "Copier", points: 2, date: "2024-01-10", bpTitle: "Cost Optimization" },
+                    { type: "Originator", points: 10, date: "2024-01-08", bpTitle: "Quality Enhancement" },
+                    { type: "Copier", points: 2, date: "2024-01-06", bpTitle: "Safety Improvement" }
                   ]
                 },
                 { 
                   plant: "Plant 3 - Pune", 
-                  totalPoints: 8, 
+                  totalPoints: 22, 
                   breakdown: [
-                    { type: "Originator", points: 4, date: "2024-01-12", bpTitle: "Process Innovation" },
+                    { type: "Originator", points: 10, date: "2024-01-12", bpTitle: "Process Innovation" },
                     { type: "Copier", points: 2, date: "2024-01-09", bpTitle: "Efficiency Gain" },
-                    { type: "Originator", points: 2, date: "2024-01-07", bpTitle: "Cost Savings" }
+                    { type: "Originator", points: 10, date: "2024-01-07", bpTitle: "Cost Savings" }
                   ]
                 },
                 { 
                   plant: "Plant 5 - Mumbai", 
-                  totalPoints: 6, 
+                  totalPoints: 14, 
                   breakdown: [
-                    { type: "Originator", points: 2, date: "2024-01-11", bpTitle: "Quality Control" },
+                    { type: "Originator", points: 10, date: "2024-01-11", bpTitle: "Quality Control" },
                     { type: "Copier", points: 2, date: "2024-01-08", bpTitle: "Safety Enhancement" },
                     { type: "Copier", points: 2, date: "2024-01-05", bpTitle: "Productivity Gain" }
                   ]
@@ -934,7 +1035,7 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
               return (
                 <div className="space-y-4">
                   <div className="text-sm text-muted-foreground">
-                    Total points earned through benchmark BPs (Originator: 2 points, Copier: 1 point)
+                    Total points earned through benchmark BPs (Originator: 10 points, Copier: 2 points)
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-xs">

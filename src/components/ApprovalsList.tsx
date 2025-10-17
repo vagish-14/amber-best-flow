@@ -6,10 +6,6 @@ import {
   FileCheck2,
   Filter,
   Search,
-  CheckCircle,
-  Clock,
-  XCircle,
-  PauseCircle,
   Calendar,
   Building2,
   User,
@@ -20,12 +16,9 @@ interface Practice {
   id: string;
   title: string;
   category: string;
-  status: "approved" | "pending" | "revision" | "rejected" | "on-hold";
   submittedBy: string;
   plant: string;
   submittedDate: string;
-  approvedDate?: string;
-  approvedBy?: string;
   description: string;
   problemStatement?: string;
   solution?: string;
@@ -68,12 +61,9 @@ const ApprovalsList = ({ userRole, onViewPractice, onBack, isBenchmarked, onTogg
       id: "BP-001",
       title: "Automated Quality Inspection System Implementation",
       category: "Quality",
-      status: "approved",
       submittedBy: "Rajesh Kumar",
       plant: "Plant 2 - Chennai",
       submittedDate: "2024-01-15",
-      approvedDate: "2024-01-18",
-      approvedBy: "Priya Sharma (HQ Admin)",
       description:
         "Implementation of an automated quality inspection system using computer vision...",
       questions: 2,
@@ -82,7 +72,6 @@ const ApprovalsList = ({ userRole, onViewPractice, onBack, isBenchmarked, onTogg
       id: "BP-002",
       title: "Energy Efficient Cooling Process",
       category: "Cost",
-      status: "pending",
       submittedBy: "Amit Singh",
       plant: "Plant 1 - Gurgaon",
       submittedDate: "2024-01-12",
@@ -94,12 +83,9 @@ const ApprovalsList = ({ userRole, onViewPractice, onBack, isBenchmarked, onTogg
       id: "BP-003",
       title: "Safety Protocol for Chemical Handling",
       category: "Safety",
-      status: "approved",
       submittedBy: "Sneha Patel",
       plant: "Plant 3 - Pune",
       submittedDate: "2024-01-10",
-      approvedDate: "2024-01-12",
-      approvedBy: "Priya Sharma (HQ Admin)",
       description:
         "Comprehensive safety protocols for handling hazardous chemicals...",
       questions: 1,
@@ -108,7 +94,6 @@ const ApprovalsList = ({ userRole, onViewPractice, onBack, isBenchmarked, onTogg
       id: "BP-004",
       title: "Production Line Optimization",
       category: "Productivity",
-      status: "revision", // treat as needs changes/on-hold bucket
       submittedBy: "Vikram Sharma",
       plant: "Plant 4 - Kolkata",
       submittedDate: "2024-01-08",
@@ -119,7 +104,6 @@ const ApprovalsList = ({ userRole, onViewPractice, onBack, isBenchmarked, onTogg
       id: "BP-005",
       title: "IoT Sensor Implementation for Predictive Maintenance",
       category: "Productivity",
-      status: "rejected",
       submittedBy: "Deepak Kumar",
       plant: "Plant 3 - Pune",
       submittedDate: "2024-01-20",
@@ -131,7 +115,6 @@ const ApprovalsList = ({ userRole, onViewPractice, onBack, isBenchmarked, onTogg
       id: "BP-006",
       title: "Waste Heat Recovery System",
       category: "Cost",
-      status: "on-hold",
       submittedBy: "Priya Gupta",
       plant: "Plant 1 - Gurgaon",
       submittedDate: "2024-01-18",
@@ -141,10 +124,8 @@ const ApprovalsList = ({ userRole, onViewPractice, onBack, isBenchmarked, onTogg
     },
   ];
 
-  // Only track items requiring action (non-approved)
-  const requiresAction = allPractices.filter(
-    (p) => p.status !== "approved"
-  );
+  // No approval statuses: show all submissions
+  const requiresAction = allPractices;
 
   // Role-based filtering
   const visiblePractices =
@@ -152,37 +133,7 @@ const ApprovalsList = ({ userRole, onViewPractice, onBack, isBenchmarked, onTogg
       ? requiresAction.filter((p) => p.plant === "Plant 1 - Gurgaon")
       : requiresAction;
 
-  const getStatusBadge = (status: Practice["status"]) => {
-    if (status === "pending")
-      return (
-        <Badge variant="outline" className="bg-warning/10 text-warning border-warning">
-          <Clock className="h-3 w-3 mr-1" /> Pending
-        </Badge>
-      );
-    if (status === "revision")
-      return (
-        <Badge variant="outline" className="bg-muted/50 text-muted-foreground">
-          <PauseCircle className="h-3 w-3 mr-1" /> Needs changes
-        </Badge>
-      );
-    if (status === "on-hold")
-      return (
-        <Badge variant="outline" className="bg-muted/50 text-muted-foreground">
-          <PauseCircle className="h-3 w-3 mr-1" /> On hold
-        </Badge>
-      );
-    if (status === "rejected")
-      return (
-        <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive">
-          <XCircle className="h-3 w-3 mr-1" /> Rejected
-        </Badge>
-      );
-    return (
-      <Badge variant="outline" className="bg-success/10 text-success border-success">
-        <CheckCircle className="h-3 w-3 mr-1" /> Approved
-      </Badge>
-    );
-  };
+  // Status badges removed
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
@@ -219,38 +170,7 @@ const ApprovalsList = ({ userRole, onViewPractice, onBack, isBenchmarked, onTogg
       </Card>
 
       {/* Counters */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="shadow-card">
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-warning">
-              {visiblePractices.filter((p) => p.status === "pending").length}
-            </div>
-            <p className="text-sm text-muted-foreground">Pending</p>
-          </CardContent>
-        </Card>
-        <Card className="shadow-card">
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-muted-foreground">
-              {visiblePractices.filter((p) => p.status === "revision" || p.status === "on-hold").length}
-            </div>
-            <p className="text-sm text-muted-foreground">On hold / Needs changes</p>
-          </CardContent>
-        </Card>
-        <Card className="shadow-card">
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-destructive">
-              {visiblePractices.filter((p) => p.status === "rejected").length}
-            </div>
-            <p className="text-sm text-muted-foreground">Rejected</p>
-          </CardContent>
-        </Card>
-        <Card className="shadow-card">
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-primary">{visiblePractices.length}</div>
-            <p className="text-sm text-muted-foreground">Total</p>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Counters removed: no approval statuses */}
 
       {/* List */}
       <Card className="shadow-card">
@@ -328,33 +248,6 @@ const ApprovalsList = ({ userRole, onViewPractice, onBack, isBenchmarked, onTogg
                     }}
                   >
                     {isBenchmarked?.(practice.id) ? "Unbenchmark" : "Benchmark"}
-                  </Button>
-                  <Button
-                    size="sm"
-                    className="bg-success text-success-foreground"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                    }}
-                  >
-                    Approve
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                    }}
-                  >
-                    Reject
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                    }}
-                  >
-                    Put on hold
                   </Button>
                 </div>
               </div>

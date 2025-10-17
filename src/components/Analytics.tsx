@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { BarChart3, TrendingUp, CheckCircle, Clock, XCircle, Factory, DollarSign } from "lucide-react";
+import { BarChart3, TrendingUp, Factory, DollarSign } from "lucide-react";
 import {
   ChartContainer,
   ChartTooltip,
@@ -17,31 +17,28 @@ interface AnalyticsProps {
 }
 
 const plantStats = [
-  { name: "Plant 1 - Gurgaon", submitted: 23, approved: 19, pending: 3, rejected: 1 },
-  { name: "Plant 2 - Chennai", submitted: 18, approved: 15, pending: 2, rejected: 1 },
-  { name: "Plant 3 - Pune", submitted: 31, approved: 28, pending: 2, rejected: 1 },
-  { name: "Plant 4 - Kolkata", submitted: 15, approved: 12, pending: 1, rejected: 2 },
-  { name: "Plant 5 - Mumbai", submitted: 22, approved: 18, pending: 3, rejected: 1 },
-  { name: "Plant 6 - Delhi", submitted: 19, approved: 16, pending: 2, rejected: 1 },
-  { name: "Plant 7 - Bangalore", submitted: 25, approved: 21, pending: 3, rejected: 1 },
-  { name: "Plant 8 - Hyderabad", submitted: 17, approved: 14, pending: 2, rejected: 1 },
-  { name: "Plant 9 - Ahmedabad", submitted: 20, approved: 17, pending: 2, rejected: 1 },
-  { name: "Plant 10 - Jaipur", submitted: 16, approved: 13, pending: 2, rejected: 1 },
-  { name: "Plant 11 - Lucknow", submitted: 21, approved: 18, pending: 2, rejected: 1 },
-  { name: "Plant 12 - Indore", submitted: 18, approved: 15, pending: 2, rejected: 1 },
-  { name: "Plant 13 - Bhopal", submitted: 14, approved: 12, pending: 1, rejected: 1 },
-  { name: "Plant 14 - Patna", submitted: 19, approved: 16, pending: 2, rejected: 1 },
-  { name: "Plant 15 - Bhubaneswar", submitted: 17, approved: 14, pending: 2, rejected: 1 },
+  { name: "Plant 1 - Gurgaon", submitted: 23 },
+  { name: "Plant 2 - Chennai", submitted: 18 },
+  { name: "Plant 3 - Pune", submitted: 31 },
+  { name: "Plant 4 - Kolkata", submitted: 15 },
+  { name: "Plant 5 - Mumbai", submitted: 22 },
+  { name: "Plant 6 - Delhi", submitted: 19 },
+  { name: "Plant 7 - Bangalore", submitted: 25 },
+  { name: "Plant 8 - Hyderabad", submitted: 17 },
+  { name: "Plant 9 - Ahmedabad", submitted: 20 },
+  { name: "Plant 10 - Jaipur", submitted: 16 },
+  { name: "Plant 11 - Lucknow", submitted: 21 },
+  { name: "Plant 12 - Indore", submitted: 18 },
+  { name: "Plant 13 - Bhopal", submitted: 14 },
+  { name: "Plant 14 - Patna", submitted: 19 },
+  { name: "Plant 15 - Bhubaneswar", submitted: 17 },
 ];
 
 const total = plantStats.reduce(
   (acc, p) => ({
-    submitted: acc.submitted + p.submitted,
-    approved: acc.approved + p.approved,
-    pending: acc.pending + p.pending,
-    rejected: acc.rejected + p.rejected,
+    submitted: acc.submitted + (p.submitted || 0),
   }),
-  { submitted: 0, approved: 0, pending: 0, rejected: 0 }
+  { submitted: 0 }
 );
 
 const Analytics = ({ userRole, onBack }: AnalyticsProps) => {
@@ -49,18 +46,18 @@ const Analytics = ({ userRole, onBack }: AnalyticsProps) => {
 
   // Company-wide monthly data (demo). In real app, fetch/compute from API.
   const monthlyData = [
-    { month: "Jan", submitted: 20, approved: 16, pending: 3, rejected: 1 },
-    { month: "Feb", submitted: 22, approved: 17, pending: 4, rejected: 1 },
-    { month: "Mar", submitted: 24, approved: 18, pending: 4, rejected: 2 },
-    { month: "Apr", submitted: 26, approved: 20, pending: 5, rejected: 1 },
-    { month: "May", submitted: 28, approved: 22, pending: 4, rejected: 2 },
-    { month: "Jun", submitted: 25, approved: 19, pending: 4, rejected: 2 },
-    { month: "Jul", submitted: 27, approved: 21, pending: 4, rejected: 2 },
-    { month: "Aug", submitted: 29, approved: 23, pending: 4, rejected: 2 },
-    { month: "Sep", submitted: 30, approved: 24, pending: 4, rejected: 2 },
-    { month: "Oct", submitted: 32, approved: 26, pending: 4, rejected: 2 },
-    { month: "Nov", submitted: 31, approved: 25, pending: 4, rejected: 2 },
-    { month: "Dec", submitted: 33, approved: 27, pending: 4, rejected: 2 },
+    { month: "Jan", submitted: 20 },
+    { month: "Feb", submitted: 22 },
+    { month: "Mar", submitted: 24 },
+    { month: "Apr", submitted: 26 },
+    { month: "May", submitted: 28 },
+    { month: "Jun", submitted: 25 },
+    { month: "Jul", submitted: 27 },
+    { month: "Aug", submitted: 29 },
+    { month: "Sep", submitted: 30 },
+    { month: "Oct", submitted: 32 },
+    { month: "Nov", submitted: 31 },
+    { month: "Dec", submitted: 33 },
   ];
 
   return (
@@ -81,11 +78,8 @@ const Analytics = ({ userRole, onBack }: AnalyticsProps) => {
           <CardHeader>
             <CardTitle className="flex items-center"><TrendingUp className="h-5 w-5 text-primary mr-2" /> Company Overview</CardTitle>
           </CardHeader>
-          <CardContent className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <CardContent className="grid grid-cols-1 md:grid-cols-1 gap-4">
             <MetricCard label="Submitted" value={total.submitted} />
-            <MetricCard label="Approved" value={total.approved} icon={<CheckCircle className="h-4 w-4 text-success" />} />
-            <MetricCard label="Pending" value={total.pending} icon={<Clock className="h-4 w-4 text-warning" />} />
-            <MetricCard label="Rejected" value={total.rejected} icon={<XCircle className="h-4 w-4 text-destructive" />} />
           </CardContent>
         </Card>
       )}
@@ -100,9 +94,6 @@ const Analytics = ({ userRole, onBack }: AnalyticsProps) => {
           <ChartContainer
             config={{
               submitted: { label: "Submitted", color: "hsl(var(--primary))" },
-              approved: { label: "Approved", color: "hsl(var(--success))" },
-              pending: { label: "Pending", color: "hsl(var(--warning))" },
-              rejected: { label: "Rejected", color: "hsl(var(--destructive))" },
             }}
             className="h-[300px] w-full"
           >
@@ -113,9 +104,6 @@ const Analytics = ({ userRole, onBack }: AnalyticsProps) => {
               <ChartTooltip content={<ChartTooltipContent />} />
               <ChartLegend content={<ChartLegendContent />} />
               <Bar dataKey="submitted" fill="var(--color-submitted)" />
-              <Bar dataKey="approved" fill="var(--color-approved)" />
-              <Bar dataKey="pending" fill="var(--color-pending)" />
-              <Bar dataKey="rejected" fill="var(--color-rejected)" />
             </BarChart>
           </ChartContainer>
         </CardContent>

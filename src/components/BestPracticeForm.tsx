@@ -19,10 +19,23 @@ import {
   Send,
   Copy
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 interface BestPracticeFormProps {
   onCancel: () => void;
+  onSubmit?: (payload: {
+    title: string;
+    category: string;
+    problemStatement: string;
+    solution: string;
+    benefits: string;
+    metrics: string;
+    implementation: string;
+    beforeImageName: string | null;
+    afterImageName: string | null;
+    mode: "copy-implement" | "new-submission";
+  }) => void;
   preFillData?: {
     title?: string;
     category?: string;
@@ -31,11 +44,25 @@ interface BestPracticeFormProps {
   } | null;
 }
 
-const BestPracticeForm = ({ onCancel, preFillData }: BestPracticeFormProps) => {
+const BestPracticeForm = ({ onCancel, preFillData, onSubmit }: BestPracticeFormProps) => {
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [problemStatement, setProblemStatement] = useState("");
   const [solution, setSolution] = useState("");
+  const [benefitsText, setBenefitsText] = useState("");
+  const [metricsText, setMetricsText] = useState("");
+  const [implementationText, setImplementationText] = useState("");
+
+  const [beforeImage, setBeforeImage] = useState<File | null>(null);
+  const [afterImage, setAfterImage] = useState<File | null>(null);
+  const [beforePreview, setBeforePreview] = useState<string | null>(null);
+  const [afterPreview, setAfterPreview] = useState<string | null>(null);
+  const beforeInputRef = useRef<HTMLInputElement | null>(null);
+  const afterInputRef = useRef<HTMLInputElement | null>(null);
+  const [supportingDocs, setSupportingDocs] = useState<File[]>([]);
+  const docsInputRef = useRef<HTMLInputElement | null>(null);
+
+  const { toast } = useToast();
 
   useEffect(() => {
     if (preFillData) {
@@ -51,6 +78,74 @@ const BestPracticeForm = ({ onCancel, preFillData }: BestPracticeFormProps) => {
       setSolution("");
     }
   }, [preFillData]);
+  
+  const validate = () => {
+    if (!title.trim()) return "Please enter Practice Title.";
+    if (!category.trim()) return "Please select a Category.";
+    if (!problemStatement.trim()) return "Please enter Problem Statement.";
+    if (!solution.trim()) return "Please enter Solution Description.";
+    return "";
+  };
+
+  const handleSaveDraft = () => {
+    const error = validate();
+    if (error) {
+      toast({ title: "Validation required", description: error });
+      return;
+    }
+    toast({ title: "Draft saved", description: "Your best practice draft has been saved." });
+  };
+
+  const handleSubmit = () => {
+    const error = validate();
+    if (error) {
+      toast({ title: "Validation required", description: error });
+      return;
+    }
+    const payload = {
+      title,
+      category,
+      problemStatement,
+      solution,
+      benefits: benefitsText,
+      metrics: metricsText,
+      implementation: implementationText,
+      beforeImageName: beforeImage?.name ?? null,
+      afterImageName: afterImage?.name ?? null,
+      mode: preFillData ? "copy-implement" : "new-submission",
+    };
+    console.log("Submitting Best Practice:", payload);
+    onSubmit?.(payload);
+    toast({ title: preFillData ? "Copy & Implement submitted" : "Practice submitted", description: "Submission successful." });
+    onCancel();
+  };
+
+  const handleBeforeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setBeforeImage(file);
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setBeforePreview(url);
+    } else {
+      setBeforePreview(null);
+    }
+  };
+
+  const handleAfterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setAfterImage(file);
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setAfterPreview(url);
+    } else {
+      setAfterPreview(null);
+    }
+  };
+
+  const handleDocsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files ? Array.from(e.target.files) : [];
+    setSupportingDocs(files);
+  };
   const categories = [
     { value: "safety", label: "Safety", icon: Shield, color: "category-safety" },
     { value: "quality", label: "Quality", icon: Target, color: "category-quality" },
@@ -175,13 +270,18 @@ const BestPracticeForm = ({ onCancel, preFillData }: BestPracticeFormProps) => {
               <CardContent className="p-6 text-center">
                 <div className="space-y-4">
                   <div className="flex justify-center">
-                    <Camera className="h-12 w-12 text-muted-foreground" />
+                    {beforePreview ? (
+                      <img src={beforePreview} alt="Before preview" className="h-24 w-24 object-cover rounded" />
+                    ) : (
+                      <Camera className="h-12 w-12 text-muted-foreground" />
+                    )}
                   </div>
                   <div>
                     <h4 className="font-medium">Before Image</h4>
                     <p className="text-sm text-muted-foreground">Upload image showing the situation before implementation</p>
                   </div>
-                  <Button variant="outline" size="sm">
+                  <input ref={beforeInputRef} type="file" accept="image/*" className="hidden" onChange={handleBeforeChange} />
+                  <Button variant="outline" size="sm" onClick={() => beforeInputRef.current?.click()}>
                     <Upload className="h-4 w-4 mr-2" />
                     Choose File
                   </Button>
@@ -193,13 +293,18 @@ const BestPracticeForm = ({ onCancel, preFillData }: BestPracticeFormProps) => {
               <CardContent className="p-6 text-center">
                 <div className="space-y-4">
                   <div className="flex justify-center">
-                    <Camera className="h-12 w-12 text-muted-foreground" />
+                    {afterPreview ? (
+                      <img src={afterPreview} alt="After preview" className="h-24 w-24 object-cover rounded" />
+                    ) : (
+                      <Camera className="h-12 w-12 text-muted-foreground" />
+                    )}
                   </div>
                   <div>
                     <h4 className="font-medium">After Image</h4>
                     <p className="text-sm text-muted-foreground">Upload image showing the improved situation</p>
                   </div>
-                  <Button variant="outline" size="sm">
+                  <input ref={afterInputRef} type="file" accept="image/*" className="hidden" onChange={handleAfterChange} />
+                  <Button variant="outline" size="sm" onClick={() => afterInputRef.current?.click()}>
                     <Upload className="h-4 w-4 mr-2" />
                     Choose File
                   </Button>
@@ -216,6 +321,8 @@ const BestPracticeForm = ({ onCancel, preFillData }: BestPracticeFormProps) => {
                 id="benefits"
                 placeholder="List the key benefits and improvements realized..."
                 className="min-h-20"
+                value={benefitsText}
+                onChange={(e) => setBenefitsText(e.target.value)}
               />
             </div>
 
@@ -225,6 +332,8 @@ const BestPracticeForm = ({ onCancel, preFillData }: BestPracticeFormProps) => {
                 id="metrics"
                 placeholder="Include measurable improvements (e.g., 15% reduction in waste, 2 hours saved per day)..."
                 className="min-h-20"
+                value={metricsText}
+                onChange={(e) => setMetricsText(e.target.value)}
               />
             </div>
           </div>
@@ -236,6 +345,8 @@ const BestPracticeForm = ({ onCancel, preFillData }: BestPracticeFormProps) => {
               id="implementation"
               placeholder="Describe the implementation timeline, resources required, team involved..."
               className="min-h-24"
+              value={implementationText}
+              onChange={(e) => setImplementationText(e.target.value)}
             />
           </div>
 
@@ -250,10 +361,23 @@ const BestPracticeForm = ({ onCancel, preFillData }: BestPracticeFormProps) => {
                     <p className="text-sm font-medium">Upload supporting documents</p>
                     <p className="text-xs text-muted-foreground">Process charts, procedures, training materials (PDF, DOC, PPT)</p>
                   </div>
-                  <Button variant="outline" size="sm">
+                <input
+                  ref={docsInputRef}
+                  type="file"
+                  multiple
+                  className="hidden"
+                  onChange={handleDocsChange}
+                  accept=".pdf,.doc,.docx,.ppt,.pptx,image/*"
+                />
+                <Button variant="outline" size="sm" onClick={() => docsInputRef.current?.click()}>
                     Browse Files
                   </Button>
                 </div>
+              {supportingDocs.length > 0 && (
+                <div className="mt-3 text-xs text-muted-foreground text-center">
+                  Selected: {supportingDocs.map((f) => f.name).join(", ")}
+                </div>
+              )}
               </CardContent>
             </Card>
           </div>
@@ -266,12 +390,10 @@ const BestPracticeForm = ({ onCancel, preFillData }: BestPracticeFormProps) => {
                   <FileText className="h-5 w-5 text-primary" />
                 </div>
                 <div className="space-y-2">
-                  <h4 className="font-medium text-primary">Submission & Approval Process</h4>
+                  <h4 className="font-medium text-primary">Submission</h4>
                   <div className="text-sm text-muted-foreground space-y-1">
-                    <p>• Your submission will be reviewed by HQ Admin team</p>
-                    <p>• You'll receive notifications about approval status and any feedback</p>
-                    <p>• Approved practices will be visible on your dashboard and available for download</p>
-                    <p>• Other team members can ask questions about your practice once approved</p>
+                    <p>• Your submission will be visible on your dashboard</p>
+                    <p>• Other team members can ask questions about your practice</p>
                   </div>
                 </div>
               </div>
@@ -292,13 +414,13 @@ const BestPracticeForm = ({ onCancel, preFillData }: BestPracticeFormProps) => {
                 <X className="h-4 w-4 mr-2" />
                 Cancel
               </Button>
-              <Button variant="outline">
+              <Button variant="outline" onClick={handleSaveDraft}>
                 <Save className="h-4 w-4 mr-2" />
                 Save Draft
               </Button>
-              <Button className="bg-gradient-primary">
+              <Button className="bg-gradient-primary" onClick={handleSubmit}>
                 <Send className="h-4 w-4 mr-2" />
-                Submit for Review
+                Submit
               </Button>
             </div>
           </div>

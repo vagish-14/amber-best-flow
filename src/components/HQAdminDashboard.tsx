@@ -42,9 +42,13 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, LabelList } from "recharts"
 
 interface HQAdminDashboardProps {
   onViewChange: (view: string) => void;
+  thisMonthTotal?: number;
+  ytdTotal?: number;
+  copySpread?: { bp: string; originator: string; copies: { plant: string; date: string }[] }[];
+  leaderboard?: { plant: string; totalPoints: number; breakdown: { type: "Originator" | "Copier"; points: number; date: string; bpTitle: string }[] }[];
 }
 
-const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
+const HQAdminDashboard = ({ onViewChange, thisMonthTotal, ytdTotal, copySpread, leaderboard }: HQAdminDashboardProps) => {
   const [showDivisionSelector, setShowDivisionSelector] = useState(false);
   const [division, setDivision] = useState<"all" | "rac" | "component">("all");
   // Leaderboard drilldown (legacy shape kept for compatibility)
@@ -73,22 +77,87 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
   const [starDrillPlant, setStarDrillPlant] = useState<string | null>(null);
   const [starDrillData, setStarDrillData] = useState<{ month: string; savings: number; stars: number }[]>([]);
 
+  // Base leaderboard to keep table sizable; merge dynamic updates
+  const baseLeaderboard = useMemo(() => ([
+    { 
+      plant: "Plant 2 - Chennai", 
+      totalPoints: 24, 
+      breakdown: [
+        { type: "Originator", points: 10, date: "2024-01-15", bpTitle: "Automated Quality Control" },
+        { type: "Copier", points: 2, date: "2024-01-12", bpTitle: "Energy Efficient Process" },
+        { type: "Originator", points: 10, date: "2024-01-10", bpTitle: "Safety Enhancement" },
+        { type: "Copier", points: 2, date: "2024-01-08", bpTitle: "Production Optimization" }
+      ]
+    },
+    { 
+      plant: "Plant 1 - Gurgaon", 
+      totalPoints: 24, 
+      breakdown: [
+        { type: "Originator", points: 10, date: "2024-01-14", bpTitle: "Cost Reduction Initiative" },
+        { type: "Copier", points: 2, date: "2024-01-11", bpTitle: "Quality Improvement" },
+        { type: "Originator", points: 10, date: "2024-01-09", bpTitle: "Waste Management" },
+        { type: "Copier", points: 2, date: "2024-01-07", bpTitle: "Safety Protocol" }
+      ]
+    },
+    { 
+      plant: "Plant 7 - Bangalore", 
+      totalPoints: 24, 
+      breakdown: [
+        { type: "Originator", points: 10, date: "2024-01-13", bpTitle: "Productivity Boost" },
+        { type: "Copier", points: 2, date: "2024-01-10", bpTitle: "Cost Optimization" },
+        { type: "Originator", points: 10, date: "2024-01-08", bpTitle: "Quality Enhancement" },
+        { type: "Copier", points: 2, date: "2024-01-06", bpTitle: "Safety Improvement" }
+      ]
+    },
+    { 
+      plant: "Plant 3 - Pune", 
+      totalPoints: 22, 
+      breakdown: [
+        { type: "Originator", points: 10, date: "2024-01-12", bpTitle: "Process Innovation" },
+        { type: "Copier", points: 2, date: "2024-01-09", bpTitle: "Efficiency Gain" },
+        { type: "Originator", points: 10, date: "2024-01-07", bpTitle: "Cost Savings" }
+      ]
+    },
+    { 
+      plant: "Plant 5 - Mumbai", 
+      totalPoints: 14, 
+      breakdown: [
+        { type: "Originator", points: 10, date: "2024-01-11", bpTitle: "Quality Control" },
+        { type: "Copier", points: 2, date: "2024-01-08", bpTitle: "Safety Enhancement" },
+        { type: "Copier", points: 2, date: "2024-01-05", bpTitle: "Productivity Gain" }
+      ]
+    }
+  ]), []);
+
+  const mergedLeaderboard = useMemo(() => {
+    if (!leaderboard || leaderboard.length === 0) return baseLeaderboard;
+    const overrideByPlant = new Map(leaderboard.map((r) => [r.plant, r] as const));
+    const merged = baseLeaderboard.map((base) => {
+      const o = overrideByPlant.get(base.plant);
+      return o ? { ...base, totalPoints: o.totalPoints, breakdown: o.breakdown } : base;
+    });
+    leaderboard.forEach((row) => {
+      if (!merged.find((r) => r.plant === row.plant)) merged.push(row);
+    });
+    return merged;
+  }, [baseLeaderboard, leaderboard]);
+
   const plantData = [
-    { name: "Plant 1 - Gurgaon", submitted: 23, approved: 19, pending: 3, rejected: 1 },
-    { name: "Plant 2 - Chennai", submitted: 18, approved: 15, pending: 2, rejected: 1 },
-    { name: "Plant 3 - Pune", submitted: 31, approved: 28, pending: 2, rejected: 1 },
-    { name: "Plant 4 - Kolkata", submitted: 15, approved: 12, pending: 1, rejected: 2 },
-    { name: "Plant 5 - Mumbai", submitted: 22, approved: 18, pending: 3, rejected: 1 },
-    { name: "Plant 6 - Delhi", submitted: 19, approved: 16, pending: 2, rejected: 1 },
-    { name: "Plant 7 - Bangalore", submitted: 25, approved: 21, pending: 3, rejected: 1 },
-    { name: "Plant 8 - Hyderabad", submitted: 17, approved: 14, pending: 2, rejected: 1 },
-    { name: "Plant 9 - Ahmedabad", submitted: 20, approved: 17, pending: 2, rejected: 1 },
-    { name: "Plant 10 - Jaipur", submitted: 16, approved: 13, pending: 2, rejected: 1 },
-    { name: "Plant 11 - Lucknow", submitted: 21, approved: 18, pending: 2, rejected: 1 },
-    { name: "Plant 12 - Indore", submitted: 18, approved: 15, pending: 2, rejected: 1 },
-    { name: "Plant 13 - Bhopal", submitted: 14, approved: 12, pending: 1, rejected: 1 },
-    { name: "Plant 14 - Patna", submitted: 19, approved: 16, pending: 2, rejected: 1 },
-    { name: "Plant 15 - Bhubaneswar", submitted: 17, approved: 14, pending: 2, rejected: 1 }
+    { name: "Plant 1 - Gurgaon", submitted: 23 },
+    { name: "Plant 2 - Chennai", submitted: 18 },
+    { name: "Plant 3 - Pune", submitted: 31 },
+    { name: "Plant 4 - Kolkata", submitted: 15 },
+    { name: "Plant 5 - Mumbai", submitted: 22 },
+    { name: "Plant 6 - Delhi", submitted: 19 },
+    { name: "Plant 7 - Bangalore", submitted: 25 },
+    { name: "Plant 8 - Hyderabad", submitted: 17 },
+    { name: "Plant 9 - Ahmedabad", submitted: 20 },
+    { name: "Plant 10 - Jaipur", submitted: 16 },
+    { name: "Plant 11 - Lucknow", submitted: 21 },
+    { name: "Plant 12 - Indore", submitted: 18 },
+    { name: "Plant 13 - Bhopal", submitted: 14 },
+    { name: "Plant 14 - Patna", submitted: 19 },
+    { name: "Plant 15 - Bhubaneswar", submitted: 17 }
   ];
 
   // Demo dataset of benchmarked BPs (used for KPI count and drilldown)
@@ -315,11 +384,11 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
         <CardContent>
           <div className="grid grid-cols-2 gap-4 text-center">
             <div>
-          <div className="text-3xl font-bold text-primary">87</div>
-          <p className="text-sm text-muted-foreground">This Month</p>
+              <div className="text-3xl font-bold text-primary">{thisMonthTotal ?? 87}</div>
+              <p className="text-sm text-muted-foreground">This Month</p>
             </div>
             <div>
-              <div className="text-3xl font-bold text-primary">{ytdSubmissions}</div>
+              <div className="text-3xl font-bold text-primary">{ytdTotal ?? ytdSubmissions}</div>
               <p className="text-sm text-muted-foreground">This Year</p>
             </div>
           </div>
@@ -336,7 +405,7 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <CheckCircle className="h-5 w-5 text-success" />
-            <span>Upload Rate</span>
+            <span>Submission Rate</span>
           </CardTitle>
         </CardHeader>
         <CardContent className="text-center">
@@ -445,7 +514,6 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
                   <div>
                     <p className="font-semibold text-category-safety">Safety</p>
                     <p className="text-2xl font-bold">34</p>
-                    <p className="text-xs text-muted-foreground">92% approved</p>
                   </div>
                 </div>
               </div>
@@ -456,7 +524,6 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
                   <div>
                     <p className="font-semibold text-category-quality">Quality</p>
                     <p className="text-2xl font-bold">28</p>
-                    <p className="text-xs text-muted-foreground">89% approved</p>
                   </div>
                 </div>
               </div>
@@ -467,7 +534,6 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
                   <div>
                     <p className="font-semibold text-category-productivity">Productivity</p>
                     <p className="text-2xl font-bold">19</p>
-                    <p className="text-xs text-muted-foreground">84% approved</p>
                   </div>
                 </div>
               </div>
@@ -478,7 +544,6 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
                   <div>
                     <p className="font-semibold text-category-cost">Cost</p>
                     <p className="text-2xl font-bold">21</p>
-                    <p className="text-xs text-muted-foreground">90% approved</p>
                   </div>
                 </div>
               </div>
@@ -489,7 +554,6 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
                   <div>
                     <p className="font-semibold text-category-other">Other</p>
                     <p className="text-2xl font-bold">8</p>
-                    <p className="text-xs text-muted-foreground">88% approved</p>
                   </div>
                 </div>
               </div>
@@ -510,14 +574,14 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
           <CardContent>
             <ChartContainer
               config={{
-                approved: { label: "Uploaded", color: "hsl(var(--success))" },
+                submitted: { label: "Uploaded", color: "hsl(var(--success))" },
               }}
               className="h-[400px] w-full"
             >
               <BarChart data={plantData.map(p => ({ 
                 plant: p.name.replace("Plant ", "P").replace(" - Gurgaon", "").replace(" - Chennai", "").replace(" - Pune", "").replace(" - Kolkata", "").replace(" - Mumbai", "").replace(" - Delhi", "").replace(" - Bangalore", "").replace(" - Hyderabad", "").replace(" - Ahmedabad", "").replace(" - Jaipur", "").replace(" - Lucknow", "").replace(" - Indore", "").replace(" - Bhopal", "").replace(" - Patna", "").replace(" - Bhubaneswar", ""),
                 fullName: p.name,
-                approved: p.approved
+                submitted: p.submitted
               }))} margin={{ top: 24, right: 16, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="plant" />
@@ -556,8 +620,8 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
                   }}
                 />
                 <ChartLegend content={<ChartLegendContent />} />
-                <Bar dataKey="approved" fill="var(--color-approved)">
-                  <LabelList dataKey="approved" position="top" className="text-xs fill-current" />
+                <Bar dataKey="submitted" fill="var(--color-submitted)">
+                  <LabelList dataKey="submitted" position="top" className="text-xs fill-current" />
                 </Bar>
               </BarChart>
             </ChartContainer>
@@ -867,7 +931,7 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
           <CardContent>
             {(() => {
               // Demo dataset of benchmarked BPs, originator, and copies
-              const copySpread = [
+              const rows = copySpread ?? [
                 {
                   bp: "Energy Efficient Cooling Process",
                   originator: "Plant 1 - Gurgaon",
@@ -905,7 +969,7 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
                       </tr>
                     </thead>
                     <tbody className="divide-y">
-                      {copySpread.map((row) => (
+                      {rows.map((row) => (
                         <tr
                           key={row.bp}
                           className="hover:bg-accent/50 cursor-pointer"
@@ -980,8 +1044,8 @@ const HQAdminDashboard = ({ onViewChange }: HQAdminDashboardProps) => {
           </CardHeader>
           <CardContent>
             {(() => {
-              // Mock leaderboard data with point breakdown (Originator: 10, Copier: 2)
-              const leaderboardData = [
+              // Leaderboard data (Originator: 10, Copier: 2)
+              const leaderboardData = mergedLeaderboard ?? [
                 { 
                   plant: "Plant 2 - Chennai", 
                   totalPoints: 24, 

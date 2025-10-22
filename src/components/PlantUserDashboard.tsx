@@ -17,7 +17,7 @@ import {
   Star,
   BarChart3
 } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -40,9 +40,14 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
 interface PlantUserDashboardProps {
   onViewChange: (view: string) => void;
   onCopyAndImplement?: (bpData: any) => void;
+  monthlyCount?: number;
+  ytdCount?: number;
+  recentSubmissions?: { title: string; category: string; date: string; questions?: number }[];
+  leaderboard?: { plant: string; totalPoints: number; breakdown: { type: "Originator" | "Copier"; points: number; date: string; bpTitle: string }[] }[];
+  copySpread?: { bp: string; originator: string; copies: { plant: string; date: string }[] }[];
 }
 
-const PlantUserDashboard = ({ onViewChange, onCopyAndImplement }: PlantUserDashboardProps) => {
+const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, monthlyCount, ytdCount, recentSubmissions, leaderboard, copySpread }: PlantUserDashboardProps) => {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [selectedBP, setSelectedBP] = useState<any>(null);
   const [bpSpreadOpen, setBpSpreadOpen] = useState(false);
@@ -64,6 +69,72 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement }: PlantUserDashb
     setShowConfirmDialog(true);
   };
 
+  // Base leaderboard to keep the table sizable; merge dynamic updates into this
+  const baseLeaderboard = useMemo(() => ([
+    { 
+      plant: "Plant 2 - Chennai", 
+      totalPoints: 24, 
+      breakdown: [
+        { type: "Originator", points: 10, date: "2024-01-15", bpTitle: "Automated Quality Control" },
+        { type: "Copier", points: 2, date: "2024-01-12", bpTitle: "Energy Efficient Process" },
+        { type: "Originator", points: 10, date: "2024-01-10", bpTitle: "Safety Enhancement" },
+        { type: "Copier", points: 2, date: "2024-01-08", bpTitle: "Production Optimization" }
+      ]
+    },
+    { 
+      plant: "Plant 1 - Gurgaon", 
+      totalPoints: 24, 
+      breakdown: [
+        { type: "Originator", points: 10, date: "2024-01-14", bpTitle: "Cost Reduction Initiative" },
+        { type: "Copier", points: 2, date: "2024-01-11", bpTitle: "Quality Improvement" },
+        { type: "Originator", points: 10, date: "2024-01-09", bpTitle: "Waste Management" },
+        { type: "Copier", points: 2, date: "2024-01-07", bpTitle: "Safety Protocol" }
+      ]
+    },
+    { 
+      plant: "Plant 7 - Bangalore", 
+      totalPoints: 24, 
+      breakdown: [
+        { type: "Originator", points: 10, date: "2024-01-13", bpTitle: "Productivity Boost" },
+        { type: "Copier", points: 2, date: "2024-01-10", bpTitle: "Cost Optimization" },
+        { type: "Originator", points: 10, date: "2024-01-08", bpTitle: "Quality Enhancement" },
+        { type: "Copier", points: 2, date: "2024-01-06", bpTitle: "Safety Improvement" }
+      ]
+    },
+    { 
+      plant: "Plant 3 - Pune", 
+      totalPoints: 22, 
+      breakdown: [
+        { type: "Originator", points: 10, date: "2024-01-12", bpTitle: "Process Innovation" },
+        { type: "Copier", points: 2, date: "2024-01-09", bpTitle: "Efficiency Gain" },
+        { type: "Originator", points: 10, date: "2024-01-07", bpTitle: "Cost Savings" }
+      ]
+    },
+    { 
+      plant: "Plant 5 - Mumbai", 
+      totalPoints: 14, 
+      breakdown: [
+        { type: "Originator", points: 10, date: "2024-01-11", bpTitle: "Quality Control" },
+        { type: "Copier", points: 2, date: "2024-01-08", bpTitle: "Safety Enhancement" },
+        { type: "Copier", points: 2, date: "2024-01-05", bpTitle: "Productivity Gain" }
+      ]
+    }
+  ]), []);
+
+  const mergedLeaderboard = useMemo(() => {
+    if (!leaderboard || leaderboard.length === 0) return baseLeaderboard;
+    const overrideByPlant = new Map(leaderboard.map((r) => [r.plant, r] as const));
+    const merged = baseLeaderboard.map((base) => {
+      const o = overrideByPlant.get(base.plant);
+      return o ? { ...base, totalPoints: o.totalPoints, breakdown: o.breakdown } : base;
+    });
+    // Append any dynamic rows not present in base
+    leaderboard.forEach((row) => {
+      if (!merged.find((r) => r.plant === row.plant)) merged.push(row);
+    });
+    return merged;
+  }, [baseLeaderboard, leaderboard]);
+
   const confirmCopyImplement = () => {
     // Prepare the data for pre-filling the form
     if (selectedBP && onCopyAndImplement) {
@@ -72,6 +143,7 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement }: PlantUserDashb
         category: selectedBP.category,
         problemStatement: selectedBP.problemStatement || "",
         solution: selectedBP.solution || "",
+        originatorPlant: selectedBP.plant,
       });
     }
     setShowConfirmDialog(false);
@@ -116,7 +188,7 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement }: PlantUserDashb
         </CardHeader>
         <CardContent>
           {(() => {
-            const copySpread = [
+            const rows = copySpread ?? [
               {
                 bp: "Energy Efficient Cooling Process",
                 originator: "Plant 1 - Gurgaon",
@@ -154,7 +226,7 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement }: PlantUserDashb
                     </tr>
                   </thead>
                   <tbody className="divide-y">
-                    {copySpread.map((row) => (
+                    {rows.map((row) => (
                       <tr
                         key={row.bp}
                         className="hover:bg-accent/50 cursor-pointer"
@@ -219,6 +291,7 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement }: PlantUserDashb
     </div>
 
       {/* Statistics Overview */}
+      <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-6">
       <Card className="shadow-card">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
@@ -226,13 +299,15 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement }: PlantUserDashb
             <span>Monthly Progress</span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="text-center">
-            <div className="text-3xl font-bold text-primary">8</div>
+        <CardContent className="space-y-3 p-4">
+          <div className="flex items-baseline justify-between">
+            <div className="text-4xl font-bold text-primary">{monthlyCount ?? 8}</div>
             <p className="text-sm text-muted-foreground">Practices This Month</p>
           </div>
-          <Progress value={66} className="w-full" />
-          <p className="text-xs text-muted-foreground text-center">Target: 12 practices/month</p>
+          <Progress value={66} className="w-full mt-2" />
+          <div className="flex justify-end">
+            <p className="text-xs text-muted-foreground">Target: 12 practices/month</p>
+          </div>
         </CardContent>
       </Card>
 
@@ -243,47 +318,16 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement }: PlantUserDashb
             <span>YTD Summary</span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 gap-4 text-center">
-            <div>
-              <div className="text-2xl font-bold text-success">45</div>
-              <p className="text-xs text-muted-foreground">Approved</p>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-primary">53</div>
-              <p className="text-xs text-muted-foreground">Total Submitted</p>
-            </div>
-          </div>
-          <div className="text-center">
-            <Badge variant="outline" className="bg-success/10 text-success border-success">
-              85% Approval Rate
-            </Badge>
+        <CardContent className="space-y-3 p-4">
+          <div className="flex items-baseline justify-between">
+            <div className="text-3xl font-bold text-primary">{ytdCount ?? 53}</div>
+            <p className="text-sm text-muted-foreground">Total Submitted (YTD)</p>
           </div>
         </CardContent>
       </Card>
+      </div>
 
-      <Card className="shadow-card">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Clock className="h-5 w-5 text-warning" />
-            <span>Status Overview</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-sm">Pending Review</span>
-            <Badge variant="outline" className="bg-warning/10 text-warning border-warning">3</Badge>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-sm">Approved</span>
-            <Badge variant="outline" className="bg-success/10 text-success border-success">45</Badge>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-sm">Needs Revision</span>
-            <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive">2</Badge>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Status Overview removed */}
 
       {/* Category Breakdown */}
       <div className="lg:col-span-3">
@@ -554,12 +598,12 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement }: PlantUserDashb
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {[
-                { title: "Automated Quality Inspection System", category: "Quality", status: "approved", date: "2024-01-15", questions: 2 },
-                { title: "Energy Efficient Cooling Process", category: "Cost", status: "pending", date: "2024-01-12", questions: 0 },
-                { title: "Safety Protocol for Chemical Handling", category: "Safety", status: "approved", date: "2024-01-10", questions: 1 },
-                { title: "Production Line Optimization", category: "Productivity", status: "revision", date: "2024-01-08", questions: 3 }
-              ].map((practice, index) => (
+              {(recentSubmissions ?? [
+                { title: "Automated Quality Inspection System", category: "Quality", date: "2024-01-15", questions: 2 },
+                { title: "Energy Efficient Cooling Process", category: "Cost", date: "2024-01-12", questions: 0 },
+                { title: "Safety Protocol for Chemical Handling", category: "Safety", date: "2024-01-10", questions: 1 },
+                { title: "Production Line Optimization", category: "Productivity", date: "2024-01-08", questions: 3 }
+              ]).map((practice, index) => (
                 <div key={index} className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors"
                      onClick={() => onViewChange("practice-list")}>
                   <div className="flex-1">
@@ -572,26 +616,11 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement }: PlantUserDashb
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
-                    {practice.questions > 0 && (
+                    {practice.questions && practice.questions > 0 && (
                       <Badge variant="outline" className="bg-primary/10 text-primary">
                         {practice.questions} Q&A
                       </Badge>
                     )}
-                    <Badge 
-                      variant="outline" 
-                      className={
-                        practice.status === "approved" 
-                          ? "bg-success/10 text-success border-success"
-                          : practice.status === "pending"
-                          ? "bg-warning/10 text-warning border-warning"
-                          : "bg-destructive/10 text-destructive border-destructive"
-                      }
-                    >
-                      {practice.status === "approved" && <CheckCircle className="h-3 w-3 mr-1" />}
-                      {practice.status === "pending" && <Clock className="h-3 w-3 mr-1" />}
-                      {practice.status === "revision" && <XCircle className="h-3 w-3 mr-1" />}
-                      {practice.status.charAt(0).toUpperCase() + practice.status.slice(1)}
-                    </Badge>
                   </div>
                 </div>
               ))}
@@ -611,58 +640,7 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement }: PlantUserDashb
           </CardHeader>
           <CardContent>
             {(() => {
-              // Mock leaderboard data with point breakdown (Originator: 10, Copier: 2)
-              const leaderboardData = [
-                { 
-                  plant: "Plant 2 - Chennai", 
-                  totalPoints: 24, 
-                  breakdown: [
-                    { type: "Originator", points: 10, date: "2024-01-15", bpTitle: "Automated Quality Control" },
-                    { type: "Copier", points: 2, date: "2024-01-12", bpTitle: "Energy Efficient Process" },
-                    { type: "Originator", points: 10, date: "2024-01-10", bpTitle: "Safety Enhancement" },
-                    { type: "Copier", points: 2, date: "2024-01-08", bpTitle: "Production Optimization" }
-                  ]
-                },
-                { 
-                  plant: "Plant 1 - Gurgaon", 
-                  totalPoints: 24, 
-                  breakdown: [
-                    { type: "Originator", points: 10, date: "2024-01-14", bpTitle: "Cost Reduction Initiative" },
-                    { type: "Copier", points: 2, date: "2024-01-11", bpTitle: "Quality Improvement" },
-                    { type: "Originator", points: 10, date: "2024-01-09", bpTitle: "Waste Management" },
-                    { type: "Copier", points: 2, date: "2024-01-07", bpTitle: "Safety Protocol" }
-                  ]
-                },
-                { 
-                  plant: "Plant 7 - Bangalore", 
-                  totalPoints: 24, 
-                  breakdown: [
-                    { type: "Originator", points: 10, date: "2024-01-13", bpTitle: "Productivity Boost" },
-                    { type: "Copier", points: 2, date: "2024-01-10", bpTitle: "Cost Optimization" },
-                    { type: "Originator", points: 10, date: "2024-01-08", bpTitle: "Quality Enhancement" },
-                    { type: "Copier", points: 2, date: "2024-01-06", bpTitle: "Safety Improvement" }
-                  ]
-                },
-                { 
-                  plant: "Plant 3 - Pune", 
-                  totalPoints: 22, 
-                  breakdown: [
-                    { type: "Originator", points: 10, date: "2024-01-12", bpTitle: "Process Innovation" },
-                    { type: "Copier", points: 2, date: "2024-01-09", bpTitle: "Efficiency Gain" },
-                    { type: "Originator", points: 10, date: "2024-01-07", bpTitle: "Cost Savings" }
-                  ]
-                },
-                { 
-                  plant: "Plant 5 - Mumbai", 
-                  totalPoints: 14, 
-                  breakdown: [
-                    { type: "Originator", points: 10, date: "2024-01-11", bpTitle: "Quality Control" },
-                    { type: "Copier", points: 2, date: "2024-01-08", bpTitle: "Safety Enhancement" },
-                    { type: "Copier", points: 2, date: "2024-01-05", bpTitle: "Productivity Gain" }
-                  ]
-                }
-              ];
-              
+              const leaderboardData = mergedLeaderboard;
               return (
                 <div className="space-y-4">
                   <div className="text-sm text-muted-foreground">

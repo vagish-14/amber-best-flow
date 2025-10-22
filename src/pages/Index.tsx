@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -92,6 +92,66 @@ const Index = () => {
     }
   });
 
+  // Dynamic updates for submissions and copies
+  const userPlant = "Plant 2 - Chennai";
+  const [plantMonthlyCount, setPlantMonthlyCount] = useState<number>(8);
+  const [plantYtdCount, setPlantYtdCount] = useState<number>(53);
+  const [recentSubmissions, setRecentSubmissions] = useState<{ title: string; category: string; date: string; questions?: number }[]>([
+    { title: "Automated Quality Inspection System", category: "Quality", date: "2024-01-15", questions: 2 },
+    { title: "Energy Efficient Cooling Process", category: "Cost", date: "2024-01-12", questions: 0 },
+    { title: "Safety Protocol for Chemical Handling", category: "Safety", date: "2024-01-10", questions: 1 },
+    { title: "Production Line Optimization", category: "Productivity", date: "2024-01-08", questions: 3 },
+  ]);
+  const [leaderboard, setLeaderboard] = useState<{ plant: string; totalPoints: number; breakdown: { type: "Originator" | "Copier"; points: number; date: string; bpTitle: string }[] }[]>([
+    {
+      plant: "Plant 2 - Chennai",
+      totalPoints: 24,
+      breakdown: [
+        { type: "Originator", points: 10, date: "2024-01-15", bpTitle: "Automated Quality Control" },
+        { type: "Copier", points: 2, date: "2024-01-12", bpTitle: "Energy Efficient Process" },
+        { type: "Originator", points: 10, date: "2024-01-10", bpTitle: "Safety Enhancement" },
+        { type: "Copier", points: 2, date: "2024-01-08", bpTitle: "Production Optimization" },
+      ],
+    },
+    {
+      plant: "Plant 1 - Gurgaon",
+      totalPoints: 24,
+      breakdown: [
+        { type: "Originator", points: 10, date: "2024-01-14", bpTitle: "Cost Reduction Initiative" },
+        { type: "Copier", points: 2, date: "2024-01-11", bpTitle: "Quality Improvement" },
+        { type: "Originator", points: 10, date: "2024-01-09", bpTitle: "Waste Management" },
+        { type: "Copier", points: 2, date: "2024-01-07", bpTitle: "Safety Protocol" },
+      ],
+    },
+  ]);
+  const [copySpread, setCopySpread] = useState<{ bp: string; originator: string; copies: { plant: string; date: string }[] }[]>([
+    {
+      bp: "Energy Efficient Cooling Process",
+      originator: "Plant 1 - Gurgaon",
+      copies: [
+        { plant: "Plant 2 - Chennai", date: "2024-01-12" },
+        { plant: "Plant 7 - Bangalore", date: "2024-01-16" },
+      ],
+    },
+    {
+      bp: "Production Line Optimization",
+      originator: "Plant 3 - Pune",
+      copies: [{ plant: "Plant 5 - Mumbai", date: "2024-01-11" }],
+    },
+    {
+      bp: "Waste Reduction Initiative",
+      originator: "Plant 5 - Mumbai",
+      copies: [
+        { plant: "Plant 1 - Gurgaon", date: "2024-01-20" },
+        { plant: "Plant 4 - Kolkata", date: "2024-01-22" },
+        { plant: "Plant 9 - Ahmedabad", date: "2024-01-25" },
+      ],
+    },
+  ]);
+  const [hqThisMonthTotal, setHqThisMonthTotal] = useState<number>(87);
+  const [hqYtdTotal, setHqYtdTotal] = useState<number>(295);
+  const [pendingCopyMeta, setPendingCopyMeta] = useState<{ originatorPlant: string; bpTitle: string } | null>(null);
+
   const isBenchmarked = (id?: string) => (id ? benchmarkedIds.includes(id) : false);
   const toggleBenchmark = (practiceOrId?: any) => {
     const id = typeof practiceOrId === "string" ? practiceOrId : practiceOrId?.id;
@@ -126,6 +186,9 @@ const Index = () => {
       problemStatement: bpData.problemStatement || bpData.problem || "",
       solution: bpData.solution || bpData.description || "",
     });
+    if (bpData.originatorPlant && bpData.title) {
+      setPendingCopyMeta({ originatorPlant: bpData.originatorPlant, bpTitle: bpData.title });
+    }
     setCurrentView("add-practice");
   };
 
@@ -133,8 +196,65 @@ const Index = () => {
     // Clear pre-fill data when navigating to add-practice normally (not from copy & implement)
     if (view === "add-practice") {
       setFormPreFillData(null);
+      setPendingCopyMeta(null);
     }
     setCurrentView(view);
+  };
+
+  const onFormSubmit = (payload: {
+    title: string;
+    category: string;
+    problemStatement: string;
+    solution: string;
+    benefits: string;
+    metrics: string;
+    implementation: string;
+    beforeImageName: string | null;
+    afterImageName: string | null;
+    mode: "copy-implement" | "new-submission";
+  }) => {
+    const today = new Date().toISOString().slice(0, 10);
+    // Update plant user metrics
+    setPlantMonthlyCount((c) => c + 1);
+    setPlantYtdCount((c) => c + 1);
+    setRecentSubmissions((list) => [{ title: payload.title, category: payload.category, date: today }, ...list].slice(0, 20));
+
+    // Update HQ totals
+    setHqThisMonthTotal((c) => c + 1);
+    setHqYtdTotal((c) => c + 1);
+
+    // If this was a copy & implement, update leaderboard and copy spread
+    if (payload.mode === "copy-implement" && pendingCopyMeta) {
+      const { originatorPlant, bpTitle } = pendingCopyMeta;
+      setLeaderboard((prev) => {
+        const next = prev.map((row) => ({ ...row, breakdown: [...row.breakdown] }));
+        const addPoints = (plant: string, type: "Originator" | "Copier", points: number) => {
+          const idx = next.findIndex((r) => r.plant === plant);
+          const entry = { type, points, date: today, bpTitle } as const;
+          if (idx >= 0) {
+            next[idx].breakdown.unshift(entry as any);
+            next[idx].totalPoints += points;
+          } else {
+            next.push({ plant, totalPoints: points, breakdown: [entry as any] });
+          }
+        };
+        addPoints(userPlant, "Copier", 2);
+        addPoints(originatorPlant, "Originator", 10);
+        return next;
+      });
+
+      setCopySpread((prev) => {
+        const idx = prev.findIndex((r) => r.bp === bpTitle);
+        if (idx >= 0) {
+          const updated = [...prev];
+          updated[idx] = { ...updated[idx], copies: [...updated[idx].copies, { plant: userPlant, date: today }] };
+          return updated;
+        }
+        return [...prev, { bp: bpTitle, originator: originatorPlant, copies: [{ plant: userPlant, date: today }] }];
+      });
+    }
+
+    setPendingCopyMeta(null);
   };
 
   return (
@@ -202,9 +322,20 @@ const Index = () => {
               <PlantUserDashboard 
                 onViewChange={handleViewChange} 
                 onCopyAndImplement={handleCopyAndImplement}
+                monthlyCount={plantMonthlyCount}
+                ytdCount={plantYtdCount}
+                recentSubmissions={recentSubmissions}
+                leaderboard={leaderboard}
+                copySpread={copySpread}
               />
             ) : (
-              <HQAdminDashboard onViewChange={handleViewChange} />
+              <HQAdminDashboard 
+                onViewChange={handleViewChange} 
+                thisMonthTotal={hqThisMonthTotal}
+                ytdTotal={hqYtdTotal}
+                leaderboard={leaderboard}
+                copySpread={copySpread}
+              />
             )}
           </div>
         )}
@@ -222,6 +353,7 @@ const Index = () => {
                 setCurrentView("dashboard");
               }}
               preFillData={formPreFillData}
+              onSubmit={onFormSubmit}
             />
           </div>
         )}

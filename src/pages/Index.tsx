@@ -148,7 +148,7 @@ const Index = () => {
       ],
     },
   ]);
-  const [hqThisMonthTotal, setHqThisMonthTotal] = useState<number>(87);
+  const [hqThisMonthTotal, setHqThisMonthTotal] = useState<number>(187);
   const [hqYtdTotal, setHqYtdTotal] = useState<number>(295);
   const [pendingCopyMeta, setPendingCopyMeta] = useState<{ originatorPlant: string; bpTitle: string } | null>(null);
 

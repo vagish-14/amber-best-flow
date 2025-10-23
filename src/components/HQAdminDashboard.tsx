@@ -384,7 +384,7 @@ const HQAdminDashboard = ({ onViewChange, thisMonthTotal, ytdTotal, copySpread, 
         <CardContent>
           <div className="grid grid-cols-2 gap-4 text-center">
             <div>
-              <div className="text-3xl font-bold text-primary">{thisMonthTotal ?? 87}</div>
+              <div className="text-3xl font-bold text-primary">{thisMonthTotal ?? 187}</div>
               <p className="text-sm text-muted-foreground">This Month</p>
             </div>
             <div>
@@ -425,7 +425,7 @@ const HQAdminDashboard = ({ onViewChange, thisMonthTotal, ytdTotal, copySpread, 
         </CardHeader>
         <CardContent className="text-center">
           <div className="text-3xl font-bold text-primary cursor-pointer" onClick={() => setBenchmarkedOpen(true)}>
-            {benchmarkedBPs.length}
+            150
           </div>
           <p className="text-sm text-muted-foreground">Tap to view details</p>
         </CardContent>

@@ -385,7 +385,7 @@ const HQAdminDashboard = ({ onViewChange, thisMonthTotal, ytdTotal, copySpread, 
           <div className="grid grid-cols-2 gap-4 text-center">
             <div>
               <div className="text-3xl font-bold text-primary">{thisMonthTotal ?? 187}</div>
-              <p className="text-sm text-muted-foreground">This Month</p>
+              <p className="text-sm text-muted-foreground">in {new Date().toLocaleString('default', { month: 'long' })}</p>
             </div>
             <div>
               <div className="text-3xl font-bold text-primary">{ytdTotal ?? ytdSubmissions}</div>
@@ -636,7 +636,7 @@ const HQAdminDashboard = ({ onViewChange, thisMonthTotal, ytdTotal, copySpread, 
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <BarChart3 className="h-5 w-5 text-primary" />
-              <span>Benchmark BPs - This Month</span>
+              <span>Benchmark BPs - {new Date().toLocaleString('default', { month: 'long' })}</span>
             </CardTitle>
           </CardHeader>
           <CardContent>

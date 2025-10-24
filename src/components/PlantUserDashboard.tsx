@@ -302,7 +302,7 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, monthlyCount, yt
         <CardContent className="space-y-3 p-4">
           <div className="flex items-baseline justify-between">
             <div className="text-4xl font-bold text-primary">{monthlyCount ?? 8}</div>
-            <p className="text-sm text-muted-foreground">Practices This Month</p>
+            <p className="text-sm text-muted-foreground">Practices in {new Date().toLocaleString('default', { month: 'long' })}</p>
           </div>
           <Progress value={66} className="w-full mt-2" />
           <div className="flex justify-end">

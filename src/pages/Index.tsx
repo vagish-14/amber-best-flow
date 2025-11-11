@@ -102,14 +102,14 @@ const Index = () => {
     { title: "Safety Protocol for Chemical Handling", category: "Safety", date: "2024-01-10", questions: 1 },
     { title: "Production Line Optimization", category: "Productivity", date: "2024-01-08", questions: 3 },
   ]);
-  const [leaderboard, setLeaderboard] = useState<{ plant: string; totalPoints: number; breakdown: { type: "Originator" | "Copier"; points: number; date: string; bpTitle: string }[] }[]>([
+  const [leaderboard, setLeaderboard] = useState<{ plant: string; totalPoints: number; breakdown: { type: "Origin" | "Copier"; points: number; date: string; bpTitle: string }[] }[]>([
     {
       plant: "Plant 2 - Chennai",
       totalPoints: 24,
       breakdown: [
-        { type: "Originator", points: 10, date: "2024-01-15", bpTitle: "Automated Quality Control" },
+        { type: "Origin", points: 10, date: "2024-01-15", bpTitle: "Automated Quality Control" },
         { type: "Copier", points: 2, date: "2024-01-12", bpTitle: "Energy Efficient Process" },
-        { type: "Originator", points: 10, date: "2024-01-10", bpTitle: "Safety Enhancement" },
+        { type: "Origin", points: 10, date: "2024-01-10", bpTitle: "Safety Enhancement" },
         { type: "Copier", points: 2, date: "2024-01-08", bpTitle: "Production Optimization" },
       ],
     },
@@ -117,17 +117,17 @@ const Index = () => {
       plant: "Plant 1 - Gurgaon",
       totalPoints: 24,
       breakdown: [
-        { type: "Originator", points: 10, date: "2024-01-14", bpTitle: "Cost Reduction Initiative" },
+        { type: "Origin", points: 10, date: "2024-01-14", bpTitle: "Cost Reduction Initiative" },
         { type: "Copier", points: 2, date: "2024-01-11", bpTitle: "Quality Improvement" },
-        { type: "Originator", points: 10, date: "2024-01-09", bpTitle: "Waste Management" },
+        { type: "Origin", points: 10, date: "2024-01-09", bpTitle: "Waste Management" },
         { type: "Copier", points: 2, date: "2024-01-07", bpTitle: "Safety Protocol" },
       ],
     },
   ]);
-  const [copySpread, setCopySpread] = useState<{ bp: string; originator: string; copies: { plant: string; date: string }[] }[]>([
+  const [copySpread, setCopySpread] = useState<{ bp: string; origin: string; copies: { plant: string; date: string }[] }[]>([
     {
       bp: "Energy Efficient Cooling Process",
-      originator: "Plant 1 - Gurgaon",
+      origin: "Plant 1 - Gurgaon",
       copies: [
         { plant: "Plant 2 - Chennai", date: "2024-01-12" },
         { plant: "Plant 7 - Bangalore", date: "2024-01-16" },
@@ -135,12 +135,12 @@ const Index = () => {
     },
     {
       bp: "Production Line Optimization",
-      originator: "Plant 3 - Pune",
+      origin: "Plant 3 - Pune",
       copies: [{ plant: "Plant 5 - Mumbai", date: "2024-01-11" }],
     },
     {
       bp: "Waste Reduction Initiative",
-      originator: "Plant 5 - Mumbai",
+      origin: "Plant 5 - Mumbai",
       copies: [
         { plant: "Plant 1 - Gurgaon", date: "2024-01-20" },
         { plant: "Plant 4 - Kolkata", date: "2024-01-22" },
@@ -150,7 +150,7 @@ const Index = () => {
   ]);
   const [hqThisMonthTotal, setHqThisMonthTotal] = useState<number>(187);
   const [hqYtdTotal, setHqYtdTotal] = useState<number>(295);
-  const [pendingCopyMeta, setPendingCopyMeta] = useState<{ originatorPlant: string; bpTitle: string } | null>(null);
+  const [pendingCopyMeta, setPendingCopyMeta] = useState<{ originPlant: string; bpTitle: string } | null>(null);
 
   const isBenchmarked = (id?: string) => (id ? benchmarkedIds.includes(id) : false);
   const toggleBenchmark = (practiceOrId?: any) => {
@@ -186,8 +186,8 @@ const Index = () => {
       problemStatement: bpData.problemStatement || bpData.problem || "",
       solution: bpData.solution || bpData.description || "",
     });
-    if (bpData.originatorPlant && bpData.title) {
-      setPendingCopyMeta({ originatorPlant: bpData.originatorPlant, bpTitle: bpData.title });
+    if (bpData.originPlant && bpData.title) {
+      setPendingCopyMeta({ originPlant: bpData.originPlant, bpTitle: bpData.title });
     }
     setCurrentView("add-practice");
   };
@@ -225,10 +225,10 @@ const Index = () => {
 
     // If this was a copy & implement, update leaderboard and copy spread
     if (payload.mode === "copy-implement" && pendingCopyMeta) {
-      const { originatorPlant, bpTitle } = pendingCopyMeta;
+      const { originPlant, bpTitle } = pendingCopyMeta;
       setLeaderboard((prev) => {
         const next = prev.map((row) => ({ ...row, breakdown: [...row.breakdown] }));
-        const addPoints = (plant: string, type: "Originator" | "Copier", points: number) => {
+        const addPoints = (plant: string, type: "Origin" | "Copier", points: number) => {
           const idx = next.findIndex((r) => r.plant === plant);
           const entry = { type, points, date: today, bpTitle } as const;
           if (idx >= 0) {
@@ -239,7 +239,7 @@ const Index = () => {
           }
         };
         addPoints(userPlant, "Copier", 2);
-        addPoints(originatorPlant, "Originator", 10);
+        addPoints(originPlant, "Origin", 10);
         return next;
       });
 
@@ -250,7 +250,7 @@ const Index = () => {
           updated[idx] = { ...updated[idx], copies: [...updated[idx].copies, { plant: userPlant, date: today }] };
           return updated;
         }
-        return [...prev, { bp: bpTitle, originator: originatorPlant, copies: [{ plant: userPlant, date: today }] }];
+        return [...prev, { bp: bpTitle, origin: originPlant, copies: [{ plant: userPlant, date: today }] }];
       });
     }
 

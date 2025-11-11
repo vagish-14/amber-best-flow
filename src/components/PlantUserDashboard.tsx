@@ -43,8 +43,8 @@ interface PlantUserDashboardProps {
   monthlyCount?: number;
   ytdCount?: number;
   recentSubmissions?: { title: string; category: string; date: string; questions?: number }[];
-  leaderboard?: { plant: string; totalPoints: number; breakdown: { type: "Originator" | "Copier"; points: number; date: string; bpTitle: string }[] }[];
-  copySpread?: { bp: string; originator: string; copies: { plant: string; date: string }[] }[];
+  leaderboard?: { plant: string; totalPoints: number; breakdown: { type: "Origin" | "Copier"; points: number; date: string; bpTitle: string }[] }[];
+  copySpread?: { bp: string; origin: string; copies: { plant: string; date: string }[] }[];
 }
 
 const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, monthlyCount, ytdCount, recentSubmissions, leaderboard, copySpread }: PlantUserDashboardProps) => {
@@ -75,9 +75,9 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, monthlyCount, yt
       plant: "Plant 2 - Chennai", 
       totalPoints: 24, 
       breakdown: [
-        { type: "Originator", points: 10, date: "2024-01-15", bpTitle: "Automated Quality Control" },
+        { type: "Origin", points: 10, date: "2024-01-15", bpTitle: "Automated Quality Control" },
         { type: "Copier", points: 2, date: "2024-01-12", bpTitle: "Energy Efficient Process" },
-        { type: "Originator", points: 10, date: "2024-01-10", bpTitle: "Safety Enhancement" },
+        { type: "Origin", points: 10, date: "2024-01-10", bpTitle: "Safety Enhancement" },
         { type: "Copier", points: 2, date: "2024-01-08", bpTitle: "Production Optimization" }
       ]
     },
@@ -85,9 +85,9 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, monthlyCount, yt
       plant: "Plant 1 - Gurgaon", 
       totalPoints: 24, 
       breakdown: [
-        { type: "Originator", points: 10, date: "2024-01-14", bpTitle: "Cost Reduction Initiative" },
+        { type: "Origin", points: 10, date: "2024-01-14", bpTitle: "Cost Reduction Initiative" },
         { type: "Copier", points: 2, date: "2024-01-11", bpTitle: "Quality Improvement" },
-        { type: "Originator", points: 10, date: "2024-01-09", bpTitle: "Waste Management" },
+        { type: "Origin", points: 10, date: "2024-01-09", bpTitle: "Waste Management" },
         { type: "Copier", points: 2, date: "2024-01-07", bpTitle: "Safety Protocol" }
       ]
     },
@@ -95,9 +95,9 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, monthlyCount, yt
       plant: "Plant 7 - Bangalore", 
       totalPoints: 24, 
       breakdown: [
-        { type: "Originator", points: 10, date: "2024-01-13", bpTitle: "Productivity Boost" },
+        { type: "Origin", points: 10, date: "2024-01-13", bpTitle: "Productivity Boost" },
         { type: "Copier", points: 2, date: "2024-01-10", bpTitle: "Cost Optimization" },
-        { type: "Originator", points: 10, date: "2024-01-08", bpTitle: "Quality Enhancement" },
+        { type: "Origin", points: 10, date: "2024-01-08", bpTitle: "Quality Enhancement" },
         { type: "Copier", points: 2, date: "2024-01-06", bpTitle: "Safety Improvement" }
       ]
     },
@@ -105,16 +105,16 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, monthlyCount, yt
       plant: "Plant 3 - Pune", 
       totalPoints: 22, 
       breakdown: [
-        { type: "Originator", points: 10, date: "2024-01-12", bpTitle: "Process Innovation" },
+        { type: "Origin", points: 10, date: "2024-01-12", bpTitle: "Process Innovation" },
         { type: "Copier", points: 2, date: "2024-01-09", bpTitle: "Efficiency Gain" },
-        { type: "Originator", points: 10, date: "2024-01-07", bpTitle: "Cost Savings" }
+        { type: "Origin", points: 10, date: "2024-01-07", bpTitle: "Cost Savings" }
       ]
     },
     { 
       plant: "Plant 5 - Mumbai", 
       totalPoints: 14, 
       breakdown: [
-        { type: "Originator", points: 10, date: "2024-01-11", bpTitle: "Quality Control" },
+        { type: "Origin", points: 10, date: "2024-01-11", bpTitle: "Quality Control" },
         { type: "Copier", points: 2, date: "2024-01-08", bpTitle: "Safety Enhancement" },
         { type: "Copier", points: 2, date: "2024-01-05", bpTitle: "Productivity Gain" }
       ]
@@ -143,7 +143,7 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, monthlyCount, yt
         category: selectedBP.category,
         problemStatement: selectedBP.problemStatement || "",
         solution: selectedBP.solution || "",
-        originatorPlant: selectedBP.plant,
+        originPlant: selectedBP.plant,
       });
     }
     setShowConfirmDialog(false);
@@ -177,6 +177,43 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, monthlyCount, yt
         </Card>
       </div>
 
+      {/* Statistics Overview */}
+      <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-6">
+      <Card className="shadow-card">
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <TrendingUp className="h-5 w-5 text-primary" />
+            <span>Monthly Progress</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3 p-4">
+          <div className="flex items-baseline justify-between">
+            <div className="text-4xl font-bold text-primary">{monthlyCount ?? 8}</div>
+            <p className="text-sm text-muted-foreground">Practices in {new Date().toLocaleString('default', { month: 'long' })}</p>
+          </div>
+          <Progress value={66} className="w-full mt-2" />
+          <div className="flex justify-end">
+            <p className="text-xs text-muted-foreground">Target: 12 practices/month</p>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="shadow-card">
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <CheckCircle className="h-5 w-5 text-success" />
+            <span>YTD Summary</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3 p-4">
+          <div className="flex items-baseline justify-between">
+            <div className="text-3xl font-bold text-primary">{ytdCount ?? 53}</div>
+            <p className="text-sm text-muted-foreground">Total Submitted (YTD)</p>
+          </div>
+        </CardContent>
+      </Card>
+      </div>
+
     {/* KPI: BP Copy Spread */}
     <div className="lg:col-span-3">
       <Card className="shadow-card">
@@ -191,7 +228,7 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, monthlyCount, yt
             const rows = copySpread ?? [
               {
                 bp: "Energy Efficient Cooling Process",
-                originator: "Plant 1 - Gurgaon",
+                origin: "Plant 1 - Gurgaon",
                 copies: [
                   { plant: "Plant 2 - Chennai", date: "2024-01-12" },
                   { plant: "Plant 7 - Bangalore", date: "2024-01-16" },
@@ -199,14 +236,14 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, monthlyCount, yt
               },
               {
                 bp: "Production Line Optimization",
-                originator: "Plant 3 - Pune",
+                origin: "Plant 3 - Pune",
                 copies: [
                   { plant: "Plant 5 - Mumbai", date: "2024-01-11" },
                 ],
               },
               {
                 bp: "Waste Reduction Initiative",
-                originator: "Plant 5 - Mumbai",
+                origin: "Plant 5 - Mumbai",
                 copies: [
                   { plant: "Plant 1 - Gurgaon", date: "2024-01-20" },
                   { plant: "Plant 4 - Kolkata", date: "2024-01-22" },
@@ -221,7 +258,7 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, monthlyCount, yt
                   <thead>
                     <tr className="text-left text-muted-foreground">
                       <th className="py-2">BP Name</th>
-                      <th className="py-2">Originator Plant</th>
+                      <th className="py-2">Origin Plant</th>
                       <th className="py-2">Copied To</th>
                     </tr>
                   </thead>
@@ -237,7 +274,7 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, monthlyCount, yt
                         }}
                       >
                         <td className="py-2 font-medium">{row.bp}</td>
-                        <td className="py-2">{row.originator}</td>
+                        <td className="py-2">{row.origin}</td>
                         <td className="py-2">{row.copies.length}</td>
                       </tr>
                     ))}
@@ -289,43 +326,6 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, monthlyCount, yt
         </CardContent>
       </Card>
     </div>
-
-      {/* Statistics Overview */}
-      <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-6">
-      <Card className="shadow-card">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <TrendingUp className="h-5 w-5 text-primary" />
-            <span>Monthly Progress</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3 p-4">
-          <div className="flex items-baseline justify-between">
-            <div className="text-4xl font-bold text-primary">{monthlyCount ?? 8}</div>
-            <p className="text-sm text-muted-foreground">Practices in {new Date().toLocaleString('default', { month: 'long' })}</p>
-          </div>
-          <Progress value={66} className="w-full mt-2" />
-          <div className="flex justify-end">
-            <p className="text-xs text-muted-foreground">Target: 12 practices/month</p>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="shadow-card">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <CheckCircle className="h-5 w-5 text-success" />
-            <span>YTD Summary</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3 p-4">
-          <div className="flex items-baseline justify-between">
-            <div className="text-3xl font-bold text-primary">{ytdCount ?? 53}</div>
-            <p className="text-sm text-muted-foreground">Total Submitted (YTD)</p>
-          </div>
-        </CardContent>
-      </Card>
-      </div>
 
       {/* Status Overview removed */}
 
@@ -644,7 +644,7 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, monthlyCount, yt
               return (
                 <div className="space-y-4">
                   <div className="text-sm text-muted-foreground">
-                    Total points earned through benchmark BPs (Originator: 10 points, Copier: 2 points)
+                    Total points earned through benchmark BPs (Origin: 10 points, Copier: 2 points)
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-xs">
@@ -666,9 +666,9 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, monthlyCount, yt
                               const copiedCount = asCopier.length;
                               const copiedPoints = asCopier.reduce((s, b) => s + (b.points || 0), 0);
 
-                              const asOriginator = entry.breakdown.filter((b) => b.type === "Originator");
+                              const asOrigin = entry.breakdown.filter((b) => b.type === "Origin");
                               const perBPMap = new Map<string, { title: string; copies: number; points: number }>();
-                              asOriginator.forEach((b) => {
+                              asOrigin.forEach((b) => {
                                 const prev = perBPMap.get(b.bpTitle) || { title: b.bpTitle, copies: 0, points: 0 };
                                 prev.copies += 1;
                                 prev.points += b.points || 0;
@@ -709,7 +709,7 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, monthlyCount, yt
                                   {entry.breakdown.slice(0, 2).map((item, idx) => (
                                     <div key={idx} className="flex items-center justify-center gap-1">
                                       <Badge variant="outline" className={
-                                        item.type === "Originator" 
+                                        item.type === "Origin" 
                                           ? "bg-success/10 text-success border-success text-xs px-1 py-0" 
                                           : "bg-primary/10 text-primary border-primary text-xs px-1 py-0"
                                       }>
@@ -837,7 +837,7 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, monthlyCount, yt
               Are you sure you want to copy and implement "{selectedBP?.title}" from {selectedBP?.plant}?
               <br /><br />
               <strong>Points System:</strong>
-              <br />• {selectedBP?.plant} will receive 10 points (originator)
+              <br />• {selectedBP?.plant} will receive 10 points (Origin)
               <br />• Your plant will receive 2 points (copier)
               <br /><br />
               This action will add this practice to your plant's implementation list.

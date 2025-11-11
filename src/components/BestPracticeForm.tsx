@@ -180,7 +180,7 @@ const BestPracticeForm = ({ onCancel, preFillData, onSubmit }: BestPracticeFormP
           <p className="text-primary-foreground/80">
             {preFillData 
               ? "Complete the remaining fields to implement this best practice at your plant"
-              : "Share your innovation with the Amber Group - Plant 2 Chennai"
+              : "Share your innovation with the Amber Group - Greater Noida (Ecotech 1)"
             }
           </p>
         </CardHeader>
@@ -442,10 +442,10 @@ const BestPracticeForm = ({ onCancel, preFillData, onSubmit }: BestPracticeFormP
           {/* Action Buttons */}
           <div className="flex items-center justify-between pt-6 border-t">
             <div className="flex items-center space-x-2">
-              <Badge variant="outline" className="bg-primary/10 text-primary">
-                <Shield className="h-3 w-3 mr-1" />
-                Plant 2 - Chennai Submission
-              </Badge>
+      <Badge variant="outline" className="bg-primary/10 text-primary">
+        <Shield className="h-3 w-3 mr-1" />
+        Greater Noida (Ecotech 1) Submission
+      </Badge>
             </div>
             
             <div className="flex space-x-3">

@@ -62,8 +62,8 @@ const ApprovalsList = ({ userRole, onViewPractice, onBack, isBenchmarked, onTogg
       title: "Automated Quality Inspection System Implementation",
       category: "Quality",
       submittedBy: "Rajesh Kumar",
-      plant: "Plant 2 - Chennai",
-      submittedDate: "2024-01-15",
+      plant: "Greater Noida (Ecotech 1)",
+      submittedDate: "2025-01-15",
       description:
         "Implementation of an automated quality inspection system using computer vision...",
       questions: 2,
@@ -73,8 +73,8 @@ const ApprovalsList = ({ userRole, onViewPractice, onBack, isBenchmarked, onTogg
       title: "Energy Efficient Cooling Process",
       category: "Cost",
       submittedBy: "Amit Singh",
-      plant: "Plant 1 - Gurgaon",
-      submittedDate: "2024-01-12",
+      plant: "Kanchipuram",
+      submittedDate: "2025-02-12",
       description:
         "Optimized cooling system that reduces energy consumption by 30%...",
       questions: 0,
@@ -84,8 +84,8 @@ const ApprovalsList = ({ userRole, onViewPractice, onBack, isBenchmarked, onTogg
       title: "Safety Protocol for Chemical Handling",
       category: "Safety",
       submittedBy: "Sneha Patel",
-      plant: "Plant 3 - Pune",
-      submittedDate: "2024-01-10",
+      plant: "Supa",
+      submittedDate: "2025-03-10",
       description:
         "Comprehensive safety protocols for handling hazardous chemicals...",
       questions: 1,
@@ -95,8 +95,8 @@ const ApprovalsList = ({ userRole, onViewPractice, onBack, isBenchmarked, onTogg
       title: "Production Line Optimization",
       category: "Productivity",
       submittedBy: "Vikram Sharma",
-      plant: "Plant 4 - Kolkata",
-      submittedDate: "2024-01-08",
+      plant: "Ranjangaon",
+      submittedDate: "2025-04-08",
       description: "Streamlined production line layout and workflow optimization...",
       questions: 3,
     },
@@ -105,8 +105,8 @@ const ApprovalsList = ({ userRole, onViewPractice, onBack, isBenchmarked, onTogg
       title: "IoT Sensor Implementation for Predictive Maintenance",
       category: "Productivity",
       submittedBy: "Deepak Kumar",
-      plant: "Plant 3 - Pune",
-      submittedDate: "2024-01-20",
+      plant: "Kanchipuram",
+      submittedDate: "2025-05-20",
       description:
         "Deployment of IoT sensors for real-time equipment monitoring...",
       questions: 0,
@@ -116,8 +116,8 @@ const ApprovalsList = ({ userRole, onViewPractice, onBack, isBenchmarked, onTogg
       title: "Waste Heat Recovery System",
       category: "Cost",
       submittedBy: "Priya Gupta",
-      plant: "Plant 1 - Gurgaon",
-      submittedDate: "2024-01-18",
+      plant: "Greater Noida (Ecotech 1)",
+      submittedDate: "2025-03-18",
       description:
         "Implementation of waste heat recovery system that captures and reuses thermal energy...",
       questions: 1,
@@ -130,7 +130,7 @@ const ApprovalsList = ({ userRole, onViewPractice, onBack, isBenchmarked, onTogg
   // Role-based filtering
   const visiblePractices =
     userRole === "plant"
-      ? requiresAction.filter((p) => p.plant === "Plant 1 - Gurgaon")
+      ? requiresAction.filter((p) => p.plant === "Greater Noida (Ecotech 1)")
       : requiresAction;
 
   // Status badges removed
@@ -143,7 +143,7 @@ const ApprovalsList = ({ userRole, onViewPractice, onBack, isBenchmarked, onTogg
           <h1 className="text-3xl font-bold">Approvals</h1>
           <p className="text-muted-foreground mt-1">
             {userRole === "plant"
-              ? "Requests from Plant 1 - Gurgaon awaiting decision"
+              ? "Requests from Greater Noida (Ecotech 1) awaiting decision"
               : "Review practices awaiting approval, rejection, or on hold"}
           </p>
         </div>

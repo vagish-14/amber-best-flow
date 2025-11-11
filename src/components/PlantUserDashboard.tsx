@@ -97,51 +97,71 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, monthlyCount, yt
   // Base leaderboard to keep the table sizable; merge dynamic updates into this
   const baseLeaderboard = useMemo(() => ([
     { 
-      plant: "Plant 2 - Chennai", 
-      totalPoints: 30, 
+      plant: "Greater Noida (Ecotech 1)", 
+      totalPoints: 36, 
       breakdown: [
-        { type: "Origin", points: 10, date: "2024-01-15", bpTitle: "Automated Quality Control" },
-        { type: "Copier", points: 5, date: "2024-01-12", bpTitle: "Energy Efficient Process" },
-        { type: "Origin", points: 10, date: "2024-01-10", bpTitle: "Safety Enhancement" },
-        { type: "Copier", points: 5, date: "2024-01-08", bpTitle: "Production Optimization" }
+        { type: "Origin", points: 10, date: "2025-02-12", bpTitle: "Digital Production Control Tower" },
+        { type: "Copier", points: 5, date: "2025-02-20", bpTitle: "Assembly Line Cobots" },
+        { type: "Origin", points: 10, date: "2025-01-15", bpTitle: "Automated Quality Inspection" },
+        { type: "Copier", points: 5, date: "2025-03-10", bpTitle: "Safety Protocol for Chemical Handling" },
+        { type: "Origin", points: 6, date: "2025-03-18", bpTitle: "Waste Reduction Initiative" }
       ]
     },
     { 
-      plant: "Plant 1 - Gurgaon", 
-      totalPoints: 30, 
+      plant: "Kanchipuram", 
+      totalPoints: 28, 
       breakdown: [
-        { type: "Origin", points: 10, date: "2024-01-14", bpTitle: "Cost Reduction Initiative" },
-        { type: "Copier", points: 5, date: "2024-01-11", bpTitle: "Quality Improvement" },
-        { type: "Origin", points: 10, date: "2024-01-09", bpTitle: "Waste Management" },
-        { type: "Copier", points: 5, date: "2024-01-07", bpTitle: "Safety Protocol" }
+        { type: "Origin", points: 10, date: "2025-05-20", bpTitle: "IoT Sensor Implementation" },
+        { type: "Copier", points: 5, date: "2025-04-12", bpTitle: "Digital Production Control Tower" },
+        { type: "Copier", points: 5, date: "2025-05-05", bpTitle: "Assembly Line Cobots" },
+        { type: "Origin", points: 8, date: "2025-03-25", bpTitle: "Lean Packaging Redesign" }
       ]
     },
     { 
-      plant: "Plant 7 - Bangalore", 
-      totalPoints: 30, 
+      plant: "Rajpura", 
+      totalPoints: 26, 
       breakdown: [
-        { type: "Origin", points: 10, date: "2024-01-13", bpTitle: "Productivity Boost" },
-        { type: "Copier", points: 5, date: "2024-01-10", bpTitle: "Cost Optimization" },
-        { type: "Origin", points: 10, date: "2024-01-08", bpTitle: "Quality Enhancement" },
-        { type: "Copier", points: 5, date: "2024-01-06", bpTitle: "Safety Improvement" }
+        { type: "Origin", points: 10, date: "2025-02-28", bpTitle: "Green Energy Dashboard" },
+        { type: "Copier", points: 5, date: "2025-03-22", bpTitle: "ELG Compliance Monitoring Program" },
+        { type: "Origin", points: 6, date: "2025-01-30", bpTitle: "Smart Inventory Tagging" },
+        { type: "Copier", points: 5, date: "2025-04-18", bpTitle: "Assembly Line Cobots" }
       ]
     },
     { 
-      plant: "Plant 3 - Pune", 
-      totalPoints: 25, 
+      plant: "Shahjahanpur", 
+      totalPoints: 22, 
       breakdown: [
-        { type: "Origin", points: 10, date: "2024-01-12", bpTitle: "Process Innovation" },
-        { type: "Copier", points: 5, date: "2024-01-09", bpTitle: "Efficiency Gain" },
-        { type: "Origin", points: 10, date: "2024-01-07", bpTitle: "Cost Savings" }
+        { type: "Origin", points: 10, date: "2025-06-14", bpTitle: "Digital Production Control Tower" },
+        { type: "Copier", points: 5, date: "2025-05-04", bpTitle: "IoT Sensor Implementation" },
+        { type: "Copier", points: 5, date: "2025-02-15", bpTitle: "Waste Reduction Initiative" },
+        { type: "Origin", points: 2, date: "2025-03-02", bpTitle: "Visual Management Boards" }
       ]
     },
     { 
-      plant: "Plant 5 - Mumbai", 
+      plant: "Supa", 
       totalPoints: 20, 
       breakdown: [
-        { type: "Origin", points: 10, date: "2024-01-11", bpTitle: "Quality Control" },
-        { type: "Copier", points: 5, date: "2024-01-08", bpTitle: "Safety Enhancement" },
-        { type: "Copier", points: 5, date: "2024-01-05", bpTitle: "Productivity Gain" }
+        { type: "Origin", points: 10, date: "2025-03-10", bpTitle: "Safety Protocol for Chemical Handling" },
+        { type: "Copier", points: 5, date: "2025-02-25", bpTitle: "Digital Production Control Tower" },
+        { type: "Copier", points: 5, date: "2025-04-05", bpTitle: "IoT Sensor Implementation" }
+      ]
+    },
+    { 
+      plant: "Ranjangaon", 
+      totalPoints: 19, 
+      breakdown: [
+        { type: "Origin", points: 10, date: "2025-04-08", bpTitle: "Production Line Optimization" },
+        { type: "Copier", points: 5, date: "2025-04-22", bpTitle: "Assembly Line Cobots" },
+        { type: "Copier", points: 4, date: "2025-05-26", bpTitle: "ELG Compliance Monitoring Program" }
+      ]
+    },
+    { 
+      plant: "Ponneri", 
+      totalPoints: 18, 
+      breakdown: [
+        { type: "Origin", points: 10, date: "2025-02-09", bpTitle: "ELG Compliance Monitoring Program" },
+        { type: "Copier", points: 5, date: "2025-03-18", bpTitle: "Waste Reduction Initiative" },
+        { type: "Copier", points: 3, date: "2025-05-12", bpTitle: "Safety Protocol for Chemical Handling" }
       ]
     }
   ]), []);
@@ -183,7 +203,7 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, monthlyCount, yt
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-bold">Plant 2 - Chennai</h2>
+                <h2 className="text-2xl font-bold">Greater Noida (Ecotech 1)</h2>
                 <p className="text-primary-foreground/80">Manufacturing Excellence Portal</p>
               </div>
               <Button 
@@ -405,27 +425,28 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, monthlyCount, yt
           {(() => {
             const rows = copySpread ?? [
               {
-                bp: "Energy Efficient Cooling Process",
-                origin: "Plant 1 - Gurgaon",
+                bp: "Digital Production Control Tower",
+                origin: "Greater Noida (Ecotech 1)",
                 copies: [
-                  { plant: "Plant 2 - Chennai", date: "2024-01-12" },
-                  { plant: "Plant 7 - Bangalore", date: "2024-01-16" },
+                  { plant: "Kanchipuram", date: "2025-02-18" },
+                  { plant: "Shahjahanpur", date: "2025-02-24" },
                 ],
               },
               {
-                bp: "Production Line Optimization",
-                origin: "Plant 3 - Pune",
+                bp: "Assembly Line Cobots",
+                origin: "Ranjangaon",
                 copies: [
-                  { plant: "Plant 5 - Mumbai", date: "2024-01-11" },
+                  { plant: "Greater Noida (Ecotech 1)", date: "2025-04-20" },
+                  { plant: "Rajpura", date: "2025-04-28" },
                 ],
               },
               {
-                bp: "Waste Reduction Initiative",
-                origin: "Plant 5 - Mumbai",
+                bp: "ELG Compliance Monitoring Program",
+                origin: "Ponneri",
                 copies: [
-                  { plant: "Plant 1 - Gurgaon", date: "2024-01-20" },
-                  { plant: "Plant 4 - Kolkata", date: "2024-01-22" },
-                  { plant: "Plant 9 - Ahmedabad", date: "2024-01-25" },
+                  { plant: "Greater Noida (Ecotech 1)", date: "2025-02-18" },
+                  { plant: "Rajpura", date: "2025-03-05" },
+                  { plant: "Ranjangaon", date: "2025-05-26" },
                 ],
               },
             ];
@@ -630,31 +651,31 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, monthlyCount, yt
             <div className="space-y-4">
               {[
                 { 
-                  title: "Energy Efficient Cooling Process", 
-                  plant: "Plant 1 - Gurgaon", 
-                  category: "Cost", 
+                  title: "Digital Production Control Tower", 
+                  plant: "Greater Noida (Ecotech 1)", 
+                  category: "Digitalisation", 
                   benchmarked: "4 hours ago",
-                  savings: "₹1.2L annually",
-                  problemStatement: "High energy consumption from cooling systems was increasing operational costs. Traditional cooling methods were inefficient and consumed excessive electricity during peak production hours.",
-                  solution: "Implemented variable frequency drive (VFD) cooling system with smart temperature sensors and automated controls. Added thermal insulation and optimized airflow patterns."
+                  savings: "₹1.6L monthly",
+                  problemStatement: "Fragmented data across production systems slowed response times to downtime events.",
+                  solution: "Deployed a centralized control tower integrating machine data, quality dashboards, and maintenance alerts for real-time decision making."
                 },
                 { 
-                  title: "Production Line Optimization", 
-                  plant: "Plant 3 - Pune", 
-                  category: "Productivity", 
+                  title: "Assembly Line Cobots", 
+                  plant: "Ranjangaon", 
+                  category: "Automation", 
                   benchmarked: "2 days ago",
-                  savings: "25% throughput increase",
-                  problemStatement: "Production bottlenecks were causing delays and reducing overall efficiency. Workflow was not optimized for current production requirements.",
-                  solution: "Redesigned production line layout with lean manufacturing principles, implemented kanban system, and optimized material flow patterns."
+                  savings: "25% cycle time reduction",
+                  problemStatement: "Manual fastening tasks were causing ergonomic issues and inconsistent torque quality.",
+                  solution: "Implemented collaborative robots with vision guidance to execute fastening and inspection while operators focus on quality verification."
                 },
                 { 
-                  title: "Waste Reduction Initiative", 
-                  plant: "Plant 5 - Mumbai", 
-                  category: "Cost", 
+                  title: "ELG Compliance Monitoring Program", 
+                  plant: "Ponneri", 
+                  category: "ELG", 
                   benchmarked: "3 days ago",
-                  savings: "35% heating cost reduction",
-                  problemStatement: "Significant thermal energy was being wasted from production processes, leading to high energy costs and environmental impact.",
-                  solution: "Installed heat recovery units to capture waste heat from exhaust systems and reuse it for heating processes and facility heating."
+                  savings: "₹0.8L compliance cost reduction",
+                  problemStatement: "Manual compliance tracking risked missed deadlines and reactive responses to regulatory changes.",
+                  solution: "Rolled out an ELG framework with digital trackers, automated alerts, and centralized documentation workflows."
                 }
               ].map((bp, index) => (
                 <div key={index} className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors">

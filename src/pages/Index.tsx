@@ -33,8 +33,8 @@ const Index = () => {
       category: "Cost",
       status: "pending",
       submittedBy: "Amit Singh",
-      plant: "Plant 1 - Gurgaon",
-      submittedDate: "2024-01-12",
+      plant: "Greater Noida (Ecotech 1)",
+      submittedDate: "2025-02-12",
       description: "Optimized cooling system that reduces energy consumption by 30% while maintaining optimal temperature control in production areas.",
       problemStatement: "High energy consumption from cooling systems was increasing operational costs. Traditional cooling methods were inefficient and consumed excessive electricity during peak production hours.",
       solution: "Implemented variable frequency drive (VFD) cooling system with smart temperature sensors and automated controls. Added thermal insulation and optimized airflow patterns.",
@@ -54,8 +54,8 @@ const Index = () => {
       category: "Productivity",
       status: "revision",
       submittedBy: "Vikram Sharma",
-      plant: "Plant 4 - Kolkata",
-      submittedDate: "2024-01-08",
+      plant: "Ranjangaon",
+      submittedDate: "2025-04-08",
       description: "Streamlined production line layout and workflow optimization that increased throughput by 25%.",
       problemStatement: "Production bottlenecks were causing delays and reducing overall efficiency. Workflow was not optimized for current production requirements.",
       solution: "Redesigned production line layout with lean manufacturing principles, implemented kanban system, and optimized material flow patterns.",
@@ -75,8 +75,8 @@ const Index = () => {
       category: "Cost",
       status: "pending",
       submittedBy: "Priya Gupta",
-      plant: "Plant 1 - Gurgaon",
-      submittedDate: "2024-01-18",
+      plant: "Greater Noida (Ecotech 1)",
+      submittedDate: "2025-03-18",
       description: "Implementation of waste heat recovery system that captures and reuses thermal energy from production processes.",
       problemStatement: "Significant thermal energy was being wasted from production processes, leading to high energy costs and environmental impact.",
       solution: "Installed heat recovery units to capture waste heat from exhaust systems and reuse it for heating processes and facility heating.",
@@ -93,58 +93,61 @@ const Index = () => {
   });
 
   // Dynamic updates for submissions and copies
-  const userPlant = "Plant 2 - Chennai";
+  const userPlant = "Greater Noida (Ecotech 1)";
   const [plantMonthlyCount, setPlantMonthlyCount] = useState<number>(8);
   const [plantYtdCount, setPlantYtdCount] = useState<number>(53);
   const [recentSubmissions, setRecentSubmissions] = useState<{ title: string; category: string; date: string; questions?: number; benchmarked?: boolean }[]>([
-    { title: "Automated Quality Inspection System", category: "Quality", date: "2024-01-15", questions: 2, benchmarked: true },
-    { title: "Energy Efficient Cooling Process", category: "Cost", date: "2024-01-12", questions: 0, benchmarked: true },
-    { title: "Safety Protocol for Chemical Handling", category: "Safety", date: "2024-01-10", questions: 1, benchmarked: false },
-    { title: "Production Line Optimization", category: "Productivity", date: "2024-01-08", questions: 3, benchmarked: false },
+    { title: "Automated Quality Inspection System", category: "Quality", date: "2025-01-15", questions: 2, benchmarked: true },
+    { title: "Digital Production Control Tower", category: "Digitalisation", date: "2025-02-12", questions: 1, benchmarked: true },
+    { title: "Safety Protocol for Chemical Handling", category: "Safety", date: "2025-03-10", questions: 1, benchmarked: false },
+    { title: "Production Line Optimization", category: "Productivity", date: "2025-04-08", questions: 3, benchmarked: false },
   ]);
   const [leaderboard, setLeaderboard] = useState<{ plant: string; totalPoints: number; breakdown: { type: "Origin" | "Copier"; points: number; date: string; bpTitle: string }[] }[]>([
     {
-      plant: "Plant 2 - Chennai",
-      totalPoints: 30,
+      plant: "Greater Noida (Ecotech 1)",
+      totalPoints: 36,
       breakdown: [
-        { type: "Origin", points: 10, date: "2024-01-15", bpTitle: "Automated Quality Control" },
-        { type: "Copier", points: 5, date: "2024-01-12", bpTitle: "Energy Efficient Process" },
-        { type: "Origin", points: 10, date: "2024-01-10", bpTitle: "Safety Enhancement" },
-        { type: "Copier", points: 5, date: "2024-01-08", bpTitle: "Production Optimization" },
+        { type: "Origin", points: 10, date: "2025-02-12", bpTitle: "Digital Production Control Tower" },
+        { type: "Copier", points: 5, date: "2025-02-20", bpTitle: "Assembly Line Cobots" },
+        { type: "Origin", points: 10, date: "2025-01-15", bpTitle: "Automated Quality Inspection" },
+        { type: "Copier", points: 5, date: "2025-03-10", bpTitle: "Safety Protocol for Chemical Handling" },
       ],
     },
     {
-      plant: "Plant 1 - Gurgaon",
-      totalPoints: 30,
+      plant: "Kanchipuram",
+      totalPoints: 28,
       breakdown: [
-        { type: "Origin", points: 10, date: "2024-01-14", bpTitle: "Cost Reduction Initiative" },
-        { type: "Copier", points: 5, date: "2024-01-11", bpTitle: "Quality Improvement" },
-        { type: "Origin", points: 10, date: "2024-01-09", bpTitle: "Waste Management" },
-        { type: "Copier", points: 5, date: "2024-01-07", bpTitle: "Safety Protocol" },
+        { type: "Origin", points: 10, date: "2025-05-20", bpTitle: "IoT Sensor Implementation" },
+        { type: "Copier", points: 5, date: "2025-04-12", bpTitle: "Digital Production Control Tower" },
+        { type: "Copier", points: 5, date: "2025-05-05", bpTitle: "Assembly Line Cobots" },
+        { type: "Origin", points: 8, date: "2025-03-25", bpTitle: "Lean Packaging Redesign" },
       ],
     },
   ]);
   const [copySpread, setCopySpread] = useState<{ bp: string; origin: string; copies: { plant: string; date: string }[] }[]>([
     {
-      bp: "Energy Efficient Cooling Process",
-      origin: "Plant 1 - Gurgaon",
+      bp: "Digital Production Control Tower",
+      origin: "Greater Noida (Ecotech 1)",
       copies: [
-        { plant: "Plant 2 - Chennai", date: "2024-01-12" },
-        { plant: "Plant 7 - Bangalore", date: "2024-01-16" },
+        { plant: "Kanchipuram", date: "2025-02-18" },
+        { plant: "Shahjahanpur", date: "2025-02-24" },
       ],
     },
     {
-      bp: "Production Line Optimization",
-      origin: "Plant 3 - Pune",
-      copies: [{ plant: "Plant 5 - Mumbai", date: "2024-01-11" }],
+      bp: "Assembly Line Cobots",
+      origin: "Ranjangaon",
+      copies: [
+        { plant: "Greater Noida (Ecotech 1)", date: "2025-04-20" },
+        { plant: "Rajpura", date: "2025-04-28" },
+      ],
     },
     {
-      bp: "Waste Reduction Initiative",
-      origin: "Plant 5 - Mumbai",
+      bp: "ELG Compliance Monitoring Program",
+      origin: "Ponneri",
       copies: [
-        { plant: "Plant 1 - Gurgaon", date: "2024-01-20" },
-        { plant: "Plant 4 - Kolkata", date: "2024-01-22" },
-        { plant: "Plant 9 - Ahmedabad", date: "2024-01-25" },
+        { plant: "Greater Noida (Ecotech 1)", date: "2025-02-18" },
+        { plant: "Rajpura", date: "2025-03-05" },
+        { plant: "Ranjangaon", date: "2025-05-26" },
       ],
     },
   ]);

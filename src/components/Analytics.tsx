@@ -1,7 +1,18 @@
+import { useMemo, useState, type KeyboardEvent } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BarChart3, TrendingUp, Factory, IndianRupee } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import {
   ChartContainer,
   ChartTooltip,
@@ -17,22 +28,24 @@ interface AnalyticsProps {
 }
 
 const plantStats = [
-  { name: "Plant 1 - Gurgaon", submitted: 23 },
-  { name: "Plant 2 - Chennai", submitted: 18 },
-  { name: "Plant 3 - Pune", submitted: 31 },
-  { name: "Plant 4 - Kolkata", submitted: 15 },
-  { name: "Plant 5 - Mumbai", submitted: 22 },
-  { name: "Plant 6 - Delhi", submitted: 19 },
-  { name: "Plant 7 - Bangalore", submitted: 25 },
-  { name: "Plant 8 - Hyderabad", submitted: 17 },
-  { name: "Plant 9 - Ahmedabad", submitted: 20 },
-  { name: "Plant 10 - Jaipur", submitted: 16 },
-  { name: "Plant 11 - Lucknow", submitted: 21 },
-  { name: "Plant 12 - Indore", submitted: 18 },
-  { name: "Plant 13 - Bhopal", submitted: 14 },
-  { name: "Plant 14 - Patna", submitted: 19 },
-  { name: "Plant 15 - Bhubaneswar", submitted: 17 },
+  { name: "Greater Noida (Ecotech 1)", submitted: 26 },
+  { name: "Kanchipuram", submitted: 21 },
+  { name: "Rajpura", submitted: 24 },
+  { name: "Shahjahanpur", submitted: 19 },
+  { name: "Supa", submitted: 17 },
+  { name: "Ranjangaon", submitted: 22 },
+  { name: "Ponneri", submitted: 18 },
 ];
+
+const plantShortLabel: Record<string, string> = {
+  "Greater Noida (Ecotech 1)": "Greater Noida",
+  "Kanchipuram": "Kanchipuram",
+  "Rajpura": "Rajpura",
+  "Shahjahanpur": "Shahjahanpur",
+  "Supa": "Supa",
+  "Ranjangaon": "Ranjangaon",
+  "Ponneri": "Ponneri",
+};
 
 const total = plantStats.reduce(
   (acc, p) => ({
@@ -42,7 +55,7 @@ const total = plantStats.reduce(
 );
 
 const Analytics = ({ userRole, onBack }: AnalyticsProps) => {
-  const plantsToShow = userRole === "plant" ? plantStats.filter(p => p.name === "Plant 1 - Gurgaon") : plantStats;
+const plantsToShow = userRole === "plant" ? plantStats.filter(p => p.name === "Greater Noida (Ecotech 1)") : plantStats;
 
   // Company-wide monthly data (demo). In real app, fetch/compute from API.
   const monthlyData = [
@@ -66,7 +79,7 @@ const Analytics = ({ userRole, onBack }: AnalyticsProps) => {
         <div>
           <h1 className="text-3xl font-bold flex items-center"><BarChart3 className="h-6 w-6 mr-2 text-primary" /> Analytics</h1>
           <p className="text-muted-foreground mt-1">
-            {userRole === "plant" ? "Plant 1 - Gurgaon performance" : "Company-wide metrics and per-plant breakdown"}
+            {userRole === "plant" ? "Greater Noida (Ecotech 1) performance" : "Company-wide metrics and per-plant breakdown"}
           </p>
         </div>
         <Button variant="outline" onClick={onBack}>Back</Button>
@@ -76,7 +89,7 @@ const Analytics = ({ userRole, onBack }: AnalyticsProps) => {
       {userRole === "hq" && (
         <Card className="shadow-card">
           <CardHeader>
-            <CardTitle className="flex items-center"><TrendingUp className="h-5 w-5 text-primary mr-2" /> Company Overview</CardTitle>
+            <CardTitle className="flex items-center"><TrendingUp className="h-5 w-5 text-primary mr-2" /> Component Division Overview</CardTitle>
           </CardHeader>
           <CardContent className="grid grid-cols-1 md:grid-cols-1 gap-4">
             <MetricCard label="Submitted" value={total.submitted} />
@@ -118,21 +131,13 @@ const Analytics = ({ userRole, onBack }: AnalyticsProps) => {
           {(() => {
             // Plant-wise YTD savings (in ₹ lakhs) - demo values for all 15 plants
             const plantSavings = [
-              { plant: "Plant 1 - Gurgaon", savings: 112 },
-              { plant: "Plant 2 - Chennai", savings: 205 },
-              { plant: "Plant 3 - Pune", savings: 72 },
-              { plant: "Plant 4 - Kolkata", savings: 48 },
-              { plant: "Plant 5 - Mumbai", savings: 89 },
-              { plant: "Plant 6 - Delhi", savings: 156 },
-              { plant: "Plant 7 - Bangalore", savings: 134 },
-              { plant: "Plant 8 - Hyderabad", savings: 67 },
-              { plant: "Plant 9 - Ahmedabad", savings: 98 },
-              { plant: "Plant 10 - Jaipur", savings: 45 },
-              { plant: "Plant 11 - Lucknow", savings: 78 },
-              { plant: "Plant 12 - Indore", savings: 123 },
-              { plant: "Plant 13 - Bhopal", savings: 56 },
-              { plant: "Plant 14 - Patna", savings: 87 },
-              { plant: "Plant 15 - Bhubaneswar", savings: 92 },
+  { plant: "Greater Noida (Ecotech 1)", savings: 196 },
+  { plant: "Kanchipuram", savings: 148 },
+  { plant: "Rajpura", savings: 132 },
+  { plant: "Shahjahanpur", savings: 104 },
+  { plant: "Supa", savings: 96 },
+  { plant: "Ranjangaon", savings: 118 },
+  { plant: "Ponneri", savings: 107 },
             ];
             const totalYtd = plantSavings.reduce((a, b) => a + b.savings, 0);
             return (
@@ -146,7 +151,7 @@ const Analytics = ({ userRole, onBack }: AnalyticsProps) => {
                   className="h-[300px] w-full"
                 >
                   <BarChart data={plantSavings.map(p => ({ 
-                    plant: p.plant.replace("Plant ", "P").replace(" - Gurgaon", "").replace(" - Chennai", "").replace(" - Pune", "").replace(" - Kolkata", "").replace(" - Mumbai", "").replace(" - Delhi", "").replace(" - Bangalore", "").replace(" - Hyderabad", "").replace(" - Ahmedabad", "").replace(" - Jaipur", "").replace(" - Lucknow", "").replace(" - Indore", "").replace(" - Bhopal", "").replace(" - Patna", "").replace(" - Bhubaneswar", ""),
+                    plant: plantShortLabel[p.plant] ?? p.plant,
                     fullName: p.plant,
                     savings: p.savings 
                   }))}>
@@ -235,7 +240,7 @@ const MetricBadge = ({ label, value, tone }: { label: string; value: number; ton
 export default Analytics;
 
 // ---------------- Cost Analysis (Savings) ----------------
-type Division = "RAC" | "Component";
+type Division = "Component";
 
 type PlantCost = {
   name: string;
@@ -246,21 +251,128 @@ type PlantCost = {
 };
 
 const plantCostData: PlantCost[] = [
-  { name: "Plant 1 - Gurgaon", division: "RAC", lastMonth: 12.5, currentMonth: 14.0, ytdTillLastMonth: 78.0 },
-  { name: "Plant 2 - Chennai", division: "Component", lastMonth: 9.0, currentMonth: 9.8, ytdTillLastMonth: 65.5 },
-  { name: "Plant 3 - Pune", division: "RAC", lastMonth: 15.2, currentMonth: 16.0, ytdTillLastMonth: 88.7 },
-  { name: "Plant 4 - Kolkata", division: "Component", lastMonth: 7.3, currentMonth: 8.1, ytdTillLastMonth: 54.2 },
-  { name: "Plant 5 - Mumbai", division: "RAC", lastMonth: 11.8, currentMonth: 12.5, ytdTillLastMonth: 72.3 },
-  { name: "Plant 6 - Delhi", division: "Component", lastMonth: 13.2, currentMonth: 14.1, ytdTillLastMonth: 81.5 },
-  { name: "Plant 7 - Bangalore", division: "RAC", lastMonth: 10.5, currentMonth: 11.2, ytdTillLastMonth: 68.9 },
-  { name: "Plant 8 - Hyderabad", division: "Component", lastMonth: 8.7, currentMonth: 9.3, ytdTillLastMonth: 56.7 },
-  { name: "Plant 9 - Ahmedabad", division: "RAC", lastMonth: 14.1, currentMonth: 15.0, ytdTillLastMonth: 85.2 },
-  { name: "Plant 10 - Jaipur", division: "Component", lastMonth: 6.8, currentMonth: 7.4, ytdTillLastMonth: 48.9 },
-  { name: "Plant 11 - Lucknow", division: "RAC", lastMonth: 9.9, currentMonth: 10.6, ytdTillLastMonth: 63.4 },
-  { name: "Plant 12 - Indore", division: "Component", lastMonth: 12.3, currentMonth: 13.1, ytdTillLastMonth: 76.8 },
-  { name: "Plant 13 - Bhopal", division: "RAC", lastMonth: 7.6, currentMonth: 8.2, ytdTillLastMonth: 52.1 },
-  { name: "Plant 14 - Patna", division: "Component", lastMonth: 10.4, currentMonth: 11.1, ytdTillLastMonth: 67.3 },
-  { name: "Plant 15 - Bhubaneswar", division: "RAC", lastMonth: 11.1, currentMonth: 11.8, ytdTillLastMonth: 69.7 },
+  { name: "Greater Noida (Ecotech 1)", division: "Component", lastMonth: 14.5, currentMonth: 15.8, ytdTillLastMonth: 92.3 },
+  { name: "Kanchipuram", division: "Component", lastMonth: 10.2, currentMonth: 11.0, ytdTillLastMonth: 68.7 },
+  { name: "Rajpura", division: "Component", lastMonth: 12.8, currentMonth: 13.6, ytdTillLastMonth: 81.4 },
+  { name: "Shahjahanpur", division: "Component", lastMonth: 8.4, currentMonth: 9.1, ytdTillLastMonth: 56.2 },
+  { name: "Supa", division: "Component", lastMonth: 9.9, currentMonth: 10.5, ytdTillLastMonth: 60.8 },
+  { name: "Ranjangaon", division: "Component", lastMonth: 11.6, currentMonth: 12.4, ytdTillLastMonth: 74.1 },
+  { name: "Ponneri", division: "Component", lastMonth: 10.8, currentMonth: 11.6, ytdTillLastMonth: 69.5 },
+];
+
+type PlantMonthlyBreakdown = {
+  month: string;
+  totalSavings: number;
+  practices: { title: string; savings: number; benchmarked?: boolean }[];
+};
+
+const currentYear = new Date().getFullYear();
+const currentMonthIndex = new Date().getMonth();
+const monthsOfYear = Array.from(
+  { length: currentMonthIndex + 1 },
+  (_, index) => `${currentYear}-${String(index + 1).padStart(2, "0")}`
+);
+
+const plantMonthlySavings: Record<string, PlantMonthlyBreakdown[]> = {
+  "Greater Noida (Ecotech 1)": [
+    {
+      month: `${currentYear}-01`,
+      totalSavings: 14.0,
+      practices: [
+        { title: "Energy Efficient Cooling Process", savings: 5.2, benchmarked: true },
+        { title: "Waste Reduction Initiative", savings: 3.8, benchmarked: true },
+        { title: "Automated Quality Inspection System", savings: 5.0, benchmarked: false },
+      ],
+    },
+    {
+      month: `${currentYear}-02`,
+      totalSavings: 12.5,
+      practices: [
+        { title: "Heat Exchanger Optimization", savings: 4.5 },
+        { title: "Packaging Automation Upgrade", savings: 3.0 },
+        { title: "Compressed Air Leak Fix Program", savings: 5.0, benchmarked: true },
+      ],
+    },
+    {
+      month: `${currentYear}-03`,
+      totalSavings: 11.8,
+      practices: [
+        { title: "Paint Booth Recirculation", savings: 4.8 },
+        { title: "Digital Maintenance Alerts", savings: 3.2 },
+        { title: "Lean Warehouse Layout", savings: 3.8 },
+      ],
+    },
+  ],
+  "Kanchipuram": [
+    {
+      month: `${currentYear}-01`,
+      totalSavings: 9.8,
+      practices: [
+        { title: "Digital Production Control Tower", savings: 4.1, benchmarked: true },
+        { title: "Kaizen Idea Harvesting", savings: 2.7 },
+        { title: "Waste Segregation & Recycling", savings: 3.0 },
+      ],
+    },
+    {
+      month: `${currentYear}-02`,
+      totalSavings: 9.0,
+      practices: [
+        { title: "Boiler Condensate Recovery", savings: 3.5 },
+        { title: "Inventory Accuracy Drive", savings: 2.4 },
+        { title: "Assembly Line Ergonomics", savings: 3.1 },
+      ],
+    },
+  ],
+  "Rajpura": [
+    {
+      month: `${currentYear}-01`,
+      totalSavings: 16.0,
+      practices: [
+        { title: "Assembly Line Cobots", savings: 6.3, benchmarked: true },
+        { title: "Predictive Maintenance Analytics", savings: 4.9 },
+        { title: "Green Packaging Initiative", savings: 4.8 },
+      ],
+    },
+    {
+      month: `${currentYear}-02`,
+      totalSavings: 15.2,
+      practices: [
+        { title: "Compressed Air Optimization", savings: 5.2 },
+        { title: "ELG Compliance Monitoring", savings: 4.6, benchmarked: true },
+        { title: "Reflow Oven Efficiency", savings: 5.4 },
+      ],
+    },
+  ],
+};
+
+const defaultMonthlyBreakdown: PlantMonthlyBreakdown[] = [
+  {
+    month: `${currentYear}-01`,
+    totalSavings: 9.2,
+    practices: [
+      { title: "Continuous Improvement Blitz", savings: 3.0 },
+      { title: "Utility Load Balancing", savings: 2.4 },
+      { title: "Training Effectiveness Program", savings: 3.8 },
+    ],
+  },
+  {
+    month: `${currentYear}-02`,
+    totalSavings: 8.6,
+    practices: [
+      { title: "Logistics Route Optimization", savings: 3.1 },
+      { title: "Smart Lighting Retrofit", savings: 2.0 },
+      { title: "Tooling Life Extension", savings: 3.5 },
+    ],
+  },
+  {
+    month: `${currentYear}-03`,
+    totalSavings: 9.4,
+    practices: [
+      { title: "Energy Dashboard Upgrade", savings: 4.2, benchmarked: true },
+      { title: "Supplier Collaboration Program", savings: 2.1 },
+      { title: "Warehouse Slotting Optimization", savings: 3.1 },
+    ],
+  },
 ];
 
 const formatLakh = (n: number) => `₹${n.toFixed(1)}L`;
@@ -268,21 +380,17 @@ const pctChange = (current: number, last: number) => (last === 0 ? 0 : ((current
 
 const CostAnalysis = ({ userRole }: { userRole: "plant" | "hq" }) => {
   // Filter by role (plant users see only their plant's savings)
-  const visible = userRole === "plant" ? plantCostData.filter(p => p.name === "Plant 1 - Gurgaon") : plantCostData;
+  const visible = userRole === "plant" ? plantCostData.filter(p => p.name === "Greater Noida (Ecotech 1)") : plantCostData;
 
-  // Aggregate division and company totals
-  const byDivision = visible.reduce(
+  // Aggregate component division totals
+  const componentTotals = visible.reduce(
     (acc, p) => {
-      const key = p.division;
-      acc[key].lastMonth += p.lastMonth;
-      acc[key].currentMonth += p.currentMonth;
-      acc[key].ytdTillLastMonth += p.ytdTillLastMonth;
+      acc.lastMonth += p.lastMonth;
+      acc.currentMonth += p.currentMonth;
+      acc.ytdTillLastMonth += p.ytdTillLastMonth;
       return acc;
     },
-    {
-      RAC: { lastMonth: 0, currentMonth: 0, ytdTillLastMonth: 0 },
-      Component: { lastMonth: 0, currentMonth: 0, ytdTillLastMonth: 0 },
-    } as Record<Division, { lastMonth: number; currentMonth: number; ytdTillLastMonth: number }>
+    { lastMonth: 0, currentMonth: 0, ytdTillLastMonth: 0 }
   );
 
   const companyTotals = visible.reduce(
@@ -294,6 +402,44 @@ const CostAnalysis = ({ userRole }: { userRole: "plant" | "hq" }) => {
     },
     { lastMonth: 0, currentMonth: 0, ytdTillLastMonth: 0 }
   );
+
+  const [plantDetailOpen, setPlantDetailOpen] = useState(false);
+  const [selectedPlant, setSelectedPlant] = useState<PlantCost | null>(null);
+
+  const selectedPlantBreakdown = useMemo<PlantMonthlyBreakdown[]>(() => {
+    const fillMissingMonths = (entries: PlantMonthlyBreakdown[]): PlantMonthlyBreakdown[] => {
+      const monthMap = new Map(entries.map((entry) => [entry.month, entry]));
+      return monthsOfYear.map((month) => {
+        const match = monthMap.get(month);
+        return match
+          ? match
+          : {
+              month,
+              totalSavings: 0,
+              practices: [],
+            };
+      });
+    };
+
+    if (!selectedPlant) {
+      return fillMissingMonths(defaultMonthlyBreakdown);
+    }
+
+    const plantEntries = plantMonthlySavings[selectedPlant.name] ?? defaultMonthlyBreakdown;
+    return fillMissingMonths(plantEntries);
+  }, [selectedPlant]);
+
+  const handlePlantRowClick = (plant: PlantCost) => {
+    setSelectedPlant(plant);
+    setPlantDetailOpen(true);
+  };
+
+  const handlePlantRowKeyDown = (event: KeyboardEvent<HTMLTableRowElement>, plant: PlantCost) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      handlePlantRowClick(plant);
+    }
+  };
 
   return (
     <Card className="shadow-card">
@@ -312,8 +458,7 @@ const CostAnalysis = ({ userRole }: { userRole: "plant" | "hq" }) => {
           >
             <BarChart
               data={[
-                { division: "RAC", last: byDivision.RAC.lastMonth, current: byDivision.RAC.currentMonth, ytd: byDivision.RAC.ytdTillLastMonth },
-                { division: "Component", last: byDivision.Component.lastMonth, current: byDivision.Component.currentMonth, ytd: byDivision.Component.ytdTillLastMonth },
+                { division: "Component", last: componentTotals.lastMonth, current: componentTotals.currentMonth, ytd: componentTotals.ytdTillLastMonth },
                 { division: "Total", last: companyTotals.lastMonth, current: companyTotals.currentMonth, ytd: companyTotals.ytdTillLastMonth },
               ]}
             >
@@ -343,16 +488,10 @@ const CostAnalysis = ({ userRole }: { userRole: "plant" | "hq" }) => {
               </thead>
               <tbody className="divide-y">
                 <tr className="hover:bg-accent/50">
-                  <td className="py-2 font-medium">RAC</td>
-                  <td className="py-2">{formatLakh(byDivision.RAC.lastMonth)}</td>
-                  <td className="py-2">{formatLakh(byDivision.RAC.currentMonth)}</td>
-                  <td className="py-2">{formatLakh(byDivision.RAC.ytdTillLastMonth)}</td>
-                </tr>
-                <tr className="hover:bg-accent/50">
                   <td className="py-2 font-medium">Component</td>
-                  <td className="py-2">{formatLakh(byDivision.Component.lastMonth)}</td>
-                  <td className="py-2">{formatLakh(byDivision.Component.currentMonth)}</td>
-                  <td className="py-2">{formatLakh(byDivision.Component.ytdTillLastMonth)}</td>
+                  <td className="py-2">{formatLakh(componentTotals.lastMonth)}</td>
+                  <td className="py-2">{formatLakh(componentTotals.currentMonth)}</td>
+                  <td className="py-2">{formatLakh(componentTotals.ytdTillLastMonth)}</td>
                 </tr>
                 <tr className="hover:bg-accent/50">
                   <td className="py-2 font-medium">Total</td>
@@ -372,7 +511,7 @@ const CostAnalysis = ({ userRole }: { userRole: "plant" | "hq" }) => {
             current: { label: "Current Month Savings", color: "hsl(var(--success))" },
           }}
         >
-          <BarChart data={visible.map(p => ({ plant: p.name.replace("Plant ", "P"), last: p.lastMonth, current: p.currentMonth }))}>
+          <BarChart data={visible.map(p => ({ plant: plantShortLabel[p.name] ?? p.name, last: p.lastMonth, current: p.currentMonth }))}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="plant" />
             <YAxis />
@@ -398,29 +537,109 @@ const CostAnalysis = ({ userRole }: { userRole: "plant" | "hq" }) => {
             </thead>
             <tbody className="divide-y">
               {visible.map((p) => (
-                <tr key={p.name} className="hover:bg-accent/50">
-                  <td className="py-2 font-medium">{p.name}</td>
-                  {userRole === "hq" && <td className="py-2">{p.division}</td>}
-                  <td className="py-2">{formatLakh(p.lastMonth)}</td>
-                  <td className="py-2">{formatLakh(p.currentMonth)}</td>
-                  <td className="py-2">{formatLakh(p.ytdTillLastMonth)}</td>
-                  <td className="py-2">
-                    <Badge
-                      variant="outline"
-                      className={
-                        pctChange(p.currentMonth, p.lastMonth) >= 0
-                          ? "bg-success/10 text-success border-success"
-                          : "bg-destructive/10 text-destructive border-destructive"
-                      }
-                    >
-                      {pctChange(p.currentMonth, p.lastMonth).toFixed(1)}%
-                    </Badge>
-                  </td>
-                </tr>
+              <tr
+                key={p.name}
+                className="hover:bg-accent/50 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary"
+                role="button"
+                tabIndex={0}
+                onClick={() => handlePlantRowClick(p)}
+                onKeyDown={(event) => handlePlantRowKeyDown(event, p)}
+              >
+                <td className="py-2 font-medium">{p.name}</td>
+                {userRole === "hq" && <td className="py-2">{p.division}</td>}
+                <td className="py-2">{formatLakh(p.lastMonth)}</td>
+                <td className="py-2">{formatLakh(p.currentMonth)}</td>
+                <td className="py-2">{formatLakh(p.ytdTillLastMonth)}</td>
+                <td className="py-2">
+                  <Badge
+                    variant="outline"
+                    className={
+                      pctChange(p.currentMonth, p.lastMonth) >= 0
+                        ? "bg-success/10 text-success border-success"
+                        : "bg-destructive/10 text-destructive border-destructive"
+                    }
+                  >
+                    {pctChange(p.currentMonth, p.lastMonth).toFixed(1)}%
+                  </Badge>
+                </td>
+              </tr>
               ))}
             </tbody>
           </table>
         </div>
+
+        <AlertDialog open={plantDetailOpen} onOpenChange={setPlantDetailOpen}>
+          <AlertDialogContent className="max-w-3xl">
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                {selectedPlant ? `${selectedPlant.name} – Monthly Savings & BPs` : "Plant Savings Details"}
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                Breakdown of best practices uploaded each month and their contribution to savings (₹L).
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left text-muted-foreground">
+                    <th className="py-2 pr-4">Month</th>
+                    <th className="py-2 pr-4">Total Savings (₹L)</th>
+                    <th className="py-2 pr-4">Best Practices</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  {selectedPlantBreakdown.map((entry) => (
+                    <tr key={entry.month}>
+                      <td className="py-2 pr-4 font-medium">
+                        {new Date(entry.month + "-01").toLocaleDateString("en-IN", {
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </td>
+                      <td className="py-2 pr-4">{entry.totalSavings.toFixed(1)}L</td>
+                      <td className="py-2 pr-4">
+                        {entry.practices.length > 0 ? (
+                          <div className="space-y-1">
+                            {entry.practices.map((practice, idx) => (
+                              <div key={`${entry.month}-${idx}`} className="flex items-center justify-between">
+                                <span>{practice.title}</span>
+                                <Badge
+                                  variant="outline"
+                                  className={
+                                    practice.benchmarked
+                                      ? "bg-primary/10 text-primary border-primary"
+                                      : "bg-muted/50 text-muted-foreground"
+                                  }
+                                >
+                                  ₹{practice.savings.toFixed(1)}L{practice.benchmarked ? " • Benchmarked" : ""}
+                                </Badge>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">No best practices recorded.</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                  {selectedPlantBreakdown.length === 0 && (
+                    <tr>
+                      <td className="py-4 text-muted-foreground" colSpan={3}>
+                        No savings data available for this plant.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Close</AlertDialogCancel>
+              <AlertDialogAction onClick={() => setPlantDetailOpen(false)}>
+                Done
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </CardContent>
     </Card>
   );

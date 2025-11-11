@@ -2,6 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useMemo, useState } from "react";
 import { 
   Search,
   Filter,
@@ -40,131 +42,143 @@ const PracticeList = ({ userRole, onViewPractice, onBack, isBenchmarked, onToggl
   const allPractices: Practice[] = [
     {
       id: "BP-001",
-      title: "Automated Quality Inspection System Implementation",
-      category: "Quality",
-      submittedBy: "Rajesh Kumar",
-      plant: "Plant 2 - Chennai",
-      submittedDate: "2024-01-15",
-      description: "Implementation of an automated quality inspection system using computer vision to detect defects in manufactured components, reducing manual inspection time and improving accuracy.",
-      problemStatement: "Manual quality inspection was time-consuming, prone to human error, and created bottlenecks in the production line. Inspectors were spending 3-4 hours daily on repetitive visual checks.",
-      solution: "Deployed AI-powered computer vision system with high-resolution cameras at key inspection points. The system uses machine learning algorithms trained on defect patterns to automatically identify and classify defects.",
+      title: "Smart Cart Movement & Management through AMR",
+      category: "Automation",
+      submittedBy: "Team Production",
+      plant: "Greater Noida (Ecotech 1)",
+      submittedDate: "2025-01-15",
+      description: "Implementation of automated cart movement and management on the shop floor through AMR (Autonomous Mobile Robots), covering the Press Shop to Paint Shop to FG Area.",
+      problemStatement: "Manual cart movement required multiple manpower for BOP transfer and resulted in inefficiency and human fatigue. Monitoring AMR efficiency was also manual.",
+      solution: "Automated the cart movement and BOP feeding process using AMR, eliminating manual intervention. Added digitalization for real-time AMR efficiency monitoring.",
       benefits: [
-        "95% reduction in inspection time",
-        "99.2% accuracy in defect detection",
-        "Eliminated production bottlenecks",
-        "Freed up 3 inspectors for other quality activities"
+        "Improved internal logistics efficiency",
+        "Reduced manpower requirement",
+        "Enhanced safety and productivity",
+        "Real-time digital tracking of AMR operations"
       ],
-      metrics: "Cost savings: ₹2.5L annually, Time saved: 20 hours/week, Defect detection improved by 15%",
-      implementation: "Project completed in 6 weeks with IT team collaboration. Total investment: ₹8L with 4-month ROI.",
-      questions: 2
+      metrics: "Manpower saved: 5 operators; Cost saving: ₹3.2L annually; Process efficiency improved by ~20%",
+      implementation: "Completed in 8 weeks with production and automation teams. Investment: ₹10L. ROI achieved in 6 months.",
+      questions: 0
     },
     {
       id: "BP-002",
-      title: "Energy Efficient Cooling Process",
-      category: "Cost",
-      submittedBy: "Amit Singh",
-      plant: "Plant 1 - Gurgaon",
-      submittedDate: "2024-01-12",
-      description: "Optimized cooling system that reduces energy consumption by 30% while maintaining optimal temperature control in production areas.",
-      problemStatement: "High energy consumption from cooling systems was increasing operational costs. Traditional cooling methods were inefficient and consumed excessive electricity during peak production hours.",
-      solution: "Implemented variable frequency drive (VFD) cooling system with smart temperature sensors and automated controls. Added thermal insulation and optimized airflow patterns.",
+      title: "Empty Cart Feeding System (Manual → Auto)",
+      category: "Productivity",
+      submittedBy: "Team Production",
+      plant: "Greater Noida (Ecotech 1)",
+      submittedDate: "2025-01-15",
+      description: "Development of an automated empty cart feeding system with pneumatic locking to prevent assembly line stoppages caused by unavailability of empty carts.",
+      problemStatement: "Assembly line stoppages occurred intermittently due to unavailability of empty carts at the assembly point, causing manpower idle time and production loss.",
+      solution: "Implemented an auto empty cart feeding system with pneumatic cylinders for automatic locking/unlocking and added part-wise tracks to streamline empty cart return flow.",
       benefits: [
-        "30% reduction in energy consumption",
-        "₹1.2L annual cost savings",
-        "Improved temperature consistency",
-        "Reduced maintenance requirements"
+        "Eliminated line stoppages due to cart unavailability",
+        "Reduced idle time significantly",
+        "Improved line productivity and manpower utilization"
       ],
-      metrics: "Energy savings: 30%, Cost reduction: ₹1.2L annually, Temperature variance reduced by 40%",
-      implementation: "Implementation took 4 weeks with electrical team. Investment: ₹3L with 8-month payback period.",
+      metrics: "Idle time reduced to zero; Line efficiency improved by 18%; Cost saving: ₹2L annually",
+      implementation: "Implemented in 6 weeks by maintenance and assembly team. Investment: ₹7L. ROI within 5 months.",
       questions: 0
     },
     {
       id: "BP-003",
-      title: "Safety Protocol for Chemical Handling",
-      category: "Safety",
-      submittedBy: "Sneha Patel",
-      plant: "Plant 3 - Pune",
-      submittedDate: "2024-01-10",
-      description: "Comprehensive safety protocols for handling hazardous chemicals with automated monitoring and emergency response procedures.",
-      problemStatement: "Chemical handling incidents were increasing due to lack of standardized procedures and inadequate safety monitoring systems.",
-      solution: "Developed comprehensive safety protocols with automated monitoring systems, emergency response procedures, and mandatory training programs for all chemical handlers.",
+      title: "Smart Inbound Logistics through AGV",
+      category: "Automation",
+      submittedBy: "Team Production",
+      plant: "Greater Noida (Ecotech 1)",
+      submittedDate: "2025-01-15",
+      description: "Smart inbound logistics improvement using AGV (Automated Guided Vehicles) for bin movement from Molding to the WIP area.",
+      problemStatement: "Manual bin movement consumed time and manpower, causing congestion and handling delays between Molding and WIP.",
+      solution: "Introduced AGVs for autonomous bin movement and optimized shop-floor layout for AGV routes, removing the need for manual handling.",
       benefits: [
-        "Zero chemical incidents in 6 months",
-        "100% compliance with safety standards",
-        "Reduced insurance premiums",
-        "Improved worker confidence"
+        "Improved internal logistics flow",
+        "Reduced manpower usage",
+        "Enhanced safety and reliability"
       ],
-      metrics: "Incident rate: 0%, Compliance: 100%, Training completion: 100%, Insurance savings: ₹50K annually",
-      implementation: "Rolled out over 3 months with safety team. Investment: ₹2L including training and equipment.",
-      questions: 1
-    },
-    {
-      id: "BP-004",
-      title: "Production Line Optimization",
-      category: "Productivity",
-      submittedBy: "Vikram Sharma",
-      plant: "Plant 4 - Kolkata",
-      submittedDate: "2024-01-08",
-      description: "Streamlined production line layout and workflow optimization that increased throughput by 25%.",
-      problemStatement: "Production bottlenecks were causing delays and reducing overall efficiency. Workflow was not optimized for current production requirements.",
-      solution: "Redesigned production line layout with lean manufacturing principles, implemented kanban system, and optimized material flow patterns.",
-      benefits: [
-        "25% increase in throughput",
-        "Reduced material handling time",
-        "Improved worker efficiency",
-        "Better space utilization"
-      ],
-      metrics: "Throughput increase: 25%, Material handling time reduced by 40%, Space utilization improved by 30%",
-      implementation: "Implementation ongoing - Phase 1 completed in 8 weeks. Total investment: ₹5L with expected 12-month ROI.",
-      questions: 3
-    },
-    {
-      id: "BP-005",
-      title: "IoT Sensor Implementation for Predictive Maintenance",
-      category: "Productivity",
-      submittedBy: "Deepak Kumar",
-      plant: "Plant 3 - Pune",
-      submittedDate: "2024-01-20",
-      description: "Deployment of IoT sensors for real-time equipment monitoring and predictive maintenance scheduling.",
-      problemStatement: "Unexpected equipment failures were causing production downtime and increasing maintenance costs. Traditional reactive maintenance was inefficient.",
-      solution: "Installed IoT sensors on critical equipment to monitor vibration, temperature, and performance metrics. Implemented predictive analytics to schedule maintenance before failures occur.",
-      benefits: [
-        "40% reduction in unplanned downtime",
-        "Predictive maintenance scheduling",
-        "Extended equipment lifespan",
-        "Reduced maintenance costs"
-      ],
-      metrics: "Downtime reduction: 40%, Maintenance cost savings: ₹3L annually, Equipment lifespan extended by 20%",
-      implementation: "Phase 1 completed in 6 weeks. Investment: ₹4L with 10-month ROI. Full rollout planned over 6 months.",
+      metrics: "Manpower saved: 2 operators; Handling time reduced by 25%; Annual savings: ₹1.8L",
+      implementation: "Completed in 5 weeks with automation support. Investment: ₹6L. ROI achieved within 6 months.",
       questions: 0
     },
     {
-      id: "BP-006",
-      title: "Waste Reduction Initiative",
-      category: "Cost",
-      status: "pending",
-      submittedBy: "Priya Gupta",
-      plant: "Plant 1 - Gurgaon",
-      submittedDate: "2024-01-18",
-      description: "Implementation of waste heat recovery system that captures and reuses thermal energy from production processes.",
-      problemStatement: "Significant thermal energy was being wasted from production processes, leading to high energy costs and environmental impact.",
-      solution: "Installed heat recovery units to capture waste heat from exhaust systems and reuse it for heating processes and facility heating.",
+      id: "BP-004",
+      title: "Injection Machines Robotic Operation",
+      category: "Automation",
+      submittedBy: "Team Injection Molding",
+      plant: "Greater Noida (Ecotech 1)",
+      submittedDate: "2025-01-15",
+      description: "Automation of molded part ejection using robotics to reduce cycle time, eliminate manual handling, and enhance safety.",
+      problemStatement: "Manual ejection of molded parts required skilled manpower, led to inconsistent cycle times, and created potential safety risks.",
+      solution: "Installed robotics for fully automated molded part ejection, reducing human touch points and delivering consistent cycle time and output.",
       benefits: [
-        "35% reduction in heating costs",
-        "Reduced carbon footprint",
-        "Improved energy efficiency",
-        "Lower operational costs"
+        "100% reduction in manual ejection",
+        "Consistent quality and cycle time",
+        "Reduced manpower and improved safety",
+        "Increased productivity by 20%"
       ],
-      metrics: "Heating cost reduction: 35%, Energy efficiency improvement: 25%, Carbon footprint reduction: 30%",
-      implementation: "Installation completed in 5 weeks with engineering team. Investment: ₹6L with 15-month payback period.",
-      questions: 1
+      metrics: "Manpower saved: 2 skilled operators; Cycle time reduced by 15%; Annual savings: ₹2.2L",
+      implementation: "Completed in 4 weeks with robotics vendor collaboration. Investment: ₹9L. ROI within 8 months.",
+      questions: 0
     }
   ];
 
   // Filter practices based on user role
   const practices = userRole === "plant" 
-    ? allPractices.filter(practice => practice.plant === "Plant 1 - Gurgaon")
+  ? allPractices.filter(practice => practice.plant === "Greater Noida (Ecotech 1)")
     : allPractices;
+
+  const uniqueCategories = useMemo(
+    () => Array.from(new Set(allPractices.map((practice) => practice.category))).sort(),
+    [allPractices]
+  );
+
+  const uniquePlants = useMemo(
+    () => Array.from(new Set(allPractices.map((practice) => practice.plant))).sort(),
+    [allPractices]
+  );
+
+  const [showFilters, setShowFilters] = useState(false);
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [plantFilter, setPlantFilter] = useState<string>("all");
+  const [startDate, setStartDate] = useState<string>("");
+  const [endDate, setEndDate] = useState<string>("");
+  const [searchTerm, setSearchTerm] = useState<string>("");
+
+  const filteredPractices = useMemo(() => {
+    return practices.filter((practice) => {
+      const matchesSearch =
+        searchTerm.trim().length === 0 ||
+        practice.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        practice.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        practice.plant.toLowerCase().includes(searchTerm.toLowerCase());
+
+      const matchesCategory =
+        categoryFilter === "all" || practice.category === categoryFilter;
+
+      const matchesPlant =
+        plantFilter === "all" || practice.plant === plantFilter;
+
+      const submittedTime = new Date(practice.submittedDate).getTime();
+      const matchesStart =
+        !startDate || submittedTime >= new Date(startDate).getTime();
+      const matchesEnd =
+        !endDate || submittedTime <= new Date(endDate).getTime();
+
+      return (
+        matchesSearch &&
+        matchesCategory &&
+        matchesPlant &&
+        matchesStart &&
+        matchesEnd
+      );
+    });
+  }, [practices, searchTerm, categoryFilter, plantFilter, startDate, endDate]);
+
+  const resetFilters = () => {
+    setCategoryFilter("all");
+    setPlantFilter("all");
+    setStartDate("");
+    setEndDate("");
+    setSearchTerm("");
+  };
 
   // Removed status concept (approved/revision/pending)
 
@@ -178,6 +192,12 @@ const PracticeList = ({ userRole, onViewPractice, onBack, isBenchmarked, onToggl
         return "bg-red-50 text-red-700 border-red-200";
       case "productivity":
         return "bg-purple-50 text-purple-700 border-purple-200";
+      case "automation":
+        return "bg-amber-50 text-amber-700 border-amber-200";
+      case "digitalisation":
+        return "bg-indigo-50 text-indigo-700 border-indigo-200";
+      case "elg":
+        return "bg-emerald-50 text-emerald-700 border-emerald-200";
       default:
         return "bg-gray-50 text-gray-700 border-gray-200";
     }
@@ -191,7 +211,7 @@ const PracticeList = ({ userRole, onViewPractice, onBack, isBenchmarked, onToggl
           <h1 className="text-3xl font-bold">Best Practices Library</h1>
           <p className="text-muted-foreground mt-1">
             {userRole === "plant" 
-              ? "Browse practices from Plant 1 - Gurgaon" 
+              ? "Browse practices from Greater Noida (Ecotech 1)" 
               : "Browse and explore best practices from across all plants"
             }
           </p>
@@ -211,13 +231,79 @@ const PracticeList = ({ userRole, onViewPractice, onBack, isBenchmarked, onToggl
               <Input
                 placeholder="Search practices by title, category, or plant..."
                 className="pl-10"
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
               />
             </div>
-            <Button variant="outline">
+            <Button
+              variant={showFilters ? "secondary" : "outline"}
+              onClick={() => setShowFilters((prev) => !prev)}
+            >
               <Filter className="h-4 w-4 mr-2" />
-              Filter
+              {showFilters ? "Hide Filters" : "Filters"}
             </Button>
           </div>
+          {showFilters && (
+            <div className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-muted-foreground">Category</p>
+                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All categories" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All categories</SelectItem>
+                    {uniqueCategories.map((category) => (
+                      <SelectItem key={category} value={category}>
+                        {category}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-muted-foreground">Plant</p>
+                <Select value={plantFilter} onValueChange={setPlantFilter}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All plants" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All plants</SelectItem>
+                    {uniquePlants.map((plant) => (
+                      <SelectItem key={plant} value={plant}>
+                        {plant}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-muted-foreground">From date</p>
+                <Input
+                  type="date"
+                  value={startDate}
+                  onChange={(event) => setStartDate(event.target.value)}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-muted-foreground">To date</p>
+                <Input
+                  type="date"
+                  value={endDate}
+                  onChange={(event) => setEndDate(event.target.value)}
+                />
+              </div>
+
+              <div className="md:col-span-2 lg:col-span-4 flex justify-end space-x-2">
+                <Button variant="outline" onClick={resetFilters}>
+                  Reset
+                </Button>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -250,12 +336,12 @@ const PracticeList = ({ userRole, onViewPractice, onBack, isBenchmarked, onToggl
           <CardTitle className="flex items-center space-x-2">
             <FileText className="h-5 w-5 text-primary" />
             <span>All Practices</span>
-            <Badge variant="outline">{practices.length}</Badge>
+            <Badge variant="outline">{filteredPractices.length}</Badge>
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {practices.map((practice) => (
+            {filteredPractices.map((practice) => (
               <div
                 key={practice.id}
                 className="flex items-center justify-between p-6 border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors group"

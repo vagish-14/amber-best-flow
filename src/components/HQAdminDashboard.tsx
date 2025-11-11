@@ -53,7 +53,7 @@ interface HQAdminDashboardProps {
 
 const HQAdminDashboard = ({ onViewChange, thisMonthTotal, ytdTotal, copySpread, leaderboard }: HQAdminDashboardProps) => {
   const [showDivisionSelector, setShowDivisionSelector] = useState(false);
-  const [division, setDivision] = useState<"all" | "rac" | "component">("all");
+  const [division, setDivision] = useState<"all" | "component">("all");
   // Leaderboard drilldown (legacy shape kept for compatibility)
   const [lbDrillOpen, setLbDrillOpen] = useState(false);
   const [lbDrillPlant, setLbDrillPlant] = useState<string | null>(null);
@@ -83,51 +83,71 @@ const HQAdminDashboard = ({ onViewChange, thisMonthTotal, ytdTotal, copySpread, 
   // Base leaderboard to keep table sizable; merge dynamic updates
   const baseLeaderboard = useMemo(() => ([
     { 
-      plant: "Plant 2 - Chennai", 
-      totalPoints: 30, 
+      plant: "Greater Noida (Ecotech 1)", 
+      totalPoints: 36, 
       breakdown: [
-        { type: "Origin", points: 10, date: "2024-01-15", bpTitle: "Automated Quality Control" },
-        { type: "Copier", points: 5, date: "2024-01-12", bpTitle: "Energy Efficient Process" },
-        { type: "Origin", points: 10, date: "2024-01-10", bpTitle: "Safety Enhancement" },
-        { type: "Copier", points: 5, date: "2024-01-08", bpTitle: "Production Optimization" }
+        { type: "Origin", points: 10, date: "2025-02-12", bpTitle: "Digital Production Control Tower" },
+        { type: "Copier", points: 5, date: "2025-02-20", bpTitle: "Assembly Line Cobots" },
+        { type: "Origin", points: 10, date: "2025-01-15", bpTitle: "Automated Quality Inspection" },
+        { type: "Copier", points: 5, date: "2025-03-10", bpTitle: "Safety Protocol for Chemical Handling" },
+        { type: "Origin", points: 6, date: "2025-03-18", bpTitle: "Waste Reduction Initiative" }
       ]
     },
     { 
-      plant: "Plant 1 - Gurgaon", 
-      totalPoints: 30, 
+      plant: "Kanchipuram", 
+      totalPoints: 28, 
       breakdown: [
-        { type: "Origin", points: 10, date: "2024-01-14", bpTitle: "Cost Reduction Initiative" },
-        { type: "Copier", points: 5, date: "2024-01-11", bpTitle: "Quality Improvement" },
-        { type: "Origin", points: 10, date: "2024-01-09", bpTitle: "Waste Management" },
-        { type: "Copier", points: 5, date: "2024-01-07", bpTitle: "Safety Protocol" }
+        { type: "Origin", points: 10, date: "2025-05-20", bpTitle: "IoT Sensor Implementation" },
+        { type: "Copier", points: 5, date: "2025-04-12", bpTitle: "Digital Production Control Tower" },
+        { type: "Copier", points: 5, date: "2025-05-05", bpTitle: "Assembly Line Cobots" },
+        { type: "Origin", points: 8, date: "2025-03-25", bpTitle: "Lean Packaging Redesign" }
       ]
     },
     { 
-      plant: "Plant 7 - Bangalore", 
-      totalPoints: 30, 
+      plant: "Rajpura", 
+      totalPoints: 26, 
       breakdown: [
-        { type: "Origin", points: 10, date: "2024-01-13", bpTitle: "Productivity Boost" },
-        { type: "Copier", points: 5, date: "2024-01-10", bpTitle: "Cost Optimization" },
-        { type: "Origin", points: 10, date: "2024-01-08", bpTitle: "Quality Enhancement" },
-        { type: "Copier", points: 5, date: "2024-01-06", bpTitle: "Safety Improvement" }
+        { type: "Origin", points: 10, date: "2025-02-28", bpTitle: "Green Energy Dashboard" },
+        { type: "Copier", points: 5, date: "2025-03-22", bpTitle: "ELG Compliance Monitoring Program" },
+        { type: "Origin", points: 6, date: "2025-01-30", bpTitle: "Smart Inventory Tagging" },
+        { type: "Copier", points: 5, date: "2025-04-18", bpTitle: "Assembly Line Cobots" }
       ]
     },
     { 
-      plant: "Plant 3 - Pune", 
-      totalPoints: 25, 
+      plant: "Shahjahanpur", 
+      totalPoints: 22, 
       breakdown: [
-        { type: "Origin", points: 10, date: "2024-01-12", bpTitle: "Process Innovation" },
-        { type: "Copier", points: 5, date: "2024-01-09", bpTitle: "Efficiency Gain" },
-        { type: "Origin", points: 10, date: "2024-01-07", bpTitle: "Cost Savings" }
+        { type: "Origin", points: 10, date: "2025-06-14", bpTitle: "Digital Production Control Tower" },
+        { type: "Copier", points: 5, date: "2025-05-04", bpTitle: "IoT Sensor Implementation" },
+        { type: "Copier", points: 5, date: "2025-02-15", bpTitle: "Waste Reduction Initiative" },
+        { type: "Origin", points: 2, date: "2025-03-02", bpTitle: "Visual Management Boards" }
       ]
     },
     { 
-      plant: "Plant 5 - Mumbai", 
+      plant: "Supa", 
       totalPoints: 20, 
       breakdown: [
-        { type: "Origin", points: 10, date: "2024-01-11", bpTitle: "Quality Control" },
-        { type: "Copier", points: 5, date: "2024-01-08", bpTitle: "Safety Enhancement" },
-        { type: "Copier", points: 5, date: "2024-01-05", bpTitle: "Productivity Gain" }
+        { type: "Origin", points: 10, date: "2025-03-10", bpTitle: "Safety Protocol for Chemical Handling" },
+        { type: "Copier", points: 5, date: "2025-02-25", bpTitle: "Digital Production Control Tower" },
+        { type: "Copier", points: 5, date: "2025-04-05", bpTitle: "IoT Sensor Implementation" }
+      ]
+    },
+    { 
+      plant: "Ranjangaon", 
+      totalPoints: 19, 
+      breakdown: [
+        { type: "Origin", points: 10, date: "2025-04-08", bpTitle: "Production Line Optimization" },
+        { type: "Copier", points: 5, date: "2025-04-22", bpTitle: "Assembly Line Cobots" },
+        { type: "Copier", points: 4, date: "2025-05-26", bpTitle: "ELG Compliance Monitoring Program" }
+      ]
+    },
+    { 
+      plant: "Ponneri", 
+      totalPoints: 18, 
+      breakdown: [
+        { type: "Origin", points: 10, date: "2025-02-09", bpTitle: "ELG Compliance Monitoring Program" },
+        { type: "Copier", points: 5, date: "2025-03-18", bpTitle: "Waste Reduction Initiative" },
+        { type: "Copier", points: 3, date: "2025-05-12", bpTitle: "Safety Protocol for Chemical Handling" }
       ]
     }
   ]), []);
@@ -146,53 +166,49 @@ const HQAdminDashboard = ({ onViewChange, thisMonthTotal, ytdTotal, copySpread, 
   }, [baseLeaderboard, leaderboard]);
 
   const plantData = [
-    { name: "Plant 1 - Gurgaon", submitted: 23 },
-    { name: "Plant 2 - Chennai", submitted: 18 },
-    { name: "Plant 3 - Pune", submitted: 31 },
-    { name: "Plant 4 - Kolkata", submitted: 15 },
-    { name: "Plant 5 - Mumbai", submitted: 22 },
-    { name: "Plant 6 - Delhi", submitted: 19 },
-    { name: "Plant 7 - Bangalore", submitted: 25 },
-    { name: "Plant 8 - Hyderabad", submitted: 17 },
-    { name: "Plant 9 - Ahmedabad", submitted: 20 },
-    { name: "Plant 10 - Jaipur", submitted: 16 },
-    { name: "Plant 11 - Lucknow", submitted: 21 },
-    { name: "Plant 12 - Indore", submitted: 18 },
-    { name: "Plant 13 - Bhopal", submitted: 14 },
-    { name: "Plant 14 - Patna", submitted: 19 },
-    { name: "Plant 15 - Bhubaneswar", submitted: 17 }
+    { name: "Greater Noida (Ecotech 1)", submitted: 26 },
+    { name: "Kanchipuram", submitted: 21 },
+    { name: "Rajpura", submitted: 24 },
+    { name: "Shahjahanpur", submitted: 19 },
+    { name: "Supa", submitted: 17 },
+    { name: "Ranjangaon", submitted: 22 },
+    { name: "Ponneri", submitted: 18 }
   ];
 
   // Demo dataset of benchmarked BPs (used for KPI count and drilldown)
   const benchmarkedBPs = [
     {
-      bp: "Energy Efficient Cooling Process",
-      origin: "Plant 1 - Gurgaon",
+      bp: "Digital Production Control Tower",
+      origin: "Greater Noida (Ecotech 1)",
       copies: [
-        { plant: "Plant 2 - Chennai", date: "2024-01-12" },
-        { plant: "Plant 7 - Bangalore", date: "2024-01-16" },
+        { plant: "Kanchipuram", date: "2025-02-18" },
+        { plant: "Shahjahanpur", date: "2025-02-24" },
       ],
     },
     {
-      bp: "Production Line Optimization",
-      origin: "Plant 3 - Pune",
+      bp: "Assembly Line Cobots",
+      origin: "Ranjangaon",
       copies: [
-        { plant: "Plant 5 - Mumbai", date: "2024-01-11" },
+        { plant: "Greater Noida (Ecotech 1)", date: "2025-04-20" },
+        { plant: "Rajpura", date: "2025-04-28" },
       ],
     },
     {
-      bp: "Waste Reduction Initiative",
-      origin: "Plant 5 - Mumbai",
+      bp: "ELG Compliance Monitoring Program",
+      origin: "Ponneri",
       copies: [
-        { plant: "Plant 1 - Gurgaon", date: "2024-01-20" },
-        { plant: "Plant 4 - Kolkata", date: "2024-01-22" },
-        { plant: "Plant 9 - Ahmedabad", date: "2024-01-25" },
+        { plant: "Greater Noida (Ecotech 1)", date: "2025-02-18" },
+        { plant: "Rajpura", date: "2025-03-05" },
+        { plant: "Ranjangaon", date: "2025-05-26" },
       ],
     },
     {
-      bp: "Automated Quality Control System",
-      origin: "Plant 2 - Chennai",
-      copies: [],
+      bp: "Safety Protocol for Chemical Handling",
+      origin: "Supa",
+      copies: [
+        { plant: "Greater Noida (Ecotech 1)", date: "2025-03-15" },
+        { plant: "Ponneri", date: "2025-04-02" },
+      ],
     },
   ];
 
@@ -203,25 +219,33 @@ const HQAdminDashboard = ({ onViewChange, thisMonthTotal, ytdTotal, copySpread, 
   const ytdSubmissions = useMemo(() => plantData.reduce((sum, p) => sum + (p.submitted || 0), 0), [plantData]);
 
   // Division datasets (mocked per requirements)
-  const [racPlants, setRacPlants] = useState<{ name: string; active: boolean }[]>([
-    { name: "RAC - P1 Gurugram", active: true },
-    { name: "RAC - P2 Chennai", active: true },
-    { name: "RAC - P3 Pune", active: true },
-    { name: "RAC - P4 Kolkata", active: true },
-    { name: "RAC - P5 Mumbai", active: true },
-    { name: "RAC - P6 delhi", active: false },
-    { name: "RAC - P7 Bangalore", active: false },
-    { name: "RAC - P8 Hyderabad", active: false },
-  ]);
   const [componentPlants, setComponentPlants] = useState<{ name: string; active: boolean }[]>([
-    { name: "Component - P9 Ahmedabad", active: true },
-    { name: "Component - P10 Jaipur", active: true },
-    { name: "Component - P11 Lucknow", active: true },
-    { name: "Component - P12 indore", active: true },
-    { name: "Component - P 13 Bhopal", active: false },
-    { name: "Component - P 14 Patna", active: false },
-    { name: "Component - P 15 bhubaneswar", active: false },
+    { name: "Component - Greater Noida (Ecotech 1)", active: true },
+    { name: "Component - Kanchipuram", active: true },
+    { name: "Component - Rajpura", active: true },
+    { name: "Component - Shahjahanpur", active: true },
+    { name: "Component - Supa", active: true },
+    { name: "Component - Ranjangaon", active: false },
+    { name: "Component - Ponneri", active: false },
+    { name: "Component - Additional Plant A", active: false },
+    { name: "Component - Additional Plant B", active: true },
+    { name: "Component - Additional Plant C", active: true },
+    { name: "Component - Additional Plant D", active: true },
+    { name: "Component - Additional Plant E", active: true },
+    { name: "Component - Additional Plant F", active: false },
+    { name: "Component - Additional Plant G", active: false },
+    { name: "Component - Additional Plant H", active: false },
   ]);
+
+  const plantShortLabel: Record<string, string> = {
+    "Greater Noida (Ecotech 1)": "Greater Noida",
+    "Kanchipuram": "Kanchipuram",
+    "Rajpura": "Rajpura",
+    "Shahjahanpur": "Shahjahanpur",
+    "Supa": "Supa",
+    "Ranjangaon": "Ranjangaon",
+    "Ponneri": "Ponneri",
+  };
 
   const { activeCount, inactiveCount } = useMemo(() => {
     const activeCount = activeBySubmissionCount;
@@ -230,31 +254,20 @@ const HQAdminDashboard = ({ onViewChange, thisMonthTotal, ytdTotal, copySpread, 
   }, [activeBySubmissionCount, totalPlantCount]);
 
   // Division-wise derivation based on submissions
-  const racNames = useMemo(() => plantData.slice(0, 8).map((p) => p.name), [plantData]);
-  const componentNames = useMemo(() => plantData.slice(8).map((p) => p.name), [plantData]);
+  const componentNames = useMemo(() => plantData.map((p) => p.name), [plantData]);
   const activeNameSet = useMemo(() => new Set(activeBySubmission.map((p) => p.name)), [activeBySubmission]);
 
   // Extra inactive placeholders: 4 for RAC, 6 for Component
-  const extraRacInactiveNames = useMemo(() => {
-    return Array.from({ length: 4 }).map((_, i) => `RAC - P${9 + i} (Inactive)`);
-  }, []);
   const extraComponentInactiveNames = useMemo(() => {
-    return Array.from({ length: 6 }).map((_, i) => `Component - P${16 + i} (Inactive)`);
+    return Array.from({ length: 6 }).map((_, i) => `Component - PX${i + 16} (Inactive)`);
   }, []);
 
   const divisionActiveNames = useMemo(() => {
-    if (division === "rac") return racNames.filter((n) => activeNameSet.has(n));
     if (division === "component") return componentNames.filter((n) => activeNameSet.has(n));
-    return [...racNames, ...componentNames].filter((n) => activeNameSet.has(n));
-  }, [division, racNames, componentNames, activeNameSet]);
+    return componentNames.filter((n) => activeNameSet.has(n));
+  }, [division, componentNames, activeNameSet]);
 
   const divisionInactiveNames = useMemo(() => {
-    if (division === "rac") {
-      return [
-        ...racNames.filter((n) => !activeNameSet.has(n)),
-        ...extraRacInactiveNames,
-      ];
-    }
     if (division === "component") {
       return [
         ...componentNames.filter((n) => !activeNameSet.has(n)),
@@ -262,20 +275,10 @@ const HQAdminDashboard = ({ onViewChange, thisMonthTotal, ytdTotal, copySpread, 
       ];
     }
     return [
-      ...[...racNames, ...componentNames].filter((n) => !activeNameSet.has(n)),
-      ...extraRacInactiveNames,
+      ...componentNames.filter((n) => !activeNameSet.has(n)),
       ...extraComponentInactiveNames,
     ];
-  }, [division, racNames, componentNames, activeNameSet, extraRacInactiveNames, extraComponentInactiveNames]);
-
-  const togglePlantActive = (name: string) => {
-    if (division === "rac" || division === "all") {
-      setRacPlants((prev) => prev.map((p) => (p.name === name ? { ...p, active: !p.active } : p)));
-    }
-    if (division === "component" || division === "all") {
-      setComponentPlants((prev) => prev.map((p) => (p.name === name ? { ...p, active: !p.active } : p)));
-    }
-  };
+  }, [division, componentNames, activeNameSet, extraComponentInactiveNames]);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -316,13 +319,6 @@ const HQAdminDashboard = ({ onViewChange, thisMonthTotal, ytdTotal, copySpread, 
                     onClick={() => setDivision("all")}
                   >
                     All
-                  </Button>
-                  <Button
-                    variant={division === "rac" ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setDivision("rac")}
-                  >
-                    RAC
                   </Button>
                   <Button
                     variant={division === "component" ? "default" : "outline"}
@@ -518,7 +514,7 @@ const HQAdminDashboard = ({ onViewChange, thisMonthTotal, ytdTotal, copySpread, 
               className="h-[400px] w-full"
             >
               <BarChart data={plantData.map(p => ({ 
-                plant: p.name.replace("Plant ", "P").replace(" - Gurgaon", "").replace(" - Chennai", "").replace(" - Pune", "").replace(" - Kolkata", "").replace(" - Mumbai", "").replace(" - Delhi", "").replace(" - Bangalore", "").replace(" - Hyderabad", "").replace(" - Ahmedabad", "").replace(" - Jaipur", "").replace(" - Lucknow", "").replace(" - Indore", "").replace(" - Bhopal", "").replace(" - Patna", "").replace(" - Bhubaneswar", ""),
+                plant: plantShortLabel[p.name] ?? p.name,
                 fullName: p.name,
                 submitted: p.submitted
               }))} margin={{ top: 24, right: 16, left: 0, bottom: 0 }}>
@@ -582,21 +578,13 @@ const HQAdminDashboard = ({ onViewChange, thisMonthTotal, ytdTotal, copySpread, 
             {(() => {
               // Mock benchmark BPs count for each plant this month
               const benchmarkBPs = [
-                { plant: "Plant 1 - Gurgaon", benchmarkedBPs: 5 },
-                { plant: "Plant 2 - Chennai", benchmarkedBPs: 8 },
-                { plant: "Plant 3 - Pune", benchmarkedBPs: 3 },
-                { plant: "Plant 4 - Kolkata", benchmarkedBPs: 2 },
-                { plant: "Plant 5 - Mumbai", benchmarkedBPs: 6 },
-                { plant: "Plant 6 - Delhi", benchmarkedBPs: 4 },
-                { plant: "Plant 7 - Bangalore", benchmarkedBPs: 7 },
-                { plant: "Plant 8 - Hyderabad", benchmarkedBPs: 3 },
-                { plant: "Plant 9 - Ahmedabad", benchmarkedBPs: 5 },
-                { plant: "Plant 10 - Jaipur", benchmarkedBPs: 2 },
-                { plant: "Plant 11 - Lucknow", benchmarkedBPs: 4 },
-                { plant: "Plant 12 - Indore", benchmarkedBPs: 3 },
-                { plant: "Plant 13 - Bhopal", benchmarkedBPs: 1 },
-                { plant: "Plant 14 - Patna", benchmarkedBPs: 4 },
-                { plant: "Plant 15 - Bhubaneswar", benchmarkedBPs: 3 },
+                { plant: "Greater Noida (Ecotech 1)", benchmarkedBPs: 6 },
+                { plant: "Kanchipuram", benchmarkedBPs: 5 },
+                { plant: "Rajpura", benchmarkedBPs: 4 },
+                { plant: "Shahjahanpur", benchmarkedBPs: 3 },
+                { plant: "Supa", benchmarkedBPs: 4 },
+                { plant: "Ranjangaon", benchmarkedBPs: 5 },
+                { plant: "Ponneri", benchmarkedBPs: 4 },
               ];
               const totalThisMonth = benchmarkBPs.reduce((sum, p) => sum + p.benchmarkedBPs, 0);
               return (
@@ -616,7 +604,7 @@ const HQAdminDashboard = ({ onViewChange, thisMonthTotal, ytdTotal, copySpread, 
                     className="h-[300px] w-full"
                   >
                     <BarChart data={benchmarkBPs.map(p => ({ 
-                      plant: p.plant.replace("Plant ", "P").replace(" - Gurgaon", "").replace(" - Chennai", "").replace(" - Pune", "").replace(" - Kolkata", "").replace(" - Mumbai", "").replace(" - Delhi", "").replace(" - Bangalore", "").replace(" - Hyderabad", "").replace(" - Ahmedabad", "").replace(" - Jaipur", "").replace(" - Lucknow", "").replace(" - Indore", "").replace(" - Bhopal", "").replace(" - Patna", "").replace(" - Bhubaneswar", ""),
+                      plant: plantShortLabel[p.plant] ?? p.plant,
                       fullName: p.plant,
                       benchmarkedBPs: p.benchmarkedBPs 
                     }))} margin={{ top: 24, right: 16, left: 0, bottom: 0 }}>
@@ -682,21 +670,21 @@ const HQAdminDashboard = ({ onViewChange, thisMonthTotal, ytdTotal, copySpread, 
             <div className="space-y-4">
               {[
                 { 
-                  title: "Energy Efficient Cooling Process", 
-                  plant: "Plant 1 - Gurgaon", 
-                  category: "Cost", 
+                  title: "Digital Production Control Tower", 
+                  plant: "Greater Noida (Ecotech 1)", 
+                  category: "Digitalisation", 
                   benchmarked: "4 hours ago"
                 },
                 { 
-                  title: "Production Line Optimization", 
-                  plant: "Plant 3 - Pune", 
-                  category: "Productivity", 
+                  title: "Assembly Line Cobots", 
+                  plant: "Ranjangaon", 
+                  category: "Automation", 
                   benchmarked: "2 days ago"
                 },
                 { 
-                  title: "Waste Reduction Initiative", 
-                  plant: "Plant 5 - Mumbai", 
-                  category: "Cost", 
+                  title: "ELG Compliance Monitoring Program", 
+                  plant: "Ponneri", 
+                  category: "ELG", 
                   benchmarked: "3 days ago"
                 }
               ].map((bp, index) => (
@@ -737,10 +725,10 @@ const HQAdminDashboard = ({ onViewChange, thisMonthTotal, ytdTotal, copySpread, 
             {(() => {
               // Demo savings data (in lakhs ₹)
               const savings = [
-                { name: "Plant 1 - Gurgaon", monthly: 9.2, ytd: 112.5 },
-                { name: "Plant 2 - Chennai", monthly: 17.8, ytd: 205.0 },
-                { name: "Plant 3 - Pune", monthly: 6.5, ytd: 72.0 },
-                { name: "Plant 4 - Kolkata", monthly: 3.2, ytd: 48.0 },
+                { name: "Greater Noida (Ecotech 1)", monthly: 14.2, ytd: 196.5 },
+                { name: "Kanchipuram", monthly: 11.8, ytd: 148.0 },
+                { name: "Rajpura", monthly: 9.5, ytd: 128.3 },
+                { name: "Shahjahanpur", monthly: 7.2, ytd: 102.4 },
               ];
 
               const getStars = (monthly: number, ytd: number) => {
@@ -949,27 +937,28 @@ const HQAdminDashboard = ({ onViewChange, thisMonthTotal, ytdTotal, copySpread, 
               // Demo dataset of benchmarked BPs, origin, and copies
               const rows = copySpread ?? [
                 {
-                  bp: "Energy Efficient Cooling Process",
-                  origin: "Plant 1 - Gurgaon",
+                  bp: "Digital Production Control Tower",
+                  origin: "Greater Noida (Ecotech 1)",
                   copies: [
-                    { plant: "Plant 2 - Chennai", date: "2024-01-12" },
-                    { plant: "Plant 7 - Bangalore", date: "2024-01-16" },
+                    { plant: "Kanchipuram", date: "2025-02-18" },
+                    { plant: "Shahjahanpur", date: "2025-02-24" },
                   ],
                 },
                 {
-                  bp: "Production Line Optimization",
-                  origin: "Plant 3 - Pune",
+                  bp: "Assembly Line Cobots",
+                  origin: "Ranjangaon",
                   copies: [
-                    { plant: "Plant 5 - Mumbai", date: "2024-01-11" },
+                    { plant: "Greater Noida (Ecotech 1)", date: "2025-04-20" },
+                    { plant: "Rajpura", date: "2025-04-28" },
                   ],
                 },
                 {
-                  bp: "Waste Reduction Initiative",
-                  origin: "Plant 5 - Mumbai",
+                  bp: "ELG Compliance Monitoring Program",
+                  origin: "Ponneri",
                   copies: [
-                    { plant: "Plant 1 - Gurgaon", date: "2024-01-20" },
-                    { plant: "Plant 4 - Kolkata", date: "2024-01-22" },
-                    { plant: "Plant 9 - Ahmedabad", date: "2024-01-25" },
+                    { plant: "Greater Noida (Ecotech 1)", date: "2025-02-18" },
+                    { plant: "Rajpura", date: "2025-03-05" },
+                    { plant: "Ranjangaon", date: "2025-05-26" },
                   ],
                 },
               ];
@@ -1063,51 +1052,53 @@ const HQAdminDashboard = ({ onViewChange, thisMonthTotal, ytdTotal, copySpread, 
               // Leaderboard data (Origin: 10, Copier: 5)
               const leaderboardData = mergedLeaderboard ?? [
                 { 
-                  plant: "Plant 2 - Chennai", 
-                  totalPoints: 30, 
+                  plant: "Greater Noida (Ecotech 1)", 
+                  totalPoints: 36, 
                   breakdown: [
-                    { type: "Origin", points: 10, date: "2024-01-15", bpTitle: "Automated Quality Control" },
-                    { type: "Copier", points: 5, date: "2024-01-12", bpTitle: "Energy Efficient Process" },
-                    { type: "Origin", points: 10, date: "2024-01-10", bpTitle: "Safety Enhancement" },
-                    { type: "Copier", points: 5, date: "2024-01-08", bpTitle: "Production Optimization" }
+                    { type: "Origin", points: 10, date: "2025-02-12", bpTitle: "Digital Production Control Tower" },
+                    { type: "Copier", points: 5, date: "2025-02-20", bpTitle: "Assembly Line Cobots" },
+                    { type: "Origin", points: 10, date: "2025-01-15", bpTitle: "Automated Quality Inspection" },
+                    { type: "Copier", points: 5, date: "2025-03-10", bpTitle: "Safety Protocol for Chemical Handling" },
+                    { type: "Origin", points: 6, date: "2025-03-18", bpTitle: "Waste Reduction Initiative" }
                   ]
                 },
                 { 
-                  plant: "Plant 1 - Gurgaon", 
-                  totalPoints: 30, 
+                  plant: "Kanchipuram", 
+                  totalPoints: 28, 
                   breakdown: [
-                    { type: "Origin", points: 10, date: "2024-01-14", bpTitle: "Cost Reduction Initiative" },
-                    { type: "Copier", points: 5, date: "2024-01-11", bpTitle: "Quality Improvement" },
-                    { type: "Origin", points: 10, date: "2024-01-09", bpTitle: "Waste Management" },
-                    { type: "Copier", points: 5, date: "2024-01-07", bpTitle: "Safety Protocol" }
+                    { type: "Origin", points: 10, date: "2025-05-20", bpTitle: "IoT Sensor Implementation" },
+                    { type: "Copier", points: 5, date: "2025-04-12", bpTitle: "Digital Production Control Tower" },
+                    { type: "Copier", points: 5, date: "2025-05-05", bpTitle: "Assembly Line Cobots" },
+                    { type: "Origin", points: 8, date: "2025-03-25", bpTitle: "Lean Packaging Redesign" }
                   ]
                 },
                 { 
-                  plant: "Plant 7 - Bangalore", 
-                  totalPoints: 30, 
+                  plant: "Rajpura", 
+                  totalPoints: 26, 
                   breakdown: [
-                    { type: "Origin", points: 10, date: "2024-01-13", bpTitle: "Productivity Boost" },
-                    { type: "Copier", points: 5, date: "2024-01-10", bpTitle: "Cost Optimization" },
-                    { type: "Origin", points: 10, date: "2024-01-08", bpTitle: "Quality Enhancement" },
-                    { type: "Copier", points: 5, date: "2024-01-06", bpTitle: "Safety Improvement" }
+                    { type: "Origin", points: 10, date: "2025-02-28", bpTitle: "Green Energy Dashboard" },
+                    { type: "Copier", points: 5, date: "2025-03-22", bpTitle: "ELG Compliance Monitoring Program" },
+                    { type: "Origin", points: 6, date: "2025-01-30", bpTitle: "Smart Inventory Tagging" },
+                    { type: "Copier", points: 5, date: "2025-04-18", bpTitle: "Assembly Line Cobots" }
                   ]
                 },
                 { 
-                  plant: "Plant 3 - Pune", 
-                  totalPoints: 25, 
+                  plant: "Shahjahanpur", 
+                  totalPoints: 22, 
                   breakdown: [
-                    { type: "Origin", points: 10, date: "2024-01-12", bpTitle: "Process Innovation" },
-                    { type: "Copier", points: 5, date: "2024-01-09", bpTitle: "Efficiency Gain" },
-                    { type: "Origin", points: 10, date: "2024-01-07", bpTitle: "Cost Savings" }
+                    { type: "Origin", points: 10, date: "2025-06-14", bpTitle: "Digital Production Control Tower" },
+                    { type: "Copier", points: 5, date: "2025-05-04", bpTitle: "IoT Sensor Implementation" },
+                    { type: "Copier", points: 5, date: "2025-02-15", bpTitle: "Waste Reduction Initiative" },
+                    { type: "Origin", points: 2, date: "2025-03-02", bpTitle: "Visual Management Boards" }
                   ]
                 },
                 { 
-                  plant: "Plant 5 - Mumbai", 
+                  plant: "Supa", 
                   totalPoints: 20, 
                   breakdown: [
-                    { type: "Origin", points: 10, date: "2024-01-11", bpTitle: "Quality Control" },
-                    { type: "Copier", points: 5, date: "2024-01-08", bpTitle: "Safety Enhancement" },
-                    { type: "Copier", points: 5, date: "2024-01-05", bpTitle: "Productivity Gain" }
+                    { type: "Origin", points: 10, date: "2025-03-10", bpTitle: "Safety Protocol for Chemical Handling" },
+                    { type: "Copier", points: 5, date: "2025-02-25", bpTitle: "Digital Production Control Tower" },
+                    { type: "Copier", points: 5, date: "2025-04-05", bpTitle: "IoT Sensor Implementation" }
                   ]
                 }
               ];
@@ -1313,25 +1304,25 @@ const HQAdminDashboard = ({ onViewChange, thisMonthTotal, ytdTotal, copySpread, 
               {[
                 { 
                   title: "IoT Sensor Implementation for Predictive Maintenance", 
-                  plant: "Plant 3 - Pune", 
+                  plant: "Kanchipuram", 
                   category: "Productivity", 
                   submitted: "2 hours ago"
                 },
                 { 
                   title: "Waste Heat Recovery System", 
-                  plant: "Plant 1 - Gurgaon", 
+                  plant: "Greater Noida (Ecotech 1)", 
                   category: "Cost", 
                   submitted: "4 hours ago"
                 },
                 { 
                   title: "Updated Chemical Storage Protocols", 
-                  plant: "Plant 2 - Chennai", 
+                  plant: "Supa", 
                   category: "Safety", 
                   submitted: "1 day ago"
                 },
                 { 
                   title: "Quality Control Automation", 
-                  plant: "Plant 4 - Kolkata", 
+                  plant: "Rajpura", 
                   category: "Quality", 
                   submitted: "2 days ago"
                 }

@@ -37,13 +37,13 @@ const BestPracticeDetail = ({ userRole, practice: propPractice, onBack, isBenchm
     category: "Quality",
     // removed approval status concept
     submittedBy: "Rajesh Kumar",
-    plant: "Plant 2 - Chennai",
-    submittedDate: "2024-01-15",
-    approvedDate: "2024-01-18",
+    plant: "Greater Noida (Ecotech 1)",
+    submittedDate: "2025-01-15",
+    approvedDate: "2025-01-18",
     approvedBy: "Priya Sharma (HQ Admin)",
     copiedToPlants: [
-      "Plant 1 - Gurgaon",
-      "Plant 3 - Pune"
+      "Kanchipuram",
+      "Rajpura"
     ],
     description: "Implementation of an automated quality inspection system using computer vision to detect defects in manufactured components, reducing manual inspection time and improving accuracy.",
     problemStatement: "Manual quality inspection was time-consuming, prone to human error, and created bottlenecks in the production line. Inspectors were spending 3-4 hours daily on repetitive visual checks.",

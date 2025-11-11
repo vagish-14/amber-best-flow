@@ -49,11 +49,14 @@ const LoginForm = ({ onLogin }: LoginFormProps) => {
               <SelectValue placeholder="Select your location" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="hq">HQ - Delhi (Admin)</SelectItem>
-              <SelectItem value="plant1">Plant 1 - Gurgaon</SelectItem>
-              <SelectItem value="plant2">Plant 2 - Chennai</SelectItem>
-              <SelectItem value="plant3">Plant 3 - Pune</SelectItem>
-              <SelectItem value="plant4">Plant 4 - Kolkata</SelectItem>
+              <SelectItem value="hq">HQ - Corporate (Admin)</SelectItem>
+              <SelectItem value="plant-gn">Greater Noida (Ecotech 1)</SelectItem>
+              <SelectItem value="plant-ka">Kanchipuram</SelectItem>
+              <SelectItem value="plant-rj">Rajpura</SelectItem>
+              <SelectItem value="plant-sj">Shahjahanpur</SelectItem>
+              <SelectItem value="plant-supa">Supa</SelectItem>
+              <SelectItem value="plant-ran">Ranjangaon</SelectItem>
+              <SelectItem value="plant-pon">Ponneri</SelectItem>
             </SelectContent>
           </Select>
         </div>

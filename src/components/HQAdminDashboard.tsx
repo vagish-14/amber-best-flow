@@ -501,100 +501,6 @@ const HQAdminDashboard = ({ onViewChange, thisMonthTotal, ytdTotal, copySpread, 
         </CardContent>
       </Card>
 
-      {/* Pending Review card removed per requirement */}
-
-      {/* Category Breakdown - Group Wide */}
-      <div className="lg:col-span-4">
-        <Card className="shadow-card">
-          <CardHeader>
-          <CardTitle>Category Wise Breakdown</CardTitle>
-          </CardHeader>
-          <CardContent>
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-            <div className="bg-gradient-to-br from-category-safety/10 to-category-safety/5 p-4 rounded-lg border border-category-safety/20">
-                <div className="flex items-center space-x-3">
-                  <Shield className="h-8 w-8 text-category-safety" />
-                  <div>
-                  <p className="font-semibold text-category-safety">Safety</p>
-                  <p className="text-2xl font-bold">58</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-gradient-to-br from-category-quality/10 to-category-quality/5 p-4 rounded-lg border border-category-quality/20">
-                <div className="flex items-center space-x-3">
-                  <Target className="h-8 w-8 text-category-quality" />
-                  <div>
-                  <p className="font-semibold text-category-quality">Quality</p>
-                  <p className="text-2xl font-bold">51</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-gradient-to-br from-category-productivity/10 to-category-productivity/5 p-4 rounded-lg border border-category-productivity/20">
-                <div className="flex items-center space-x-3">
-                  <Zap className="h-8 w-8 text-category-productivity" />
-                  <div>
-                  <p className="font-semibold text-category-productivity">Productivity</p>
-                  <p className="text-2xl font-bold">43</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-gradient-to-br from-category-cost/10 to-category-cost/5 p-4 rounded-lg border border-category-cost/20">
-                <div className="flex items-center space-x-3">
-                  <IndianRupee className="h-8 w-8 text-category-cost" />
-                  <div>
-                  <p className="font-semibold text-category-cost">Cost</p>
-                  <p className="text-2xl font-bold">39</p>
-                  </div>
-                </div>
-              </div>
-
-            <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 p-4 rounded-lg border border-indigo-200/80">
-              <div className="flex items-center space-x-3">
-                <Cpu className="h-8 w-8 text-indigo-500" />
-                <div>
-                  <p className="font-semibold text-indigo-600">Digitalisation</p>
-                  <p className="text-2xl font-bold">32</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 p-4 rounded-lg border border-emerald-200/80">
-              <div className="flex items-center space-x-3">
-                <LineChart className="h-8 w-8 text-emerald-500" />
-                <div>
-                  <p className="font-semibold text-emerald-600">ELG</p>
-                  <p className="text-2xl font-bold">28</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-gradient-to-br from-amber-50 to-amber-100 p-4 rounded-lg border border-amber-200/80">
-              <div className="flex items-center space-x-3">
-                <Bot className="h-8 w-8 text-amber-500" />
-                <div>
-                  <p className="font-semibold text-amber-600">Automation</p>
-                  <p className="text-2xl font-bold">37</p>
-                </div>
-              </div>
-            </div>
-
-              <div className="bg-gradient-to-br from-category-other/10 to-category-other/5 p-4 rounded-lg border border-category-other/20">
-                <div className="flex items-center space-x-3">
-                  <Settings className="h-8 w-8 text-category-other" />
-                  <div>
-                  <p className="font-semibold text-category-other">Other</p>
-                  <p className="text-2xl font-bold">12</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
       {/* Plant-wise Performance */}
       <div className="lg:col-span-4">
         <Card className="shadow-card">
@@ -933,6 +839,98 @@ const HQAdminDashboard = ({ onViewChange, thisMonthTotal, ytdTotal, copySpread, 
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Category Breakdown - Group Wide */}
+      <div className="lg:col-span-4">
+        <Card className="shadow-card">
+          <CardHeader>
+            <CardTitle>Category Wise Breakdown</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+              <div className="bg-gradient-to-br from-category-safety/10 to-category-safety/5 p-4 rounded-lg border border-category-safety/20">
+                <div className="flex items-center space-x-3">
+                  <Shield className="h-8 w-8 text-category-safety" />
+                  <div>
+                    <p className="font-semibold text-category-safety">Safety</p>
+                    <p className="text-2xl font-bold">58</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-br from-category-quality/10 to-category-quality/5 p-4 rounded-lg border border-category-quality/20">
+                <div className="flex items-center space-x-3">
+                  <Target className="h-8 w-8 text-category-quality" />
+                  <div>
+                    <p className="font-semibold text-category-quality">Quality</p>
+                    <p className="text-2xl font-bold">51</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-br from-category-productivity/10 to-category-productivity/5 p-4 rounded-lg border border-category-productivity/20">
+                <div className="flex items-center space-x-3">
+                  <Zap className="h-8 w-8 text-category-productivity" />
+                  <div>
+                    <p className="font-semibold text-category-productivity">Productivity</p>
+                    <p className="text-2xl font-bold">43</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-br from-category-cost/10 to-category-cost/5 p-4 rounded-lg border border-category-cost/20">
+                <div className="flex items-center space-x-3">
+                  <IndianRupee className="h-8 w-8 text-category-cost" />
+                  <div>
+                    <p className="font-semibold text-category-cost">Cost</p>
+                    <p className="text-2xl font-bold">39</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 p-4 rounded-lg border border-indigo-200/80">
+                <div className="flex items-center space-x-3">
+                  <Cpu className="h-8 w-8 text-indigo-500" />
+                  <div>
+                    <p className="font-semibold text-indigo-600">Digitalisation</p>
+                    <p className="text-2xl font-bold">32</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 p-4 rounded-lg border border-emerald-200/80">
+                <div className="flex items-center space-x-3">
+                  <LineChart className="h-8 w-8 text-emerald-500" />
+                  <div>
+                    <p className="font-semibold text-emerald-600">ELG</p>
+                    <p className="text-2xl font-bold">28</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-br from-amber-50 to-amber-100 p-4 rounded-lg border border-amber-200/80">
+                <div className="flex items-center space-x-3">
+                  <Bot className="h-8 w-8 text-amber-500" />
+                  <div>
+                    <p className="font-semibold text-amber-600">Automation</p>
+                    <p className="text-2xl font-bold">37</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-br from-category-other/10 to-category-other/5 p-4 rounded-lg border border-category-other/20">
+                <div className="flex items-center space-x-3">
+                  <Settings className="h-8 w-8 text-category-other" />
+                  <div>
+                    <p className="font-semibold text-category-other">Other</p>
+                    <p className="text-2xl font-bold">12</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>

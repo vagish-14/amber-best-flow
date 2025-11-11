@@ -105,22 +105,22 @@ const Index = () => {
   const [leaderboard, setLeaderboard] = useState<{ plant: string; totalPoints: number; breakdown: { type: "Origin" | "Copier"; points: number; date: string; bpTitle: string }[] }[]>([
     {
       plant: "Plant 2 - Chennai",
-      totalPoints: 24,
+      totalPoints: 30,
       breakdown: [
         { type: "Origin", points: 10, date: "2024-01-15", bpTitle: "Automated Quality Control" },
-        { type: "Copier", points: 2, date: "2024-01-12", bpTitle: "Energy Efficient Process" },
+        { type: "Copier", points: 5, date: "2024-01-12", bpTitle: "Energy Efficient Process" },
         { type: "Origin", points: 10, date: "2024-01-10", bpTitle: "Safety Enhancement" },
-        { type: "Copier", points: 2, date: "2024-01-08", bpTitle: "Production Optimization" },
+        { type: "Copier", points: 5, date: "2024-01-08", bpTitle: "Production Optimization" },
       ],
     },
     {
       plant: "Plant 1 - Gurgaon",
-      totalPoints: 24,
+      totalPoints: 30,
       breakdown: [
         { type: "Origin", points: 10, date: "2024-01-14", bpTitle: "Cost Reduction Initiative" },
-        { type: "Copier", points: 2, date: "2024-01-11", bpTitle: "Quality Improvement" },
+        { type: "Copier", points: 5, date: "2024-01-11", bpTitle: "Quality Improvement" },
         { type: "Origin", points: 10, date: "2024-01-09", bpTitle: "Waste Management" },
-        { type: "Copier", points: 2, date: "2024-01-07", bpTitle: "Safety Protocol" },
+        { type: "Copier", points: 5, date: "2024-01-07", bpTitle: "Safety Protocol" },
       ],
     },
   ]);
@@ -238,7 +238,7 @@ const Index = () => {
             next.push({ plant, totalPoints: points, breakdown: [entry as any] });
           }
         };
-        addPoints(userPlant, "Copier", 2);
+        addPoints(userPlant, "Copier", 5);
         addPoints(originPlant, "Origin", 10);
         return next;
       });

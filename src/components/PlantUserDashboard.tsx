@@ -73,50 +73,50 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, monthlyCount, yt
   const baseLeaderboard = useMemo(() => ([
     { 
       plant: "Plant 2 - Chennai", 
-      totalPoints: 24, 
+      totalPoints: 30, 
       breakdown: [
         { type: "Origin", points: 10, date: "2024-01-15", bpTitle: "Automated Quality Control" },
-        { type: "Copier", points: 2, date: "2024-01-12", bpTitle: "Energy Efficient Process" },
+        { type: "Copier", points: 5, date: "2024-01-12", bpTitle: "Energy Efficient Process" },
         { type: "Origin", points: 10, date: "2024-01-10", bpTitle: "Safety Enhancement" },
-        { type: "Copier", points: 2, date: "2024-01-08", bpTitle: "Production Optimization" }
+        { type: "Copier", points: 5, date: "2024-01-08", bpTitle: "Production Optimization" }
       ]
     },
     { 
       plant: "Plant 1 - Gurgaon", 
-      totalPoints: 24, 
+      totalPoints: 30, 
       breakdown: [
         { type: "Origin", points: 10, date: "2024-01-14", bpTitle: "Cost Reduction Initiative" },
-        { type: "Copier", points: 2, date: "2024-01-11", bpTitle: "Quality Improvement" },
+        { type: "Copier", points: 5, date: "2024-01-11", bpTitle: "Quality Improvement" },
         { type: "Origin", points: 10, date: "2024-01-09", bpTitle: "Waste Management" },
-        { type: "Copier", points: 2, date: "2024-01-07", bpTitle: "Safety Protocol" }
+        { type: "Copier", points: 5, date: "2024-01-07", bpTitle: "Safety Protocol" }
       ]
     },
     { 
       plant: "Plant 7 - Bangalore", 
-      totalPoints: 24, 
+      totalPoints: 30, 
       breakdown: [
         { type: "Origin", points: 10, date: "2024-01-13", bpTitle: "Productivity Boost" },
-        { type: "Copier", points: 2, date: "2024-01-10", bpTitle: "Cost Optimization" },
+        { type: "Copier", points: 5, date: "2024-01-10", bpTitle: "Cost Optimization" },
         { type: "Origin", points: 10, date: "2024-01-08", bpTitle: "Quality Enhancement" },
-        { type: "Copier", points: 2, date: "2024-01-06", bpTitle: "Safety Improvement" }
+        { type: "Copier", points: 5, date: "2024-01-06", bpTitle: "Safety Improvement" }
       ]
     },
     { 
       plant: "Plant 3 - Pune", 
-      totalPoints: 22, 
+      totalPoints: 25, 
       breakdown: [
         { type: "Origin", points: 10, date: "2024-01-12", bpTitle: "Process Innovation" },
-        { type: "Copier", points: 2, date: "2024-01-09", bpTitle: "Efficiency Gain" },
+        { type: "Copier", points: 5, date: "2024-01-09", bpTitle: "Efficiency Gain" },
         { type: "Origin", points: 10, date: "2024-01-07", bpTitle: "Cost Savings" }
       ]
     },
     { 
       plant: "Plant 5 - Mumbai", 
-      totalPoints: 14, 
+      totalPoints: 20, 
       breakdown: [
         { type: "Origin", points: 10, date: "2024-01-11", bpTitle: "Quality Control" },
-        { type: "Copier", points: 2, date: "2024-01-08", bpTitle: "Safety Enhancement" },
-        { type: "Copier", points: 2, date: "2024-01-05", bpTitle: "Productivity Gain" }
+        { type: "Copier", points: 5, date: "2024-01-08", bpTitle: "Safety Enhancement" },
+        { type: "Copier", points: 5, date: "2024-01-05", bpTitle: "Productivity Gain" }
       ]
     }
   ]), []);
@@ -518,7 +518,6 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, monthlyCount, yt
                   plant: "Plant 1 - Gurgaon", 
                   category: "Cost", 
                   benchmarked: "4 hours ago",
-                  priority: "medium",
                   savings: "₹1.2L annually",
                   problemStatement: "High energy consumption from cooling systems was increasing operational costs. Traditional cooling methods were inefficient and consumed excessive electricity during peak production hours.",
                   solution: "Implemented variable frequency drive (VFD) cooling system with smart temperature sensors and automated controls. Added thermal insulation and optimized airflow patterns."
@@ -528,7 +527,6 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, monthlyCount, yt
                   plant: "Plant 3 - Pune", 
                   category: "Productivity", 
                   benchmarked: "2 days ago",
-                  priority: "low",
                   savings: "25% throughput increase",
                   problemStatement: "Production bottlenecks were causing delays and reducing overall efficiency. Workflow was not optimized for current production requirements.",
                   solution: "Redesigned production line layout with lean manufacturing principles, implemented kanban system, and optimized material flow patterns."
@@ -538,7 +536,6 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, monthlyCount, yt
                   plant: "Plant 5 - Mumbai", 
                   category: "Cost", 
                   benchmarked: "3 days ago",
-                  priority: "medium",
                   savings: "35% heating cost reduction",
                   problemStatement: "Significant thermal energy was being wasted from production processes, leading to high energy costs and environmental impact.",
                   solution: "Installed heat recovery units to capture waste heat from exhaust systems and reuse it for heating processes and facility heating."
@@ -559,18 +556,6 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, monthlyCount, yt
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Badge 
-                      variant="outline" 
-                      className={
-                        bp.priority === "high" 
-                          ? "bg-destructive/10 text-destructive border-destructive"
-                          : bp.priority === "medium"
-                          ? "bg-warning/10 text-warning border-warning"
-                          : "bg-muted/50 text-muted-foreground"
-                      }
-                    >
-                      {bp.priority} priority
-                    </Badge>
                     <Button size="sm" variant="outline" onClick={() => onViewChange("profile")}>
                       View Details
                     </Button>
@@ -644,7 +629,7 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, monthlyCount, yt
               return (
                 <div className="space-y-4">
                   <div className="text-sm text-muted-foreground">
-                    Total points earned through benchmark BPs (Origin: 10 points, Copier: 2 points)
+                    Total points earned through benchmark BPs (Origin: 10 points, Copier: 5 points)
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-xs">
@@ -838,7 +823,7 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, monthlyCount, yt
               <br /><br />
               <strong>Points System:</strong>
               <br />• {selectedBP?.plant} will receive 10 points (Origin)
-              <br />• Your plant will receive 2 points (copier)
+              <br />• Your plant will receive 5 points (copier)
               <br /><br />
               This action will add this practice to your plant's implementation list.
             </AlertDialogDescription>

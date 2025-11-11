@@ -81,50 +81,50 @@ const HQAdminDashboard = ({ onViewChange, thisMonthTotal, ytdTotal, copySpread, 
   const baseLeaderboard = useMemo(() => ([
     { 
       plant: "Plant 2 - Chennai", 
-      totalPoints: 24, 
+      totalPoints: 30, 
       breakdown: [
         { type: "Origin", points: 10, date: "2024-01-15", bpTitle: "Automated Quality Control" },
-        { type: "Copier", points: 2, date: "2024-01-12", bpTitle: "Energy Efficient Process" },
+        { type: "Copier", points: 5, date: "2024-01-12", bpTitle: "Energy Efficient Process" },
         { type: "Origin", points: 10, date: "2024-01-10", bpTitle: "Safety Enhancement" },
-        { type: "Copier", points: 2, date: "2024-01-08", bpTitle: "Production Optimization" }
+        { type: "Copier", points: 5, date: "2024-01-08", bpTitle: "Production Optimization" }
       ]
     },
     { 
       plant: "Plant 1 - Gurgaon", 
-      totalPoints: 24, 
+      totalPoints: 30, 
       breakdown: [
         { type: "Origin", points: 10, date: "2024-01-14", bpTitle: "Cost Reduction Initiative" },
-        { type: "Copier", points: 2, date: "2024-01-11", bpTitle: "Quality Improvement" },
+        { type: "Copier", points: 5, date: "2024-01-11", bpTitle: "Quality Improvement" },
         { type: "Origin", points: 10, date: "2024-01-09", bpTitle: "Waste Management" },
-        { type: "Copier", points: 2, date: "2024-01-07", bpTitle: "Safety Protocol" }
+        { type: "Copier", points: 5, date: "2024-01-07", bpTitle: "Safety Protocol" }
       ]
     },
     { 
       plant: "Plant 7 - Bangalore", 
-      totalPoints: 24, 
+      totalPoints: 30, 
       breakdown: [
         { type: "Origin", points: 10, date: "2024-01-13", bpTitle: "Productivity Boost" },
-        { type: "Copier", points: 2, date: "2024-01-10", bpTitle: "Cost Optimization" },
+        { type: "Copier", points: 5, date: "2024-01-10", bpTitle: "Cost Optimization" },
         { type: "Origin", points: 10, date: "2024-01-08", bpTitle: "Quality Enhancement" },
-        { type: "Copier", points: 2, date: "2024-01-06", bpTitle: "Safety Improvement" }
+        { type: "Copier", points: 5, date: "2024-01-06", bpTitle: "Safety Improvement" }
       ]
     },
     { 
       plant: "Plant 3 - Pune", 
-      totalPoints: 22, 
+      totalPoints: 25, 
       breakdown: [
         { type: "Origin", points: 10, date: "2024-01-12", bpTitle: "Process Innovation" },
-        { type: "Copier", points: 2, date: "2024-01-09", bpTitle: "Efficiency Gain" },
+        { type: "Copier", points: 5, date: "2024-01-09", bpTitle: "Efficiency Gain" },
         { type: "Origin", points: 10, date: "2024-01-07", bpTitle: "Cost Savings" }
       ]
     },
     { 
       plant: "Plant 5 - Mumbai", 
-      totalPoints: 14, 
+      totalPoints: 20, 
       breakdown: [
         { type: "Origin", points: 10, date: "2024-01-11", bpTitle: "Quality Control" },
-        { type: "Copier", points: 2, date: "2024-01-08", bpTitle: "Safety Enhancement" },
-        { type: "Copier", points: 2, date: "2024-01-05", bpTitle: "Productivity Gain" }
+        { type: "Copier", points: 5, date: "2024-01-08", bpTitle: "Safety Enhancement" },
+        { type: "Copier", points: 5, date: "2024-01-05", bpTitle: "Productivity Gain" }
       ]
     }
   ]), []);
@@ -1044,54 +1044,54 @@ const HQAdminDashboard = ({ onViewChange, thisMonthTotal, ytdTotal, copySpread, 
           </CardHeader>
           <CardContent>
             {(() => {
-              // Leaderboard data (Origin: 10, Copier: 2)
+              // Leaderboard data (Origin: 10, Copier: 5)
               const leaderboardData = mergedLeaderboard ?? [
                 { 
                   plant: "Plant 2 - Chennai", 
-                  totalPoints: 24, 
+                  totalPoints: 30, 
                   breakdown: [
                     { type: "Origin", points: 10, date: "2024-01-15", bpTitle: "Automated Quality Control" },
-                    { type: "Copier", points: 2, date: "2024-01-12", bpTitle: "Energy Efficient Process" },
+                    { type: "Copier", points: 5, date: "2024-01-12", bpTitle: "Energy Efficient Process" },
                     { type: "Origin", points: 10, date: "2024-01-10", bpTitle: "Safety Enhancement" },
-                    { type: "Copier", points: 2, date: "2024-01-08", bpTitle: "Production Optimization" }
+                    { type: "Copier", points: 5, date: "2024-01-08", bpTitle: "Production Optimization" }
                   ]
                 },
                 { 
                   plant: "Plant 1 - Gurgaon", 
-                  totalPoints: 24, 
+                  totalPoints: 30, 
                   breakdown: [
                     { type: "Origin", points: 10, date: "2024-01-14", bpTitle: "Cost Reduction Initiative" },
-                    { type: "Copier", points: 2, date: "2024-01-11", bpTitle: "Quality Improvement" },
+                    { type: "Copier", points: 5, date: "2024-01-11", bpTitle: "Quality Improvement" },
                     { type: "Origin", points: 10, date: "2024-01-09", bpTitle: "Waste Management" },
-                    { type: "Copier", points: 2, date: "2024-01-07", bpTitle: "Safety Protocol" }
+                    { type: "Copier", points: 5, date: "2024-01-07", bpTitle: "Safety Protocol" }
                   ]
                 },
                 { 
                   plant: "Plant 7 - Bangalore", 
-                  totalPoints: 24, 
+                  totalPoints: 30, 
                   breakdown: [
                     { type: "Origin", points: 10, date: "2024-01-13", bpTitle: "Productivity Boost" },
-                    { type: "Copier", points: 2, date: "2024-01-10", bpTitle: "Cost Optimization" },
+                    { type: "Copier", points: 5, date: "2024-01-10", bpTitle: "Cost Optimization" },
                     { type: "Origin", points: 10, date: "2024-01-08", bpTitle: "Quality Enhancement" },
-                    { type: "Copier", points: 2, date: "2024-01-06", bpTitle: "Safety Improvement" }
+                    { type: "Copier", points: 5, date: "2024-01-06", bpTitle: "Safety Improvement" }
                   ]
                 },
                 { 
                   plant: "Plant 3 - Pune", 
-                  totalPoints: 22, 
+                  totalPoints: 25, 
                   breakdown: [
                     { type: "Origin", points: 10, date: "2024-01-12", bpTitle: "Process Innovation" },
-                    { type: "Copier", points: 2, date: "2024-01-09", bpTitle: "Efficiency Gain" },
+                    { type: "Copier", points: 5, date: "2024-01-09", bpTitle: "Efficiency Gain" },
                     { type: "Origin", points: 10, date: "2024-01-07", bpTitle: "Cost Savings" }
                   ]
                 },
                 { 
                   plant: "Plant 5 - Mumbai", 
-                  totalPoints: 14, 
+                  totalPoints: 20, 
                   breakdown: [
                     { type: "Origin", points: 10, date: "2024-01-11", bpTitle: "Quality Control" },
-                    { type: "Copier", points: 2, date: "2024-01-08", bpTitle: "Safety Enhancement" },
-                    { type: "Copier", points: 2, date: "2024-01-05", bpTitle: "Productivity Gain" }
+                    { type: "Copier", points: 5, date: "2024-01-08", bpTitle: "Safety Enhancement" },
+                    { type: "Copier", points: 5, date: "2024-01-05", bpTitle: "Productivity Gain" }
                   ]
                 }
               ];
@@ -1099,7 +1099,7 @@ const HQAdminDashboard = ({ onViewChange, thisMonthTotal, ytdTotal, copySpread, 
               return (
                 <div className="space-y-4">
                   <div className="text-sm text-muted-foreground">
-                    Total points earned through benchmark BPs (Origin: 10 points, Copier: 2 points)
+                    Total points earned through benchmark BPs (Origin: 10 points, Copier: 5 points)
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-xs">

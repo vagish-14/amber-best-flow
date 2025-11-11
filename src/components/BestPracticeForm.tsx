@@ -34,6 +34,7 @@ interface BestPracticeFormProps {
     benefits: string;
     metrics: string;
     implementation: string;
+    investment: string;
     beforeImageName: string | null;
     afterImageName: string | null;
     mode: "copy-implement" | "new-submission";
@@ -54,6 +55,8 @@ const BestPracticeForm = ({ onCancel, preFillData, onSubmit }: BestPracticeFormP
   const [benefitsText, setBenefitsText] = useState("");
   const [metricsText, setMetricsText] = useState("");
   const [implementationText, setImplementationText] = useState("");
+  const [investmentText, setInvestmentText] = useState("");
+  const [implementationArea, setImplementationArea] = useState("");
 
   const [beforeImage, setBeforeImage] = useState<File | null>(null);
   const [afterImage, setAfterImage] = useState<File | null>(null);
@@ -72,12 +75,16 @@ const BestPracticeForm = ({ onCancel, preFillData, onSubmit }: BestPracticeFormP
       setCategory(preFillData.category?.toLowerCase() || "");
       setProblemStatement(preFillData.problemStatement || "");
       setSolution(preFillData.solution || "");
+      setInvestmentText("");
+      setImplementationArea("");
     } else {
       // Clear all fields when preFillData is null (normal add-practice flow)
       setTitle("");
       setCategory("");
       setProblemStatement("");
       setSolution("");
+      setInvestmentText("");
+      setImplementationArea("");
     }
   }, [preFillData]);
   
@@ -104,6 +111,7 @@ const BestPracticeForm = ({ onCancel, preFillData, onSubmit }: BestPracticeFormP
       toast({ title: "Validation required", description: error });
       return;
     }
+    const mode: "copy-implement" | "new-submission" = preFillData ? "copy-implement" : "new-submission";
     const payload = {
       title,
       category,
@@ -112,9 +120,11 @@ const BestPracticeForm = ({ onCancel, preFillData, onSubmit }: BestPracticeFormP
       benefits: benefitsText,
       metrics: metricsText,
       implementation: implementationText,
+      investment: investmentText,
+      implementationArea,
       beforeImageName: beforeImage?.name ?? null,
       afterImageName: afterImage?.name ?? null,
-      mode: preFillData ? "copy-implement" : "new-submission",
+      mode,
     };
     console.log("Submitting Best Practice:", payload);
     onSubmit?.(payload);
@@ -201,7 +211,7 @@ const BestPracticeForm = ({ onCancel, preFillData, onSubmit }: BestPracticeFormP
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <Label htmlFor="title" className="flex items-center gap-2">
-                Practice Title *
+                Practice Theme *
                 {preFillData && <Badge variant="outline" className="bg-blue-50 text-blue-600 border-blue-200 text-xs">Pre-filled</Badge>}
               </Label>
               <Input
@@ -343,7 +353,31 @@ const BestPracticeForm = ({ onCancel, preFillData, onSubmit }: BestPracticeFormP
             </div>
           </div>
 
-          {/* Implementation Details */}
+        {/* Investment */}
+        <div className="space-y-2">
+          <Label htmlFor="investment">Investment in the Practice</Label>
+          <Textarea
+            id="investment"
+            placeholder="Document the investment made to implement this practice (time, budget, resources, etc.)"
+            className="min-h-20"
+            value={investmentText}
+            onChange={(e) => setInvestmentText(e.target.value)}
+          />
+        </div>
+
+        {/* Implementation Area */}
+        <div className="space-y-2">
+          <Label htmlFor="implementationArea">Area Implemented In</Label>
+          <Input
+            id="implementationArea"
+            placeholder="Specify the plant area or department where this practice is implemented"
+            className="w-full"
+            value={implementationArea}
+            onChange={(e) => setImplementationArea(e.target.value)}
+          />
+        </div>
+
+        {/* Implementation Details */}
           <div className="space-y-2">
             <Label htmlFor="implementation">Implementation Timeline & Resources</Label>
             <Textarea

@@ -96,11 +96,11 @@ const Index = () => {
   const userPlant = "Plant 2 - Chennai";
   const [plantMonthlyCount, setPlantMonthlyCount] = useState<number>(8);
   const [plantYtdCount, setPlantYtdCount] = useState<number>(53);
-  const [recentSubmissions, setRecentSubmissions] = useState<{ title: string; category: string; date: string; questions?: number }[]>([
-    { title: "Automated Quality Inspection System", category: "Quality", date: "2024-01-15", questions: 2 },
-    { title: "Energy Efficient Cooling Process", category: "Cost", date: "2024-01-12", questions: 0 },
-    { title: "Safety Protocol for Chemical Handling", category: "Safety", date: "2024-01-10", questions: 1 },
-    { title: "Production Line Optimization", category: "Productivity", date: "2024-01-08", questions: 3 },
+  const [recentSubmissions, setRecentSubmissions] = useState<{ title: string; category: string; date: string; questions?: number; benchmarked?: boolean }[]>([
+    { title: "Automated Quality Inspection System", category: "Quality", date: "2024-01-15", questions: 2, benchmarked: true },
+    { title: "Energy Efficient Cooling Process", category: "Cost", date: "2024-01-12", questions: 0, benchmarked: true },
+    { title: "Safety Protocol for Chemical Handling", category: "Safety", date: "2024-01-10", questions: 1, benchmarked: false },
+    { title: "Production Line Optimization", category: "Productivity", date: "2024-01-08", questions: 3, benchmarked: false },
   ]);
   const [leaderboard, setLeaderboard] = useState<{ plant: string; totalPoints: number; breakdown: { type: "Origin" | "Copier"; points: number; date: string; bpTitle: string }[] }[]>([
     {
@@ -209,6 +209,7 @@ const Index = () => {
     benefits: string;
     metrics: string;
     implementation: string;
+  investment: string;
     beforeImageName: string | null;
     afterImageName: string | null;
     mode: "copy-implement" | "new-submission";
@@ -217,7 +218,7 @@ const Index = () => {
     // Update plant user metrics
     setPlantMonthlyCount((c) => c + 1);
     setPlantYtdCount((c) => c + 1);
-    setRecentSubmissions((list) => [{ title: payload.title, category: payload.category, date: today }, ...list].slice(0, 20));
+    setRecentSubmissions((list) => [{ title: payload.title, category: payload.category, date: today, benchmarked: false }, ...list].slice(0, 20));
 
     // Update HQ totals
     setHqThisMonthTotal((c) => c + 1);

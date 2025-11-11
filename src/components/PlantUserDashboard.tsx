@@ -20,7 +20,7 @@ import {
   LineChart,
   Bot
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { KeyboardEvent, useMemo, useState } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -45,7 +45,7 @@ interface PlantUserDashboardProps {
   onCopyAndImplement?: (bpData: any) => void;
   monthlyCount?: number;
   ytdCount?: number;
-  recentSubmissions?: { title: string; category: string; date: string; questions?: number }[];
+  recentSubmissions?: { title: string; category: string; date: string; questions?: number; benchmarked?: boolean }[];
   leaderboard?: { plant: string; totalPoints: number; breakdown: { type: "Origin" | "Copier"; points: number; date: string; bpTitle: string }[] }[];
   copySpread?: { bp: string; origin: string; copies: { plant: string; date: string }[] }[];
 }
@@ -66,6 +66,28 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, monthlyCount, yt
     originatedCount: number;
     originatedPoints: number;
   } | null>(null);
+  const [ytdDialogOpen, setYtdDialogOpen] = useState(false);
+
+  const ytdPractices = useMemo(() => {
+    const fallbackPractices = [
+      { title: "Automated Quality Inspection System", category: "Quality", date: "2024-01-15", questions: 2, benchmarked: true },
+      { title: "Energy Efficient Cooling Process", category: "Cost", date: "2024-01-12", questions: 0, benchmarked: true },
+      { title: "Safety Protocol for Chemical Handling", category: "Safety", date: "2024-01-10", questions: 1, benchmarked: false },
+      { title: "Production Line Optimization", category: "Productivity", date: "2024-01-08", questions: 3, benchmarked: false },
+    ];
+    const source = (recentSubmissions && recentSubmissions.length > 0) ? recentSubmissions : fallbackPractices;
+    return source.map((practice) => ({
+      ...practice,
+      benchmarked: practice.benchmarked ?? false,
+    }));
+  }, [recentSubmissions]);
+
+  const handleYtdCardKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      setYtdDialogOpen(true);
+    }
+  };
 
   const handleCopyImplement = (bp: any) => {
     setSelectedBP(bp);
@@ -201,7 +223,14 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, monthlyCount, yt
         </CardContent>
       </Card>
 
-      <Card className="shadow-card">
+      <Card
+        className="shadow-card cursor-pointer transition hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary"
+        role="button"
+        tabIndex={0}
+        onClick={() => setYtdDialogOpen(true)}
+        onKeyDown={handleYtdCardKeyDown}
+        aria-label="View year-to-date best practices"
+      >
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <CheckCircle className="h-5 w-5 text-success" />
@@ -308,6 +337,60 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, monthlyCount, yt
           </CardContent>
         </Card>
       </div>
+
+      <AlertDialog open={ytdDialogOpen} onOpenChange={setYtdDialogOpen}>
+        <AlertDialogContent className="max-w-3xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Year-to-Date Best Practices</AlertDialogTitle>
+            <AlertDialogDescription>
+              Overview of all practices submitted this year and their benchmark status.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-left text-muted-foreground">
+                  <th className="py-2 pr-4">Practice</th>
+                  <th className="py-2 pr-4">Category</th>
+                  <th className="py-2 pr-4">Date</th>
+                  <th className="py-2 pr-4 text-center">Benchmark</th>
+                  <th className="py-2 pr-4 text-center">Q&A</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {ytdPractices.map((practice, index) => (
+                  <tr key={`${practice.title}-${index}`} className="hover:bg-accent/50">
+                    <td className="py-2 pr-4 font-medium">{practice.title}</td>
+                    <td className="py-2 pr-4">{practice.category}</td>
+                    <td className="py-2 pr-4">{practice.date}</td>
+                    <td className="py-2 pr-4 text-center">
+                      <Badge
+                        variant="outline"
+                        className={
+                          practice.benchmarked
+                            ? "bg-success/10 text-success border-success"
+                            : "bg-muted/50 text-muted-foreground"
+                        }
+                      >
+                        {practice.benchmarked ? "Benchmarked" : "Not Benchmarked"}
+                      </Badge>
+                    </td>
+                    <td className="py-2 pr-4 text-center">
+                      {practice.questions ?? 0}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Close</AlertDialogCancel>
+            <AlertDialogAction onClick={() => setYtdDialogOpen(false)}>
+              Done
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
     {/* KPI: BP Copy Spread */}
     <div className="lg:col-span-3">
@@ -617,10 +700,10 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, monthlyCount, yt
           <CardContent>
             <div className="space-y-4">
               {(recentSubmissions ?? [
-                { title: "Automated Quality Inspection System", category: "Quality", date: "2024-01-15", questions: 2 },
-                { title: "Energy Efficient Cooling Process", category: "Cost", date: "2024-01-12", questions: 0 },
-                { title: "Safety Protocol for Chemical Handling", category: "Safety", date: "2024-01-10", questions: 1 },
-                { title: "Production Line Optimization", category: "Productivity", date: "2024-01-08", questions: 3 }
+                { title: "Automated Quality Inspection System", category: "Quality", date: "2024-01-15", questions: 2, benchmarked: true },
+                { title: "Energy Efficient Cooling Process", category: "Cost", date: "2024-01-12", questions: 0, benchmarked: true },
+                { title: "Safety Protocol for Chemical Handling", category: "Safety", date: "2024-01-10", questions: 1, benchmarked: false },
+                { title: "Production Line Optimization", category: "Productivity", date: "2024-01-08", questions: 3, benchmarked: false }
               ]).map((practice, index) => (
                 <div key={index} className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors"
                      onClick={() => onViewChange("practice-list")}>

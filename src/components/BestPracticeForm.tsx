@@ -17,7 +17,9 @@ import {
   Settings,
   Save,
   Send,
-  Copy
+  Copy,
+  Cpu,
+  LineChart
 } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -151,6 +153,9 @@ const BestPracticeForm = ({ onCancel, preFillData, onSubmit }: BestPracticeFormP
     { value: "quality", label: "Quality", icon: Target, color: "category-quality" },
     { value: "productivity", label: "Productivity", icon: Zap, color: "category-productivity" },
     { value: "cost", label: "Cost", icon: DollarSign, color: "category-cost" },
+    { value: "digitalisation", label: "Digitalisation", icon: Cpu, color: "category-digitalisation" },
+    { value: "elg", label: "ELG", icon: LineChart, color: "category-elg" },
+    { value: "automation", label: "Automation", icon: Settings, color: "category-automation" },
     { value: "other", label: "Other", icon: Settings, color: "category-other" }
   ];
 

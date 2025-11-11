@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { BarChart3, TrendingUp, Factory, DollarSign } from "lucide-react";
+import { BarChart3, TrendingUp, Factory, IndianRupee } from "lucide-react";
 import {
   ChartContainer,
   ChartTooltip,
@@ -112,7 +112,7 @@ const Analytics = ({ userRole, onBack }: AnalyticsProps) => {
       {/* Yearly Cost Savings (Company-wide) */}
       <Card className="shadow-card">
         <CardHeader>
-          <CardTitle className="flex items-center"><DollarSign className="h-5 w-5 text-primary mr-2" /> Yearly Cost Savings</CardTitle>
+          <CardTitle className="flex items-center"><IndianRupee className="h-5 w-5 text-primary mr-2" /> Yearly Cost Savings</CardTitle>
         </CardHeader>
         <CardContent>
           {(() => {

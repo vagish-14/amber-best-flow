@@ -24,7 +24,7 @@ import {
   Shield,
   Zap,
   Target,
-  DollarSign,
+  IndianRupee,
   Settings,
   Users,
   BarChart3,
@@ -540,7 +540,7 @@ const HQAdminDashboard = ({ onViewChange, thisMonthTotal, ytdTotal, copySpread, 
 
               <div className="bg-gradient-to-br from-category-cost/10 to-category-cost/5 p-4 rounded-lg border border-category-cost/20">
                 <div className="flex items-center space-x-3">
-                  <DollarSign className="h-8 w-8 text-category-cost" />
+                  <IndianRupee className="h-8 w-8 text-category-cost" />
                   <div>
                     <p className="font-semibold text-category-cost">Cost</p>
                     <p className="text-2xl font-bold">21</p>

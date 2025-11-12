@@ -447,22 +447,47 @@ const CostAnalysis = ({ userRole }: { userRole: "plant" | "hq" }) => {
         <CardTitle>Cost Analysis (Savings)</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Component Division Pie Chart */}
+        {/* Plant-wise Pie Charts */}
         {userRole === "hq" && (() => {
-          const pieData = [
-            { name: "Last Month Savings", value: componentTotals.lastMonth, color: "hsl(var(--warning))" },
-            { name: "Current Month Savings", value: componentTotals.currentMonth, color: "hsl(var(--success))" },
-            { name: "YTD till last month", value: componentTotals.ytdTillLastMonth, color: "hsl(var(--primary))" },
+          const COLORS = [
+            "hsl(var(--primary))",
+            "hsl(var(--success))",
+            "hsl(var(--warning))",
+            "hsl(var(--destructive))",
+            "hsl(217, 91%, 60%)",
+            "hsl(280, 70%, 50%)",
+            "hsl(142, 76%, 36%)"
           ];
-          
-          const total = pieData.reduce((sum, item) => sum + item.value, 0);
 
-          return (
+          const currentMonthData = plantCostData.map(p => ({
+            name: plantShortLabel[p.name] ?? p.name,
+            fullName: p.name,
+            value: p.currentMonth,
+            color: COLORS[plantCostData.indexOf(p) % COLORS.length]
+          }));
+
+          const lastMonthData = plantCostData.map(p => ({
+            name: plantShortLabel[p.name] ?? p.name,
+            fullName: p.name,
+            value: p.lastMonth,
+            color: COLORS[plantCostData.indexOf(p) % COLORS.length]
+          }));
+
+          const yearlyData = plantCostData.map(p => ({
+            name: plantShortLabel[p.name] ?? p.name,
+            fullName: p.name,
+            value: p.ytdTillLastMonth,
+            color: COLORS[plantCostData.indexOf(p) % COLORS.length]
+          }));
+
+          const currentMonthTotal = currentMonthData.reduce((sum, item) => sum + item.value, 0);
+          const lastMonthTotal = lastMonthData.reduce((sum, item) => sum + item.value, 0);
+          const yearlyTotal = yearlyData.reduce((sum, item) => sum + item.value, 0);
+
+          const renderPieChart = (data: typeof currentMonthData, total: number, title: string) => (
             <ChartContainer
               config={{
-                last: { label: "Last Month Savings", color: "hsl(var(--warning))" },
-                current: { label: "Current Month Savings", color: "hsl(var(--success))" },
-                ytd: { label: "YTD till last month (Savings)", color: "hsl(var(--primary))" },
+                value: { label: "Savings", color: "hsl(var(--primary))" },
               }}
               className="h-[450px] w-full"
             >
@@ -480,7 +505,7 @@ const CostAnalysis = ({ userRole }: { userRole: "plant" | "hq" }) => {
                                 className="w-3 h-3 rounded-full" 
                                 style={{ backgroundColor: data.color }}
                               />
-                              <span className="font-semibold text-sm">{data.name}</span>
+                              <span className="font-semibold text-sm">{data.fullName || data.name}</span>
                             </div>
                             <div className="flex flex-col gap-1">
                               <span className="text-2xl font-bold text-primary">
@@ -497,16 +522,12 @@ const CostAnalysis = ({ userRole }: { userRole: "plant" | "hq" }) => {
                     return null;
                   }}
                 />
-                <ChartLegend 
-                  content={<ChartLegendContent />}
-                  wrapperStyle={{ paddingTop: '20px' }}
-                />
                 <Pie
-                  data={pieData}
+                  data={data}
                   cx="50%"
                   cy="45%"
                   labelLine={true}
-                  label={({ name, percent, value }) => {
+                  label={({ name, percent }) => {
                     return `${(percent * 100).toFixed(1)}%`;
                   }}
                   outerRadius={140}
@@ -519,7 +540,7 @@ const CostAnalysis = ({ userRole }: { userRole: "plant" | "hq" }) => {
                   animationEasing="ease-out"
                   isAnimationActive={true}
                 >
-                  {pieData.map((entry, index) => (
+                  {data.map((entry, index) => (
                     <Cell 
                       key={`cell-${index}`} 
                       fill={entry.color}
@@ -553,10 +574,27 @@ const CostAnalysis = ({ userRole }: { userRole: "plant" | "hq" }) => {
                   fontSize="14"
                   dominantBaseline="middle"
                 >
-                  Total Savings
+                  {title}
                 </text>
               </PieChart>
             </ChartContainer>
+          );
+
+          return (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div>
+                <h3 className="text-lg font-semibold mb-4 text-center">Current Month Savings</h3>
+                {renderPieChart(currentMonthData, currentMonthTotal, "Current Month")}
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold mb-4 text-center">Last Month Savings</h3>
+                {renderPieChart(lastMonthData, lastMonthTotal, "Last Month")}
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold mb-4 text-center">Yearly Savings (YTD)</h3>
+                {renderPieChart(yearlyData, yearlyTotal, "Yearly (YTD)")}
+              </div>
+            </div>
           );
         })()}
 

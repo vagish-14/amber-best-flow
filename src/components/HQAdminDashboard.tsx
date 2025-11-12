@@ -214,7 +214,7 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
   ];
 
   // Submission-derived active plants KPI
-  const totalPlantCount = 25;
+  const totalPlantCount = 7;
   const activeBySubmission = useMemo(() => plantData.filter((p) => p.submitted > 0), [plantData]);
   const activeBySubmissionCount = activeBySubmission.length;
   const ytdSubmissions = useMemo(() => plantData.reduce((sum, p) => sum + (p.submitted || 0), 0), [plantData]);

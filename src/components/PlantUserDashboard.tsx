@@ -262,6 +262,7 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, monthlyCount, yt
             <div className="text-3xl font-bold text-primary">{ytdCount ?? 53}</div>
             <p className="text-sm text-muted-foreground">Total Submitted (YTD)</p>
           </div>
+          <p className="text-xs text-muted-foreground mt-2">Click to view the yearly breakdown of BP's</p>
         </CardContent>
       </Card>
       </div>
@@ -458,7 +459,7 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, monthlyCount, yt
                     <tr className="text-left text-muted-foreground">
                       <th className="py-2">BP Name</th>
                       <th className="py-2">Origin Plant</th>
-                      <th className="py-2">Replicated by Plant (No's)</th>
+                      <th className="py-2">Replicated to Plant (No's)</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y">

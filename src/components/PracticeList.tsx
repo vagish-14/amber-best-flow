@@ -31,6 +31,8 @@ interface Practice {
   questions: number;
   savings?: string;
   areaImplemented?: string;
+  beforeImage?: string;
+  afterImage?: string;
 }
 
 interface PracticeListProps {
@@ -41,9 +43,8 @@ interface PracticeListProps {
   onToggleBenchmark?: (practice: Practice) => void;
 }
 
-const PracticeList = ({ userRole, onViewPractice, onBack, isBenchmarked, onToggleBenchmark }: PracticeListProps) => {
-  // Mock data for practices
-  const allPractices: Practice[] = [
+// Export practice data for use in other components
+export const allPracticesData: Practice[] = [
     {
       id: "BP-001",
       title: "Smart Cart Movement & Management through AMR",
@@ -64,7 +65,9 @@ const PracticeList = ({ userRole, onViewPractice, onBack, isBenchmarked, onToggl
       implementation: "Completed in 8 weeks with production and automation teams. Investment: ₹10L. ROI achieved in 6 months.",
       questions: 0,
       savings: "₹3.2L annually",
-      areaImplemented: "Press Shop to Paint Shop to FG Area"
+      areaImplemented: "Press Shop to Paint Shop to FG Area",
+      beforeImage: "/images/entry 1 before .jpeg",
+      afterImage: "/images/entry 1 after.jpeg"
     },
     {
       id: "BP-002",
@@ -85,7 +88,9 @@ const PracticeList = ({ userRole, onViewPractice, onBack, isBenchmarked, onToggl
       implementation: "Implemented in 6 weeks by maintenance and assembly team. Investment: ₹7L. ROI within 5 months.",
       questions: 0,
       savings: "₹2L annually",
-      areaImplemented: "Assembly Line"
+      areaImplemented: "Assembly Line",
+      beforeImage: "/images/entry 2 before.jpeg",
+      afterImage: "/images/entry 2 after.jpeg"
     },
     {
       id: "BP-003",
@@ -106,7 +111,9 @@ const PracticeList = ({ userRole, onViewPractice, onBack, isBenchmarked, onToggl
       implementation: "Completed in 5 weeks with automation support. Investment: ₹6L. ROI achieved within 6 months.",
       questions: 0,
       savings: "₹1.8L annually",
-      areaImplemented: "Molding to WIP Area"
+      areaImplemented: "Molding to WIP Area",
+      beforeImage: "/images/entry 3 before.png",
+      afterImage: "/images/entry 3 after.png"
     },
     {
       id: "BP-004",
@@ -128,7 +135,9 @@ const PracticeList = ({ userRole, onViewPractice, onBack, isBenchmarked, onToggl
       implementation: "Completed in 4 weeks with robotics vendor collaboration. Investment: ₹9L. ROI within 8 months.",
       questions: 0,
       savings: "₹2.2L annually",
-      areaImplemented: "Injection Molding Area"
+      areaImplemented: "Injection Molding Area",
+      beforeImage: "/images/entry 4 before .png",
+      afterImage: "/images/entry 4 after.png"
     },
     {
       id: "BP-005",
@@ -283,6 +292,10 @@ const PracticeList = ({ userRole, onViewPractice, onBack, isBenchmarked, onToggl
       areaImplemented: "Assembly Line 2"
     }
   ];
+
+const PracticeList = ({ userRole, onViewPractice, onBack, isBenchmarked, onToggleBenchmark }: PracticeListProps) => {
+  // Use exported practice data
+  const allPractices = allPracticesData;
 
   // Filter practices based on user role
   const practices = userRole === "plant" 

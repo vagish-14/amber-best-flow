@@ -45,13 +45,14 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, LabelList } from "recharts"
 
 interface HQAdminDashboardProps {
   onViewChange: (view: string) => void;
+  onViewPractice?: (practice: any) => void;
   thisMonthTotal?: number;
   ytdTotal?: number;
   copySpread?: { bp: string; origin: string; copies: { plant: string; date: string }[] }[];
   leaderboard?: { plant: string; totalPoints: number; breakdown: { type: "Origin" | "Copier"; points: number; date: string; bpTitle: string }[] }[];
 }
 
-const HQAdminDashboard = ({ onViewChange, thisMonthTotal, ytdTotal, copySpread, leaderboard }: HQAdminDashboardProps) => {
+const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTotal, copySpread, leaderboard }: HQAdminDashboardProps) => {
   const [showDivisionSelector, setShowDivisionSelector] = useState(false);
   const [division, setDivision] = useState<"all" | "component">("all");
   // Leaderboard drilldown (legacy shape kept for compatibility)
@@ -767,8 +768,21 @@ const HQAdminDashboard = ({ onViewChange, thisMonthTotal, ytdTotal, copySpread, 
                   benchmarked: "3 days ago"
                 }
               ].map((bp, index) => (
-                <div key={index} className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors"
-                     onClick={() => onViewChange("practice-list")}>
+                <div 
+                  key={index} 
+                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors"
+                  onClick={() => {
+                    if (onViewPractice) {
+                      onViewPractice({
+                        title: bp.title,
+                        category: bp.category,
+                        plant: bp.plant
+                      });
+                    } else {
+                      onViewChange("practice-list");
+                    }
+                  }}
+                >
                   <div className="flex-1">
                     <h4 className="font-medium">{bp.title}</h4>
                     <div className="flex items-center space-x-2 mt-1">
@@ -780,7 +794,22 @@ const HQAdminDashboard = ({ onViewChange, thisMonthTotal, ytdTotal, copySpread, 
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Button size="sm" variant="outline">
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (onViewPractice) {
+                          onViewPractice({
+                            title: bp.title,
+                            category: bp.category,
+                            plant: bp.plant
+                          });
+                        } else {
+                          onViewChange("practice-list");
+                        }
+                      }}
+                    >
                       View Details
                     </Button>
                   </div>
@@ -1314,8 +1343,21 @@ const HQAdminDashboard = ({ onViewChange, thisMonthTotal, ytdTotal, copySpread, 
                   submitted: "2 days ago"
                 }
               ].map((activity, index) => (
-                <div key={index} className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors"
-                     onClick={() => onViewChange("practice-list")}>
+                <div 
+                  key={index} 
+                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors"
+                  onClick={() => {
+                    if (onViewPractice) {
+                      onViewPractice({
+                        title: activity.title,
+                        category: activity.category,
+                        plant: activity.plant
+                      });
+                    } else {
+                      onViewChange("practice-list");
+                    }
+                  }}
+                >
                   <div className="flex-1">
                     <h4 className="font-medium">{activity.title}</h4>
                     <div className="flex items-center space-x-2 mt-1">
@@ -1327,7 +1369,22 @@ const HQAdminDashboard = ({ onViewChange, thisMonthTotal, ytdTotal, copySpread, 
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Button size="sm" variant="outline">
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (onViewPractice) {
+                          onViewPractice({
+                            title: activity.title,
+                            category: activity.category,
+                            plant: activity.plant
+                          });
+                        } else {
+                          onViewChange("practice-list");
+                        }
+                      }}
+                    >
                       Review
                     </Button>
                   </div>

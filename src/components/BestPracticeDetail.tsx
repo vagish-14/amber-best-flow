@@ -30,8 +30,29 @@ interface BestPracticeDetailProps {
 }
 
 const BestPracticeDetail = ({ userRole, practice: propPractice, onBack, isBenchmarked, onToggleBenchmark }: BestPracticeDetailProps) => {
-  // Use passed practice or fallback to mock data
-  const practice = propPractice || {
+  // Use passed practice or fallback to mock data, with safe defaults for all fields
+  const practice = propPractice ? {
+    id: propPractice.id || "BP-001",
+    title: propPractice.title || "Best Practice",
+    category: propPractice.category || "Other",
+    submittedBy: propPractice.submittedBy || "Unknown",
+    plant: propPractice.plant || "Unknown Plant",
+    submittedDate: propPractice.submittedDate || propPractice.date || new Date().toISOString().split('T')[0],
+    approvedDate: propPractice.approvedDate,
+    approvedBy: propPractice.approvedBy,
+    copiedToPlants: propPractice.copiedToPlants || [],
+    description: propPractice.description || "",
+    problemStatement: propPractice.problemStatement || "",
+    solution: propPractice.solution || "",
+    benefits: Array.isArray(propPractice.benefits) ? propPractice.benefits : [],
+    metrics: propPractice.metrics || "",
+    implementation: propPractice.implementation || "",
+    questions: propPractice.questions || 0,
+    savings: propPractice.savings,
+    areaImplemented: propPractice.areaImplemented,
+    beforeImage: propPractice.beforeImage,
+    afterImage: propPractice.afterImage
+  } : {
     id: "BP-001",
     title: "Automated Quality Inspection System Implementation",
     category: "Quality",
@@ -55,7 +76,8 @@ const BestPracticeDetail = ({ userRole, practice: propPractice, onBack, isBenchm
       "Freed up 3 inspectors for other quality activities"
     ],
     metrics: "Cost savings: ₹2.5L annually, Time saved: 20 hours/week, Defect detection improved by 15%",
-    implementation: "Project completed in 6 weeks with IT team collaboration. Total investment: ₹8L with 4-month ROI."
+    implementation: "Project completed in 6 weeks with IT team collaboration. Total investment: ₹8L with 4-month ROI.",
+    questions: 0
   };
 
   const questions = [
@@ -162,12 +184,12 @@ const BestPracticeDetail = ({ userRole, practice: propPractice, onBack, isBenchm
                 <h4 className="font-medium">Horizontal Deployment</h4>
               </div>
               <Badge variant="outline" className="bg-primary/10 text-primary">
-                Copied to {(practice as any).copiedToPlants?.length ?? 0} plant{(((practice as any).copiedToPlants?.length ?? 0) === 1 ? "" : "s")}
+                Copied to {practice.copiedToPlants?.length ?? 0} plant{(practice.copiedToPlants?.length === 1 ? "" : "s")}
               </Badge>
             </div>
-            {((practice as any).copiedToPlants?.length ?? 0) > 0 && (
+            {practice.copiedToPlants && Array.isArray(practice.copiedToPlants) && practice.copiedToPlants.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-3">
-                {(practice as any).copiedToPlants.map((pl: string) => (
+                {practice.copiedToPlants.map((pl: string) => (
                   <Badge key={pl} variant="outline" className="bg-muted/50">{pl}</Badge>
                 ))}
               </div>
@@ -195,22 +217,42 @@ const BestPracticeDetail = ({ userRole, practice: propPractice, onBack, isBenchm
           {/* Before/After Images */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card className="border-dashed">
-              <CardContent className="p-4 text-center">
-                <div className="bg-muted/50 rounded-lg p-8 mb-3">
-                  <ImageIcon className="h-12 w-12 mx-auto text-muted-foreground" />
-                </div>
-                <p className="font-medium">Before Implementation</p>
-                <p className="text-sm text-muted-foreground">Manual inspection setup</p>
+              <CardContent className="p-4">
+                <p className="font-medium mb-3 text-center">Before Implementation</p>
+                {practice.beforeImage ? (
+                  <div className="rounded-lg overflow-hidden border bg-muted/20">
+                    <img 
+                      src={practice.beforeImage} 
+                      alt="Before Implementation" 
+                      className="w-full h-auto object-contain max-h-96"
+                    />
+                  </div>
+                ) : (
+                  <div className="bg-muted/50 rounded-lg p-8 mb-3 text-center">
+                    <ImageIcon className="h-12 w-12 mx-auto text-muted-foreground" />
+                    <p className="text-sm text-muted-foreground mt-2">No image available</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
             
             <Card className="border-dashed">
-              <CardContent className="p-4 text-center">
-                <div className="bg-success/10 rounded-lg p-8 mb-3">
-                  <ImageIcon className="h-12 w-12 mx-auto text-success" />
-                </div>
-                <p className="font-medium">After Implementation</p>
-                <p className="text-sm text-muted-foreground">Automated inspection system</p>
+              <CardContent className="p-4">
+                <p className="font-medium mb-3 text-center">After Implementation</p>
+                {practice.afterImage ? (
+                  <div className="rounded-lg overflow-hidden border bg-success/5">
+                    <img 
+                      src={practice.afterImage} 
+                      alt="After Implementation" 
+                      className="w-full h-auto object-contain max-h-96"
+                    />
+                  </div>
+                ) : (
+                  <div className="bg-success/10 rounded-lg p-8 mb-3 text-center">
+                    <ImageIcon className="h-12 w-12 mx-auto text-success" />
+                    <p className="text-sm text-muted-foreground mt-2">No image available</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -220,12 +262,16 @@ const BestPracticeDetail = ({ userRole, practice: propPractice, onBack, isBenchm
             <div>
               <h4 className="font-medium mb-3">Key Benefits</h4>
               <ul className="space-y-2">
-                {practice.benefits.map((benefit, index) => (
-                  <li key={index} className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-success" />
-                    <span className="text-sm">{benefit}</span>
-                  </li>
-                ))}
+                {practice.benefits && Array.isArray(practice.benefits) && practice.benefits.length > 0 ? (
+                  practice.benefits.map((benefit, index) => (
+                    <li key={index} className="flex items-center space-x-2">
+                      <CheckCircle className="h-4 w-4 text-success" />
+                      <span className="text-sm">{benefit}</span>
+                    </li>
+                  ))
+                ) : (
+                  <li className="text-sm text-muted-foreground">No benefits listed</li>
+                )}
               </ul>
             </div>
             

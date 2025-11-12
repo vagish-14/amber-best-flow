@@ -43,6 +43,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
 interface PlantUserDashboardProps {
   onViewChange: (view: string) => void;
   onCopyAndImplement?: (bpData: any) => void;
+  onViewPractice?: (practice: any) => void;
   monthlyCount?: number;
   ytdCount?: number;
   recentSubmissions?: { title: string; category: string; date: string; questions?: number; benchmarked?: boolean }[];
@@ -50,7 +51,7 @@ interface PlantUserDashboardProps {
   copySpread?: { bp: string; origin: string; copies: { plant: string; date: string }[] }[];
 }
 
-const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, monthlyCount, ytdCount, recentSubmissions, leaderboard, copySpread }: PlantUserDashboardProps) => {
+const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, monthlyCount, ytdCount, recentSubmissions, leaderboard, copySpread }: PlantUserDashboardProps) => {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [selectedBP, setSelectedBP] = useState<any>(null);
   const [bpSpreadOpen, setBpSpreadOpen] = useState(false);
@@ -694,7 +695,24 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, monthlyCount, yt
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Button size="sm" variant="outline" onClick={() => onViewChange("profile")}>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={() => {
+                        if (onViewPractice) {
+                          onViewPractice({
+                            title: bp.title,
+                            category: bp.category,
+                            plant: bp.plant,
+                            problemStatement: bp.problemStatement,
+                            solution: bp.solution,
+                            savings: bp.savings
+                          });
+                        } else {
+                          onViewChange("practice-list");
+                        }
+                      }}
+                    >
                       View Details
                     </Button>
                     <Button 
@@ -727,8 +745,23 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, monthlyCount, yt
                 { title: "Safety Protocol for Chemical Handling", category: "Safety", date: "2024-01-10", questions: 1, benchmarked: false },
                 { title: "Production Line Optimization", category: "Productivity", date: "2024-01-08", questions: 3, benchmarked: false }
               ]).map((practice, index) => (
-                <div key={index} className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors"
-                     onClick={() => onViewChange("practice-list")}>
+                <div 
+                  key={index} 
+                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors"
+                  onClick={() => {
+                    if (onViewPractice) {
+                      onViewPractice({
+                        title: practice.title,
+                        category: practice.category,
+                        submittedDate: practice.date,
+                        questions: practice.questions,
+                        benchmarked: practice.benchmarked
+                      });
+                    } else {
+                      onViewChange("practice-list");
+                    }
+                  }}
+                >
                   <div className="flex-1">
                     <h4 className="font-medium">{practice.title}</h4>
                     <div className="flex items-center space-x-2 mt-1">

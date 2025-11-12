@@ -20,7 +20,7 @@ import {
   ChartLegend,
   ChartLegendContent,
 } from "@/components/ui/chart";
-import { Pie, PieChart, Cell, BarChart, XAxis, YAxis, CartesianGrid, Bar } from "recharts";
+import { Pie, PieChart, Cell, BarChart, XAxis, YAxis, CartesianGrid, Bar, Label } from "recharts";
 
 interface AnalyticsProps {
   userRole: "plant" | "hq";
@@ -447,32 +447,118 @@ const CostAnalysis = ({ userRole }: { userRole: "plant" | "hq" }) => {
         <CardTitle>Cost Analysis (Savings)</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Division-wise grouped bar chart (savings) */}
-        {userRole === "hq" && (
-          <ChartContainer
-            config={{
-              last: { label: "Last Month Savings", color: "hsl(var(--warning))" },
-              current: { label: "Current Month Savings", color: "hsl(var(--success))" },
-              ytd: { label: "YTD till last month (Savings)", color: "hsl(var(--primary))" },
-            }}
-          >
-            <BarChart
-              data={[
-                { division: "Component", last: componentTotals.lastMonth, current: componentTotals.currentMonth, ytd: componentTotals.ytdTillLastMonth },
-                { division: "Total", last: companyTotals.lastMonth, current: companyTotals.currentMonth, ytd: companyTotals.ytdTillLastMonth },
-              ]}
+        {/* Component Division Pie Chart */}
+        {userRole === "hq" && (() => {
+          const pieData = [
+            { name: "Last Month Savings", value: componentTotals.lastMonth, color: "hsl(var(--warning))" },
+            { name: "Current Month Savings", value: componentTotals.currentMonth, color: "hsl(var(--success))" },
+            { name: "YTD till last month", value: componentTotals.ytdTillLastMonth, color: "hsl(var(--primary))" },
+          ];
+          
+          const total = pieData.reduce((sum, item) => sum + item.value, 0);
+
+          return (
+            <ChartContainer
+              config={{
+                last: { label: "Last Month Savings", color: "hsl(var(--warning))" },
+                current: { label: "Current Month Savings", color: "hsl(var(--success))" },
+                ytd: { label: "YTD till last month (Savings)", color: "hsl(var(--primary))" },
+              }}
+              className="h-[450px] w-full"
             >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="division" />
-              <YAxis />
-              <ChartTooltip content={<ChartTooltipContent />} />
-              <ChartLegend content={<ChartLegendContent />} />
-              <Bar dataKey="last" fill="var(--color-last)" />
-              <Bar dataKey="current" fill="var(--color-current)" />
-              <Bar dataKey="ytd" fill="var(--color-ytd)" />
-            </BarChart>
-          </ChartContainer>
-        )}
+              <PieChart>
+                <ChartTooltip
+                  content={({ active, payload }) => {
+                    if (active && payload && payload.length) {
+                      const data = payload[0].payload;
+                      const percent = ((data.value / total) * 100).toFixed(1);
+                      return (
+                        <div className="rounded-lg border bg-background p-4 shadow-lg backdrop-blur-sm">
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2">
+                              <div 
+                                className="w-3 h-3 rounded-full" 
+                                style={{ backgroundColor: data.color }}
+                              />
+                              <span className="font-semibold text-sm">{data.name}</span>
+                            </div>
+                            <div className="flex flex-col gap-1">
+                              <span className="text-2xl font-bold text-primary">
+                                {formatLakh(data.value)} ₹L
+                              </span>
+                              <span className="text-xs text-muted-foreground">
+                                {percent}% of total savings
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    }
+                    return null;
+                  }}
+                />
+                <ChartLegend 
+                  content={<ChartLegendContent />}
+                  wrapperStyle={{ paddingTop: '20px' }}
+                />
+                <Pie
+                  data={pieData}
+                  cx="50%"
+                  cy="45%"
+                  labelLine={true}
+                  label={({ name, percent, value }) => {
+                    return `${(percent * 100).toFixed(1)}%`;
+                  }}
+                  outerRadius={140}
+                  innerRadius={70}
+                  paddingAngle={3}
+                  fill="#8884d8"
+                  dataKey="value"
+                  animationBegin={0}
+                  animationDuration={800}
+                  animationEasing="ease-out"
+                  isAnimationActive={true}
+                >
+                  {pieData.map((entry, index) => (
+                    <Cell 
+                      key={`cell-${index}`} 
+                      fill={entry.color}
+                      stroke={entry.color}
+                      strokeWidth={2}
+                      style={{
+                        filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
+                        transition: 'all 0.3s ease',
+                        cursor: 'pointer'
+                      }}
+                    />
+                  ))}
+                </Pie>
+                {/* Center label showing total */}
+                <text
+                  x="50%"
+                  y="42%"
+                  textAnchor="middle"
+                  fill="hsl(var(--foreground))"
+                  fontSize="24"
+                  fontWeight="bold"
+                  dominantBaseline="middle"
+                >
+                  {formatLakh(total)} ₹L
+                </text>
+                <text
+                  x="50%"
+                  y="48%"
+                  textAnchor="middle"
+                  fill="hsl(var(--muted-foreground))"
+                  fontSize="14"
+                  dominantBaseline="middle"
+                >
+                  Total Savings
+                </text>
+              </PieChart>
+            </ChartContainer>
+          );
+        })()}
 
         {/* Division-wise savings table */}
         {userRole === "hq" && (
@@ -503,24 +589,6 @@ const CostAnalysis = ({ userRole }: { userRole: "plant" | "hq" }) => {
             </table>
           </div>
         )}
-
-        {/* Plant-wise savings bar chart */}
-        <ChartContainer
-          config={{
-            last: { label: "Last Month Savings", color: "hsl(var(--warning))" },
-            current: { label: "Current Month Savings", color: "hsl(var(--success))" },
-          }}
-        >
-          <BarChart data={visible.map(p => ({ plant: plantShortLabel[p.name] ?? p.name, last: p.lastMonth, current: p.currentMonth }))}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="plant" />
-            <YAxis />
-            <ChartTooltip content={<ChartTooltipContent />} />
-            <ChartLegend content={<ChartLegendContent />} />
-            <Bar dataKey="last" fill="var(--color-last)" />
-            <Bar dataKey="current" fill="var(--color-current)" />
-          </BarChart>
-        </ChartContainer>
 
         {/* Plant-wise table (exact savings figures) */}
         <div className="overflow-x-auto">

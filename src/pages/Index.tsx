@@ -11,7 +11,7 @@ import BestPracticeDetail from "@/components/BestPracticeDetail";
 import ApprovalsList from "@/components/ApprovalsList";
 import Analytics from "@/components/Analytics";
 import BenchmarkedList from "@/components/BenchmarkedList";
-import PracticeList from "@/components/PracticeList";
+import PracticeList, { allPracticesData } from "@/components/PracticeList";
 import Navigation from "@/components/Navigation";
 import { Building2, Shield, LogIn } from "lucide-react";
 
@@ -19,6 +19,7 @@ const Index = () => {
   const [currentView, setCurrentView] = useState("login");
   const [userRole, setUserRole] = useState<"plant" | "hq" | null>(null);
   const [selectedPractice, setSelectedPractice] = useState<any>(null);
+  const [previousView, setPreviousView] = useState<string>("dashboard");
   const [benchmarkedIds, setBenchmarkedIds] = useState<string[]>(["BP-002", "BP-004", "BP-006"]);
   const [formPreFillData, setFormPreFillData] = useState<{
     title?: string;
@@ -204,6 +205,20 @@ const Index = () => {
     setCurrentView(view);
   };
 
+  const handleViewPractice = (practiceData: any) => {
+    // Find the full practice data by title
+    const fullPractice = allPracticesData.find(p => 
+      p.title === practiceData.title || 
+      (practiceData.title && p.title.toLowerCase().includes(practiceData.title.toLowerCase()))
+    );
+    
+    // Use the found practice or merge with provided data
+    const practiceToView = fullPractice ? { ...fullPractice, ...practiceData } : practiceData;
+    setPreviousView(currentView); // Track where we came from
+    setSelectedPractice(practiceToView);
+    setCurrentView("practice-detail");
+  };
+
   const onFormSubmit = (payload: {
     title: string;
     category: string;
@@ -326,6 +341,7 @@ const Index = () => {
               <PlantUserDashboard 
                 onViewChange={handleViewChange} 
                 onCopyAndImplement={handleCopyAndImplement}
+                onViewPractice={handleViewPractice}
                 monthlyCount={plantMonthlyCount}
                 ytdCount={plantYtdCount}
                 recentSubmissions={recentSubmissions}
@@ -335,6 +351,7 @@ const Index = () => {
             ) : (
               <HQAdminDashboard 
                 onViewChange={handleViewChange} 
+                onViewPractice={handleViewPractice}
                 thisMonthTotal={hqThisMonthTotal}
                 ytdTotal={hqYtdTotal}
                 leaderboard={leaderboard}
@@ -374,6 +391,7 @@ const Index = () => {
               isBenchmarked={isBenchmarked}
               onToggleBenchmark={(practice) => toggleBenchmark(practice.id)}
               onViewPractice={(practice) => {
+                setPreviousView("practice-list");
                 setSelectedPractice(practice);
                 setCurrentView("practice-detail");
               }}
@@ -394,7 +412,7 @@ const Index = () => {
               practice={selectedPractice}
               isBenchmarked={isBenchmarked(selectedPractice?.id)}
               onToggleBenchmark={() => toggleBenchmark(selectedPractice?.id)}
-              onBack={() => setCurrentView("practice-list")} 
+              onBack={() => setCurrentView(previousView)} 
             />
           </div>
         )}
@@ -411,6 +429,7 @@ const Index = () => {
               isBenchmarked={isBenchmarked}
               onToggleBenchmark={(practice) => toggleBenchmark(practice.id)}
               onViewPractice={(practice) => {
+                setPreviousView("approvals");
                 setSelectedPractice(practice);
                 setCurrentView("practice-detail");
               }}
@@ -442,7 +461,11 @@ const Index = () => {
             />
             <BenchmarkedList
               items={Object.values(benchmarkedById)}
-              onViewPractice={(practice) => { setSelectedPractice(practice); setCurrentView("practice-detail"); }}
+              onViewPractice={(practice) => { 
+                setPreviousView("profile");
+                setSelectedPractice(practice); 
+                setCurrentView("practice-detail"); 
+              }}
               onUnbenchmark={(practice) => toggleBenchmark(practice)}
               onBack={() => setCurrentView("dashboard")}
               onCopyAndImplement={handleCopyAndImplement}

@@ -228,7 +228,7 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, monthlyCount, yt
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <TrendingUp className="h-5 w-5 text-primary" />
-            <span>Monthly Progress</span>
+            <span>Monthly Progress (Uploaded BP's)</span>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3 p-4">
@@ -270,7 +270,7 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, monthlyCount, yt
       <div className="lg:col-span-3">
         <Card className="shadow-card">
           <CardHeader>
-            <CardTitle>Category Wise Breakdown</CardTitle>
+            <CardTitle>Category Wise BP's</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
@@ -458,7 +458,7 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, monthlyCount, yt
                     <tr className="text-left text-muted-foreground">
                       <th className="py-2">BP Name</th>
                       <th className="py-2">Origin Plant</th>
-                      <th className="py-2">Copied To</th>
+                      <th className="py-2">Replicated by Plant (No's)</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y">

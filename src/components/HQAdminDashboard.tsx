@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { cn, formatCurrency } from "@/lib/utils";
 import { useState, useMemo } from "react";
 import {
@@ -55,6 +56,7 @@ interface HQAdminDashboardProps {
 const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTotal, copySpread, leaderboard }: HQAdminDashboardProps) => {
   const [showDivisionSelector, setShowDivisionSelector] = useState(false);
   const [division, setDivision] = useState<"all" | "component">("all");
+  const [plantPerformanceView, setPlantPerformanceView] = useState<"yearly" | "currentMonth">("yearly");
   // Leaderboard drilldown (legacy shape kept for compatibility)
   const [lbDrillOpen, setLbDrillOpen] = useState(false);
   const [lbDrillPlant, setLbDrillPlant] = useState<string | null>(null);
@@ -174,6 +176,16 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
     { name: "Supa", submitted: 17 },
     { name: "Ranjangaon", submitted: 22 },
     { name: "Ponneri", submitted: 0 }
+  ];
+
+  const plantMonthlyPerformance = [
+    { name: "Greater Noida (Ecotech 1)", submitted: 5 },
+    { name: "Kanchipuram", submitted: 4 },
+    { name: "Rajpura", submitted: 4 },
+    { name: "Shahjahanpur", submitted: 3 },
+    { name: "Supa", submitted: 2 },
+    { name: "Ranjangaon", submitted: 4 },
+    { name: "Ponneri", submitted: 2 }
   ];
 
   // Demo dataset of benchmarked BPs (used for count and drilldown)
@@ -581,10 +593,29 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
       <div className="lg:col-span-4">
         <Card className="shadow-card">
           <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Building2 className="h-5 w-5 text-primary" />
-              <span>Plant-wise Performance</span>
-            </CardTitle>
+            <div className="flex items-center justify-between gap-4">
+              <CardTitle className="flex items-center space-x-2">
+                <Building2 className="h-5 w-5 text-primary" />
+                <span>Plant-wise Performance</span>
+              </CardTitle>
+              <ToggleGroup
+                type="single"
+                value={plantPerformanceView}
+                onValueChange={(value) => {
+                  if (value === "yearly" || value === "currentMonth") {
+                    setPlantPerformanceView(value);
+                  }
+                }}
+                className="border rounded-md"
+              >
+                <ToggleGroupItem value="yearly" aria-label="Yearly performance" className="px-4 text-sm">
+                  Yearly
+                </ToggleGroupItem>
+                <ToggleGroupItem value="currentMonth" aria-label="Current month performance" className="px-4 text-sm">
+                  Current Month
+                </ToggleGroupItem>
+              </ToggleGroup>
+            </div>
           </CardHeader>
           <CardContent>
             <ChartContainer
@@ -593,11 +624,14 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
               }}
               className="h-[400px] w-full"
             >
-              <BarChart data={plantData.map(p => ({ 
-                plant: plantShortLabel[p.name] ?? p.name,
-                fullName: p.name,
-                submitted: p.submitted
-              }))} margin={{ top: 24, right: 16, left: 0, bottom: 0 }}>
+              <BarChart
+                data={(plantPerformanceView === "yearly" ? plantData : plantMonthlyPerformance).map((p) => ({
+                  plant: plantShortLabel[p.name] ?? p.name,
+                  fullName: p.name,
+                  submitted: p.submitted,
+                }))}
+                margin={{ top: 24, right: 16, left: 0, bottom: 0 }}
+              >
                 <defs>
                   <linearGradient id="gradientSubmitted" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="hsl(var(--success))" stopOpacity={0.9} />

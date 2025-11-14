@@ -96,7 +96,10 @@ const plantsToShow = userRole === "plant" ? plantStats.filter(p => p.name === "G
       <Card className="shadow-soft hover:shadow-medium transition-smooth border border-border/50">
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center"><BarChart3 className="h-5 w-5 text-primary mr-2" /> Yearly Analytics</CardTitle>
+            <CardTitle className="flex items-center">
+              <BarChart3 className="h-5 w-5 text-primary mr-2" />
+              {yearlyViewMode === "yearly" ? "Yearly Analytics" : "Monthly Analytics"}
+            </CardTitle>
             {userRole === "hq" && (
               <ToggleGroup 
                 type="single" 

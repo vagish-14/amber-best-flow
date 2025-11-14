@@ -201,7 +201,7 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Quick Actions */}
       <div className="lg:col-span-3">
-        <Card className="bg-gradient-hero text-primary-foreground shadow-elevated">
+        <Card className="bg-gradient-hero text-primary-foreground shadow-strong border-0">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -226,7 +226,7 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
 
       {/* Statistics Overview */}
       <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-6">
-      <Card className="shadow-card">
+      <Card className="shadow-soft hover:shadow-medium transition-smooth border border-border/50">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <TrendingUp className="h-5 w-5 text-primary" />
@@ -246,7 +246,7 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
       </Card>
 
       <Card
-        className="shadow-card cursor-pointer transition hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary"
+        className="shadow-soft hover:shadow-medium transition-smooth border border-border/50 cursor-pointer hover-lift focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary"
         role="button"
         tabIndex={0}
         onClick={() => setYtdDialogOpen(true)}
@@ -271,7 +271,7 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
 
       {/* Category Wise Breakdown */}
       <div className="lg:col-span-3">
-        <Card className="shadow-card">
+        <Card className="shadow-soft hover:shadow-medium transition-smooth border border-border/50">
           <CardHeader>
             <CardTitle>Category Wise BP's</CardTitle>
           </CardHeader>
@@ -417,7 +417,7 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
 
     {/* BP Copy Spread */}
     <div className="lg:col-span-3">
-      <Card className="shadow-card">
+      <Card className="shadow-soft hover:shadow-medium transition-smooth border border-border/50">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Target className="h-5 w-5 text-primary" />
@@ -535,7 +535,7 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
 
       {/* Monthly Cost Savings & Stars */}
       <div className="lg:col-span-3">
-        <Card className="shadow-card">
+        <Card className="shadow-soft hover:shadow-medium transition-smooth border border-border/50">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <BarChart3 className="h-5 w-5 text-primary" />
@@ -655,7 +655,7 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
 
       {/* Recent Benchmark BPs */}
       <div className="lg:col-span-3">
-        <Card className="shadow-card">
+        <Card className="shadow-soft hover:shadow-medium transition-smooth border border-border/50">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Star className="h-5 w-5 text-primary" />
@@ -759,7 +759,7 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
 
       {/* Recent Submissions */}
       <div className="lg:col-span-3">
-        <Card className="shadow-card">
+        <Card className="shadow-soft hover:shadow-medium transition-smooth border border-border/50">
           <CardHeader>
             <CardTitle>Your Recent Submissions</CardTitle>
           </CardHeader>
@@ -773,7 +773,7 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
               ]).map((practice, index) => (
                 <div 
                   key={index} 
-                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors"
+                  className="flex items-center justify-between p-4 border rounded-xl hover:bg-accent/50 hover:border-primary/20 cursor-pointer transition-smooth hover-lift"
                   onClick={() => {
                     if (onViewPractice) {
                       onViewPractice({
@@ -813,7 +813,7 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
 
       {/* Benchmark BP Leaderboard */}
       <div className="lg:col-span-3">
-        <Card className="shadow-card">
+        <Card className="shadow-soft hover:shadow-medium transition-smooth border border-border/50">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Target className="h-5 w-5 text-primary" />
@@ -842,7 +842,7 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
                         {leaderboardData.map((entry, index) => (
                           <tr
                             key={entry.plant}
-                            className="hover:bg-accent/50 cursor-pointer"
+                            className="hover:bg-accent/50 hover:border-l-4 hover:border-l-primary cursor-pointer transition-smooth"
                             onClick={() => {
                               const asCopier = entry.breakdown.filter((b) => b.type === "Copier");
                               const copiedCount = asCopier.length;

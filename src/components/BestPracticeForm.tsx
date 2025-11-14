@@ -171,7 +171,7 @@ const BestPracticeForm = ({ onCancel, preFillData, onSubmit }: BestPracticeFormP
 
   return (
     <div className="max-w-4xl mx-auto">
-      <Card className="shadow-elevated">
+      <Card className="shadow-medium hover:shadow-strong transition-smooth border border-border/50">
         <CardHeader className="bg-gradient-hero text-primary-foreground">
           <CardTitle className="flex items-center space-x-2">
             {preFillData ? <Copy className="h-6 w-6" /> : <FileText className="h-6 w-6" />}
@@ -217,8 +217,8 @@ const BestPracticeForm = ({ onCancel, preFillData, onSubmit }: BestPracticeFormP
               <Input
                 id="title"
                 placeholder="Enter a descriptive title for your best practice"
-                className="w-full"
-                value={title}
+              className="w-full h-11 transition-smooth focus:ring-2 focus:ring-primary/20"
+              value={title}
                 onChange={(e) => {
                   const value = e.target.value;
                   if (value.length === 0) {
@@ -244,7 +244,7 @@ const BestPracticeForm = ({ onCancel, preFillData, onSubmit }: BestPracticeFormP
                 {preFillData && <Badge variant="outline" className="bg-blue-50 text-blue-600 border-blue-200 text-xs">Pre-filled</Badge>}
               </Label>
               <Select value={category} onValueChange={setCategory}>
-                <SelectTrigger>
+                <SelectTrigger className="h-11 transition-smooth focus:ring-2 focus:ring-primary/20">
                   <SelectValue placeholder="Select practice category" />
                 </SelectTrigger>
                 <SelectContent>
@@ -270,7 +270,7 @@ const BestPracticeForm = ({ onCancel, preFillData, onSubmit }: BestPracticeFormP
             <Input
               id="implementationArea"
               placeholder="Enter the area where this practice was implemented"
-              className="w-full"
+              className="w-full h-11 transition-smooth focus:ring-2 focus:ring-primary/20"
               value={implementationArea}
               onChange={(e) => {
                 const value = e.target.value;
@@ -300,7 +300,7 @@ const BestPracticeForm = ({ onCancel, preFillData, onSubmit }: BestPracticeFormP
             <Textarea
               id="problem"
               placeholder="Describe the problem or challenge this practice addresses..."
-              className="min-h-24"
+              className="min-h-24 transition-smooth focus:ring-2 focus:ring-primary/20"
               value={problemStatement}
               onChange={(e) => {
                 const value = e.target.value;
@@ -324,7 +324,7 @@ const BestPracticeForm = ({ onCancel, preFillData, onSubmit }: BestPracticeFormP
             <Textarea
               id="solution"
               placeholder="Provide detailed description of your solution, including implementation steps..."
-              className="min-h-32"
+              className="min-h-32 transition-smooth focus:ring-2 focus:ring-primary/20"
               value={solution}
               onChange={(e) => {
                 const value = e.target.value;
@@ -395,7 +395,7 @@ const BestPracticeForm = ({ onCancel, preFillData, onSubmit }: BestPracticeFormP
               <Textarea
                 id="benefits"
                 placeholder="List the key benefits and improvements realized..."
-                className="min-h-20"
+                className="min-h-20 transition-smooth focus:ring-2 focus:ring-primary/20"
                 value={benefitsText}
                 onChange={(e) => {
                   const value = e.target.value;
@@ -415,7 +415,7 @@ const BestPracticeForm = ({ onCancel, preFillData, onSubmit }: BestPracticeFormP
               <Textarea
                 id="metrics"
                 placeholder="Include measurable improvements (e.g., 15% reduction in waste, 2 hours saved per day)..."
-                className="min-h-20"
+                className="min-h-20 transition-smooth focus:ring-2 focus:ring-primary/20"
                 value={metricsText}
                 onChange={(e) => {
                   const value = e.target.value;
@@ -458,7 +458,7 @@ const BestPracticeForm = ({ onCancel, preFillData, onSubmit }: BestPracticeFormP
             <Textarea
               id="implementation"
               placeholder="Describe the implementation timeline, resources required, team involved..."
-              className="min-h-24"
+              className="min-h-24 transition-smooth focus:ring-2 focus:ring-primary/20"
               value={implementationText}
               onChange={(e) => {
                 const value = e.target.value;
@@ -533,15 +533,15 @@ const BestPracticeForm = ({ onCancel, preFillData, onSubmit }: BestPracticeFormP
             </div>
             
             <div className="flex space-x-3">
-              <Button variant="outline" onClick={onCancel}>
+              <Button variant="outline" onClick={onCancel} className="transition-smooth hover:bg-accent">
                 <X className="h-4 w-4 mr-2" />
                 Cancel
               </Button>
-              <Button variant="outline" onClick={handleSaveDraft}>
+              <Button variant="outline" onClick={handleSaveDraft} className="transition-smooth hover:bg-accent">
                 <Save className="h-4 w-4 mr-2" />
                 Save Draft
               </Button>
-              <Button className="bg-gradient-primary" onClick={handleSubmit}>
+              <Button className="bg-gradient-primary hover:bg-gradient-primary/90 shadow-medium hover:shadow-strong transition-smooth" onClick={handleSubmit}>
                 <Send className="h-4 w-4 mr-2" />
                 Submit
               </Button>

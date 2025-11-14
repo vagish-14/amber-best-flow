@@ -272,7 +272,7 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
       {/* HQ Overview Header */}
       <div className="lg:col-span-4">
-        <Card className="bg-gradient-hero text-primary-foreground shadow-elevated">
+        <Card className="bg-gradient-hero text-primary-foreground shadow-strong border-0">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -297,7 +297,7 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
       {/* Division Selector */}
       {showDivisionSelector && (
         <div className="lg:col-span-4">
-          <Card className="shadow-card">
+          <Card className="shadow-soft hover:shadow-medium transition-smooth border border-border/50">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -792,7 +792,7 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
               ].filter(bp => bp.hasImage).map((bp, index) => (
                 <div 
                   key={index} 
-                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors"
+                  className="flex items-center justify-between p-4 border rounded-xl hover:bg-accent/50 hover:border-primary/20 cursor-pointer transition-smooth hover-lift"
                   onClick={() => {
                     if (onViewPractice) {
                       onViewPractice({
@@ -901,7 +901,7 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
                       {ratings.map((r) => (
                         <tr
                           key={r.name}
-                          className="hover:bg-accent/50 cursor-pointer"
+                          className="hover:bg-accent/50 hover:border-l-4 hover:border-l-primary cursor-pointer transition-smooth"
                           onClick={() => {
                             setStarDrillPlant(r.name);
                             setStarDrillData(generateMonthlyData(r.monthly, r.ytd));
@@ -1016,7 +1016,7 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
                       {rows.map((row) => (
                         <tr
                           key={row.bp}
-                          className="hover:bg-accent/50 cursor-pointer"
+                          className="hover:bg-accent/50 hover:border-l-4 hover:border-l-primary cursor-pointer transition-smooth"
                           onClick={() => {
                             setBpSpreadBP(row.bp);
                             setBpSpreadRows(row.copies);
@@ -1161,7 +1161,7 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
                         {leaderboardData.map((entry, index) => (
                           <tr
                             key={entry.plant}
-                            className="hover:bg-accent/50 cursor-pointer"
+                            className="hover:bg-accent/50 hover:border-l-4 hover:border-l-primary cursor-pointer transition-smooth"
                             onClick={() => {
                               // Aggregate both copier and origin sides (only benchmarked BPs can be copied)
                               const asCopier = entry.breakdown.filter((b) => b.type === "Copier");
@@ -1368,7 +1368,7 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
               ].map((activity, index) => (
                 <div 
                   key={index} 
-                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors"
+                  className="flex items-center justify-between p-4 border rounded-xl hover:bg-accent/50 hover:border-primary/20 cursor-pointer transition-smooth hover-lift"
                   onClick={() => {
                     if (onViewPractice) {
                       onViewPractice({

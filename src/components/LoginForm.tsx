@@ -12,40 +12,40 @@ interface LoginFormProps {
 const LoginForm = ({ onLogin }: LoginFormProps) => {
   return (
     <div className="space-y-6">
-      <div className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="email" className="flex items-center space-x-2">
-            <User className="h-4 w-4" />
+      <div className="space-y-5">
+        <div className="space-y-2.5">
+          <Label htmlFor="email" className="flex items-center space-x-2 text-sm font-medium">
+            <User className="h-4 w-4 text-muted-foreground" />
             <span>Email / Employee ID</span>
           </Label>
           <Input
             id="email"
             type="email"
             placeholder="employee@ambergroup.com"
-            className="w-full"
+            className="w-full h-11 transition-smooth focus:ring-2 focus:ring-primary/20"
           />
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="password" className="flex items-center space-x-2">
-            <Lock className="h-4 w-4" />
+        <div className="space-y-2.5">
+          <Label htmlFor="password" className="flex items-center space-x-2 text-sm font-medium">
+            <Lock className="h-4 w-4 text-muted-foreground" />
             <span>Password</span>
           </Label>
           <Input
             id="password"
             type="password"
             placeholder="Enter your password"
-            className="w-full"
+            className="w-full h-11 transition-smooth focus:ring-2 focus:ring-primary/20"
           />
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="plant" className="flex items-center space-x-2">
-            <Building className="h-4 w-4" />
+        <div className="space-y-2.5">
+          <Label htmlFor="plant" className="flex items-center space-x-2 text-sm font-medium">
+            <Building className="h-4 w-4 text-muted-foreground" />
             <span>Plant / Department</span>
           </Label>
           <Select>
-            <SelectTrigger>
+            <SelectTrigger className="h-11 transition-smooth focus:ring-2 focus:ring-primary/20">
               <SelectValue placeholder="Select your location" />
             </SelectTrigger>
             <SelectContent>
@@ -62,37 +62,41 @@ const LoginForm = ({ onLogin }: LoginFormProps) => {
         </div>
       </div>
 
-      <div className="space-y-3">
-        <p className="text-sm text-muted-foreground text-center">
+      <div className="space-y-4">
+        <p className="text-sm text-muted-foreground text-center font-medium">
           Wireframe Demo - Choose User Type:
         </p>
         
-        <div className="grid grid-cols-2 gap-3">
-          <Card className="cursor-pointer hover:shadow-card transition-shadow" onClick={() => onLogin("plant")}>
-            <CardContent className="p-4 text-center">
-              <Building className="h-8 w-8 mx-auto mb-2 text-primary" />
-              <p className="font-medium text-sm">Plant User</p>
+        <div className="grid grid-cols-2 gap-4">
+          <Card className="cursor-pointer hover-lift border-2 border-transparent hover:border-primary/20 transition-smooth group" onClick={() => onLogin("plant")}>
+            <CardContent className="p-5 text-center">
+              <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-smooth">
+                <Building className="h-6 w-6 text-primary" />
+              </div>
+              <p className="font-semibold text-sm mb-1">Plant User</p>
               <p className="text-xs text-muted-foreground">Submit & view own practices</p>
             </CardContent>
           </Card>
 
-          <Card className="cursor-pointer hover:shadow-card transition-shadow" onClick={() => onLogin("hq")}>
-            <CardContent className="p-4 text-center">
-              <User className="h-8 w-8 mx-auto mb-2 text-primary" />
-              <p className="font-medium text-sm">HQ Admin</p>
+          <Card className="cursor-pointer hover-lift border-2 border-transparent hover:border-primary/20 transition-smooth group" onClick={() => onLogin("hq")}>
+            <CardContent className="p-5 text-center">
+              <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-smooth">
+                <User className="h-6 w-6 text-primary" />
+              </div>
+              <p className="font-semibold text-sm mb-1">HQ Admin</p>
               <p className="text-xs text-muted-foreground">Review & approve all practices</p>
             </CardContent>
           </Card>
         </div>
       </div>
 
-      <Button className="w-full bg-gradient-primary hover:bg-gradient-primary/90">
+      <Button className="w-full h-11 bg-gradient-primary hover:bg-gradient-primary/90 text-base font-medium shadow-medium hover:shadow-strong transition-smooth">
         Sign In to Portal
       </Button>
 
-      <div className="text-center text-xs text-muted-foreground">
+      <div className="text-center text-xs text-muted-foreground space-y-1">
         <p>Forgot password? Contact IT Support</p>
-        <p className="mt-1">This is a wireframe demonstration</p>
+        <p>This is a wireframe demonstration</p>
       </div>
     </div>
   );

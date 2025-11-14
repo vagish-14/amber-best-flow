@@ -93,7 +93,7 @@ const plantsToShow = userRole === "plant" ? plantStats.filter(p => p.name === "G
       </div>
 
       {/* Company-wide yearly bar chart */}
-      <Card className="shadow-card">
+      <Card className="shadow-soft hover:shadow-medium transition-smooth border border-border/50">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center"><BarChart3 className="h-5 w-5 text-primary mr-2" /> Yearly Analytics</CardTitle>
@@ -170,7 +170,7 @@ const plantsToShow = userRole === "plant" ? plantStats.filter(p => p.name === "G
       </Card>
 
       {/* Yearly Cost Savings (Company-wide) */}
-      <Card className="shadow-card">
+      <Card className="shadow-soft hover:shadow-medium transition-smooth border border-border/50">
         <CardHeader>
           <CardTitle className="flex items-center"><IndianRupee className="h-5 w-5 text-primary mr-2" /> Yearly Cost Savings</CardTitle>
         </CardHeader>

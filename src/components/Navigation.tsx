@@ -20,14 +20,14 @@ interface NavigationProps {
 
 const Navigation = ({ userRole, currentView, onViewChange }: NavigationProps) => {
   return (
-    <div className="bg-card border rounded-lg p-4 shadow-card">
+    <div className="bg-card border rounded-xl p-4 shadow-soft backdrop-blur-sm">
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-1">
+        <div className="flex items-center space-x-2">
           <Button
             variant={currentView === "dashboard" ? "default" : "ghost"}
             size="sm"
             onClick={() => onViewChange("dashboard")}
-            className="text-sm"
+            className="text-sm font-medium transition-smooth h-9 px-4"
           >
             <Home className="h-4 w-4 mr-2" />
             Dashboard
@@ -38,7 +38,7 @@ const Navigation = ({ userRole, currentView, onViewChange }: NavigationProps) =>
               variant={currentView === "add-practice" ? "default" : "ghost"}
               size="sm"
               onClick={() => onViewChange("add-practice")}
-              className="text-sm"
+              className="text-sm font-medium transition-smooth h-9 px-4"
             >
               <Plus className="h-4 w-4 mr-2" />
               Add Best Practice
@@ -49,7 +49,7 @@ const Navigation = ({ userRole, currentView, onViewChange }: NavigationProps) =>
             variant={currentView === "practice-list" ? "default" : "ghost"}
             size="sm"
             onClick={() => onViewChange("practice-list")}
-            className="text-sm"
+            className="text-sm font-medium transition-smooth h-9 px-4"
           >
             <FileText className="h-4 w-4 mr-2" />
             View Best Practices
@@ -60,7 +60,7 @@ const Navigation = ({ userRole, currentView, onViewChange }: NavigationProps) =>
               variant={currentView === "profile" ? "default" : "ghost"}
               size="sm"
               onClick={() => onViewChange("profile")}
-              className="text-sm"
+              className="text-sm font-medium transition-smooth h-9 px-4"
             >
               <UserIcon className="h-4 w-4 mr-2" />
               Benchmark
@@ -72,7 +72,7 @@ const Navigation = ({ userRole, currentView, onViewChange }: NavigationProps) =>
               variant={currentView === "approvals" ? "default" : "ghost"}
               size="sm"
               onClick={() => onViewChange("approvals")}
-              className="text-sm"
+              className="text-sm font-medium transition-smooth h-9 px-4"
             >
               <CheckCircle className="h-4 w-4 mr-2" />
               Benchmark BP's
@@ -84,7 +84,7 @@ const Navigation = ({ userRole, currentView, onViewChange }: NavigationProps) =>
               variant={currentView === "analytics" ? "default" : "ghost"}
               size="sm"
               onClick={() => onViewChange("analytics")}
-              className="text-sm"
+              className="text-sm font-medium transition-smooth h-9 px-4"
             >
               <BarChart3 className="h-4 w-4 mr-2" />
               Analytics
@@ -93,12 +93,10 @@ const Navigation = ({ userRole, currentView, onViewChange }: NavigationProps) =>
         </div>
 
         <div className="flex items-center space-x-3">
-          {/* Removed Approved/Pending/Rejected badges for plant users */}
-
           {userRole === "hq" && (
             <div className="flex items-center space-x-2 text-sm">
-              <Badge variant="outline" className="bg-primary/10 text-primary border-primary">
-                <Users className="h-3 w-3 mr-1" />
+              <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30 px-3 py-1.5 font-medium shadow-soft">
+                <Users className="h-3.5 w-3.5 mr-1.5" />
                 4 Plants Active
               </Badge>
             </div>

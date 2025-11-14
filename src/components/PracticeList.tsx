@@ -422,7 +422,7 @@ const PracticeList = ({ userRole, onViewPractice, onBack, isBenchmarked, onToggl
       </div>
 
       {/* Search and Filter */}
-      <Card className="shadow-card">
+      <Card className="shadow-soft hover:shadow-medium transition-smooth border border-border/50">
         <CardContent className="p-6">
           <div className="flex items-center space-x-4">
             <div className="flex-1 relative">
@@ -542,7 +542,7 @@ const PracticeList = ({ userRole, onViewPractice, onBack, isBenchmarked, onToggl
 
       {/* Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card className="shadow-card">
+        <Card className="shadow-soft hover:shadow-medium transition-smooth border border-border/50">
           <CardContent className="p-4">
             <div className="flex items-baseline justify-between">
               <p className="text-sm text-muted-foreground">Total Best Practices</p>
@@ -551,7 +551,7 @@ const PracticeList = ({ userRole, onViewPractice, onBack, isBenchmarked, onToggl
           </CardContent>
         </Card>
         {/* Removed Approved/Pending cards */}
-        <Card className="shadow-card">
+        <Card className="shadow-soft hover:shadow-medium transition-smooth border border-border/50">
           <CardContent className="p-4">
             <div className="flex items-baseline justify-between">
               <p className="text-sm text-muted-foreground">Total Q&A</p>
@@ -564,7 +564,7 @@ const PracticeList = ({ userRole, onViewPractice, onBack, isBenchmarked, onToggl
       </div>
 
       {/* Practices List */}
-      <Card className="shadow-card">
+      <Card className="shadow-soft hover:shadow-medium transition-smooth border border-border/50">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <FileText className="h-5 w-5 text-primary" />
@@ -577,7 +577,7 @@ const PracticeList = ({ userRole, onViewPractice, onBack, isBenchmarked, onToggl
             {filteredPractices.map((practice) => (
               <div
                 key={practice.id}
-                className="flex items-center justify-between p-6 border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors group"
+                className="flex items-center justify-between p-6 border rounded-xl hover:bg-accent/50 hover:border-primary/20 cursor-pointer transition-smooth group hover-lift"
                 onClick={() => onViewPractice(practice)}
               >
                 <div className="flex-1">

@@ -313,7 +313,7 @@ const Index = () => {
       <div className="container mx-auto px-4 py-8">
         {currentView === "login" && (
           <div className="max-w-md mx-auto">
-            <Card className="shadow-elevated">
+            <Card className="shadow-medium hover:shadow-strong transition-smooth border border-border/50">
               <CardHeader className="text-center">
                 <h2 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
                   Portal Access

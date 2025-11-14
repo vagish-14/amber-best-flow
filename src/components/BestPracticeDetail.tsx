@@ -136,7 +136,7 @@ const BestPracticeDetail = ({ userRole, practice: propPractice, onBack, isBenchm
       </div>
 
       {/* Practice Details */}
-      <Card className="shadow-card">
+      <Card className="shadow-soft hover:shadow-medium transition-smooth border border-border/50">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center space-x-2">
@@ -294,7 +294,7 @@ const BestPracticeDetail = ({ userRole, practice: propPractice, onBack, isBenchm
       </Card>
 
       {/* Q&A Section */}
-      <Card className="shadow-card">
+      <Card className="shadow-soft hover:shadow-medium transition-smooth border border-border/50">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <MessageCircle className="h-5 w-5 text-primary" />

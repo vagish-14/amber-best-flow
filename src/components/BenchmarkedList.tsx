@@ -53,7 +53,7 @@ const BenchmarkedList = ({ items, onViewPractice, onUnbenchmark, onBack, onCopyA
         <Button variant="outline" onClick={onBack}><FileText className="h-4 w-4 mr-2" />Back</Button>
       </div>
 
-      <Card className="shadow-card">
+      <Card className="shadow-soft hover:shadow-medium transition-smooth border border-border/50">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Star className="h-5 w-5 text-primary" />

@@ -154,7 +154,7 @@ const ApprovalsList = ({ userRole, onViewPractice, onBack, isBenchmarked, onTogg
       </div>
 
       {/* Search/Filters */}
-      <Card className="shadow-card">
+      <Card className="shadow-soft hover:shadow-medium transition-smooth border border-border/50">
         <CardContent className="p-6">
           <div className="flex items-center space-x-4">
             <div className="flex-1 relative">
@@ -173,7 +173,7 @@ const ApprovalsList = ({ userRole, onViewPractice, onBack, isBenchmarked, onTogg
       {/* Counters removed: no approval statuses */}
 
       {/* List */}
-      <Card className="shadow-card">
+      <Card className="shadow-soft hover:shadow-medium transition-smooth border border-border/50">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <FileCheck2 className="h-5 w-5 text-primary" />

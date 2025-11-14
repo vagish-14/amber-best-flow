@@ -251,14 +251,14 @@ export const allPracticesData: Practice[] = [
     },
     {
       id: "BP-011",
-      title: "ELG Compliance Monitoring Program",
-      category: "ELG",
+      title: "ESG Compliance Monitoring Program",
+      category: "ESG",
       submittedBy: "Ankit Verma",
       plant: "Kanchipuram",
       submittedDate: "2025-02-09",
-      description: "Program for Environmental and Legal Governance (ELG) tracking, ensuring continuous compliance with local regulations.",
+      description: "Program for Environmental, Social, and Governance (ESG) tracking, ensuring continuous compliance with local regulations.",
       problemStatement: "Manual compliance tracking led to missed deadlines and reactive responses to regulatory updates.",
-      solution: "Set up an ELG management framework with digital tracking for audit schedules, hazardous waste disposal, and documentation approvals, plus automated reminders.",
+      solution: "Set up an ESG management framework with digital tracking for audit schedules, hazardous waste disposal, and documentation approvals, plus automated reminders.",
       benefits: [
         "Zero missed compliance deadlines",
         "Improved stakeholder transparency",
@@ -395,7 +395,7 @@ const PracticeList = ({ userRole, onViewPractice, onBack, isBenchmarked, onToggl
         return "bg-amber-50 text-amber-700 border-amber-200";
       case "digitalisation":
         return "bg-indigo-50 text-indigo-700 border-indigo-200";
-      case "elg":
+      case "esg":
         return "bg-emerald-50 text-emerald-700 border-emerald-200";
       default:
         return "bg-gray-50 text-gray-700 border-gray-200";
@@ -545,7 +545,7 @@ const PracticeList = ({ userRole, onViewPractice, onBack, isBenchmarked, onToggl
         <Card className="shadow-card">
           <CardContent className="p-4">
             <div className="flex items-baseline justify-between">
-              <p className="text-sm text-muted-foreground">Total Practices</p>
+              <p className="text-sm text-muted-foreground">Total Best Practices</p>
               <div className="text-2xl font-bold text-primary">{practices.length}</div>
             </div>
           </CardContent>
@@ -568,7 +568,7 @@ const PracticeList = ({ userRole, onViewPractice, onBack, isBenchmarked, onToggl
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <FileText className="h-5 w-5 text-primary" />
-            <span>All Practices</span>
+            <span>All Best Practices</span>
             <Badge variant="outline">{filteredPractices.length}</Badge>
           </CardTitle>
         </CardHeader>

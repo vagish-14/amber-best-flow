@@ -143,7 +143,7 @@ const Index = () => {
       ],
     },
     {
-      bp: "ELG Compliance Monitoring Program",
+      bp: "ESG Compliance Monitoring Program",
       origin: "Ponneri",
       copies: [
         { plant: "Greater Noida (Ecotech 1)", date: "2025-02-18" },
@@ -521,7 +521,7 @@ const Index = () => {
                     disabled={!userRole}
                     className="text-xs"
                   >
-                    View Practices
+                    View Best Practices
                   </Button>
                 </div>
               </TabsContent>

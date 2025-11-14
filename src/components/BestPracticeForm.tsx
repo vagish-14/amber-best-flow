@@ -128,7 +128,7 @@ const BestPracticeForm = ({ onCancel, preFillData, onSubmit }: BestPracticeFormP
     };
     console.log("Submitting Best Practice:", payload);
     onSubmit?.(payload);
-    toast({ title: preFillData ? "Copy & Implement submitted" : "Practice submitted", description: "Submission successful." });
+    toast({ title: preFillData ? "Copy & Implement submitted" : "Best Practice submitted", description: "Submission successful." });
     onCancel();
   };
 
@@ -164,7 +164,7 @@ const BestPracticeForm = ({ onCancel, preFillData, onSubmit }: BestPracticeFormP
     { value: "productivity", label: "Productivity", icon: Zap, color: "category-productivity" },
     { value: "cost", label: "Cost", icon: IndianRupee, color: "category-cost" },
     { value: "digitalisation", label: "Digitalisation", icon: Cpu, color: "category-digitalisation" },
-    { value: "elg", label: "ELG", icon: LineChart, color: "category-elg" },
+    { value: "elg", label: "ESG", icon: LineChart, color: "category-elg" },
     { value: "automation", label: "Automation", icon: Settings, color: "category-automation" },
     { value: "other", label: "Other", icon: Settings, color: "category-other" }
   ];
@@ -211,7 +211,7 @@ const BestPracticeForm = ({ onCancel, preFillData, onSubmit }: BestPracticeFormP
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <Label htmlFor="title" className="flex items-center gap-2">
-                Practice Theme *
+                Best Practice Theme *
                 {preFillData && <Badge variant="outline" className="bg-blue-50 text-blue-600 border-blue-200 text-xs">Pre-filled</Badge>}
               </Label>
               <Input
@@ -219,7 +219,22 @@ const BestPracticeForm = ({ onCancel, preFillData, onSubmit }: BestPracticeFormP
                 placeholder="Enter a descriptive title for your best practice"
                 className="w-full"
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value.length === 0) {
+                    setTitle(value);
+                  } else if (value.length === 1) {
+                    setTitle(value.charAt(0).toUpperCase());
+                  } else {
+                    setTitle(value);
+                  }
+                }}
+                onBlur={(e) => {
+                  const value = e.target.value;
+                  if (value.length > 0 && value.charAt(0) !== value.charAt(0).toUpperCase()) {
+                    setTitle(value.charAt(0).toUpperCase() + value.slice(1));
+                  }
+                }}
               />
             </div>
 
@@ -249,6 +264,33 @@ const BestPracticeForm = ({ onCancel, preFillData, onSubmit }: BestPracticeFormP
             </div>
           </div>
 
+          {/* Area Implemented In */}
+          <div className="space-y-2">
+            <Label htmlFor="implementationArea">Area Implemented In</Label>
+            <Input
+              id="implementationArea"
+              placeholder="Enter the area where this practice was implemented"
+              className="w-full"
+              value={implementationArea}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value.length === 0) {
+                  setImplementationArea(value);
+                } else if (value.length === 1) {
+                  setImplementationArea(value.charAt(0).toUpperCase());
+                } else {
+                  setImplementationArea(value);
+                }
+              }}
+              onBlur={(e) => {
+                const value = e.target.value;
+                if (value.length > 0 && value.charAt(0) !== value.charAt(0).toUpperCase()) {
+                  setImplementationArea(value.charAt(0).toUpperCase() + value.slice(1));
+                }
+              }}
+            />
+          </div>
+
           {/* Problem Statement */}
           <div className="space-y-2">
             <Label htmlFor="problem" className="flex items-center gap-2">
@@ -260,7 +302,16 @@ const BestPracticeForm = ({ onCancel, preFillData, onSubmit }: BestPracticeFormP
               placeholder="Describe the problem or challenge this practice addresses..."
               className="min-h-24"
               value={problemStatement}
-              onChange={(e) => setProblemStatement(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                setProblemStatement(value);
+              }}
+              onBlur={(e) => {
+                const value = e.target.value;
+                if (value.length > 0 && value.charAt(0) !== value.charAt(0).toUpperCase()) {
+                  setProblemStatement(value.charAt(0).toUpperCase() + value.slice(1));
+                }
+              }}
             />
           </div>
 
@@ -275,7 +326,16 @@ const BestPracticeForm = ({ onCancel, preFillData, onSubmit }: BestPracticeFormP
               placeholder="Provide detailed description of your solution, including implementation steps..."
               className="min-h-32"
               value={solution}
-              onChange={(e) => setSolution(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                setSolution(value);
+              }}
+              onBlur={(e) => {
+                const value = e.target.value;
+                if (value.length > 0 && value.charAt(0) !== value.charAt(0).toUpperCase()) {
+                  setSolution(value.charAt(0).toUpperCase() + value.slice(1));
+                }
+              }}
             />
           </div>
 
@@ -337,7 +397,16 @@ const BestPracticeForm = ({ onCancel, preFillData, onSubmit }: BestPracticeFormP
                 placeholder="List the key benefits and improvements realized..."
                 className="min-h-20"
                 value={benefitsText}
-                onChange={(e) => setBenefitsText(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setBenefitsText(value);
+                }}
+                onBlur={(e) => {
+                  const value = e.target.value;
+                  if (value.length > 0 && value.charAt(0) !== value.charAt(0).toUpperCase()) {
+                    setBenefitsText(value.charAt(0).toUpperCase() + value.slice(1));
+                  }
+                }}
               />
             </div>
 
@@ -348,32 +417,38 @@ const BestPracticeForm = ({ onCancel, preFillData, onSubmit }: BestPracticeFormP
                 placeholder="Include measurable improvements (e.g., 15% reduction in waste, 2 hours saved per day)..."
                 className="min-h-20"
                 value={metricsText}
-                onChange={(e) => setMetricsText(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setMetricsText(value);
+                }}
+                onBlur={(e) => {
+                  const value = e.target.value;
+                  if (value.length > 0 && value.charAt(0) !== value.charAt(0).toUpperCase()) {
+                    setMetricsText(value.charAt(0).toUpperCase() + value.slice(1));
+                  }
+                }}
               />
             </div>
           </div>
 
         {/* Investment */}
         <div className="space-y-2">
-          <Label htmlFor="investment">Investment in the Practice</Label>
+          <Label htmlFor="investment">Investment in the Best Practice</Label>
           <Textarea
             id="investment"
             placeholder="Document the investment made to implement this practice (time, budget, resources, etc.)"
             className="min-h-20"
             value={investmentText}
-            onChange={(e) => setInvestmentText(e.target.value)}
-          />
-        </div>
-
-        {/* Implementation Area */}
-        <div className="space-y-2">
-          <Label htmlFor="implementationArea">Area Implemented In</Label>
-          <Input
-            id="implementationArea"
-            placeholder="Specify the plant area or department where this practice is implemented"
-            className="w-full"
-            value={implementationArea}
-            onChange={(e) => setImplementationArea(e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value;
+              setInvestmentText(value);
+            }}
+            onBlur={(e) => {
+              const value = e.target.value;
+              if (value.length > 0 && value.charAt(0) !== value.charAt(0).toUpperCase()) {
+                setInvestmentText(value.charAt(0).toUpperCase() + value.slice(1));
+              }
+            }}
           />
         </div>
 
@@ -385,7 +460,16 @@ const BestPracticeForm = ({ onCancel, preFillData, onSubmit }: BestPracticeFormP
               placeholder="Describe the implementation timeline, resources required, team involved..."
               className="min-h-24"
               value={implementationText}
-              onChange={(e) => setImplementationText(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                setImplementationText(value);
+              }}
+              onBlur={(e) => {
+                const value = e.target.value;
+                if (value.length > 0 && value.charAt(0) !== value.charAt(0).toUpperCase()) {
+                  setImplementationText(value.charAt(0).toUpperCase() + value.slice(1));
+                }
+              }}
             />
           </div>
 

@@ -21,6 +21,7 @@ import {
   Bot
 } from "lucide-react";
 import { KeyboardEvent, useMemo, useState } from "react";
+import { formatCurrency } from "@/lib/utils";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -123,7 +124,7 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
       totalPoints: 26, 
       breakdown: [
         { type: "Origin", points: 10, date: "2025-02-28", bpTitle: "Green Energy Dashboard" },
-        { type: "Copier", points: 5, date: "2025-03-22", bpTitle: "ELG Compliance Monitoring Program" },
+        { type: "Copier", points: 5, date: "2025-03-22", bpTitle: "ESG Compliance Monitoring Program" },
         { type: "Origin", points: 6, date: "2025-01-30", bpTitle: "Smart Inventory Tagging" },
         { type: "Copier", points: 5, date: "2025-04-18", bpTitle: "Assembly Line Cobots" }
       ]
@@ -153,14 +154,14 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
       breakdown: [
         { type: "Origin", points: 10, date: "2025-04-08", bpTitle: "Production Line Optimization" },
         { type: "Copier", points: 5, date: "2025-04-22", bpTitle: "Assembly Line Cobots" },
-        { type: "Copier", points: 4, date: "2025-05-26", bpTitle: "ELG Compliance Monitoring Program" }
+        { type: "Copier", points: 4, date: "2025-05-26", bpTitle: "ESG Compliance Monitoring Program" }
       ]
     },
     { 
       plant: "Ponneri", 
       totalPoints: 18, 
       breakdown: [
-        { type: "Origin", points: 10, date: "2025-02-09", bpTitle: "ELG Compliance Monitoring Program" },
+        { type: "Origin", points: 10, date: "2025-02-09", bpTitle: "ESG Compliance Monitoring Program" },
         { type: "Copier", points: 5, date: "2025-03-18", bpTitle: "Waste Reduction Initiative" },
         { type: "Copier", points: 3, date: "2025-05-12", bpTitle: "Safety Protocol for Chemical Handling" }
       ]
@@ -235,7 +236,7 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
         <CardContent className="space-y-3 p-4">
           <div className="flex items-baseline justify-between">
             <div className="text-4xl font-bold text-primary">{monthlyCount ?? 8}</div>
-            <p className="text-sm text-muted-foreground">Practices in {new Date().toLocaleString('default', { month: 'long' })}</p>
+            <p className="text-sm text-muted-foreground">Best Practices in {new Date().toLocaleString('default', { month: 'long' })}</p>
           </div>
           <Progress value={66} className="w-full mt-2" />
           <div className="flex justify-end">
@@ -330,7 +331,7 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
                 <div className="flex items-center space-x-3">
                   <LineChart className="h-8 w-8 text-emerald-500" />
                   <div>
-                    <p className="font-semibold text-emerald-600">ELG</p>
+                    <p className="font-semibold text-emerald-600">ESG</p>
                     <p className="text-2xl font-bold">4</p>
                   </div>
                 </div>
@@ -414,44 +415,46 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
         </AlertDialogContent>
       </AlertDialog>
 
-    {/* KPI: BP Copy Spread */}
+    {/* BP Copy Spread */}
     <div className="lg:col-span-3">
       <Card className="shadow-card">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Target className="h-5 w-5 text-primary" />
-            <span>Benchmark BP Copy Spread</span>
+            <span>Horizontal Deployment Status</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
           {(() => {
-            const rows = copySpread ?? [
+            // Default dataset of benchmarked BPs with images - show 2 entries
+            const defaultRows = [
               {
-                bp: "Digital Production Control Tower",
+                bp: "Smart Cart Movement & Management through AMR",
                 origin: "Greater Noida (Ecotech 1)",
                 copies: [
                   { plant: "Kanchipuram", date: "2025-02-18" },
                   { plant: "Shahjahanpur", date: "2025-02-24" },
                 ],
+                hasImage: true
               },
               {
-                bp: "Assembly Line Cobots",
-                origin: "Ranjangaon",
+                bp: "Empty Cart Feeding System (Manual → Auto)",
+                origin: "Greater Noida (Ecotech 1)",
                 copies: [
                   { plant: "Greater Noida (Ecotech 1)", date: "2025-04-20" },
                   { plant: "Rajpura", date: "2025-04-28" },
                 ],
-              },
-              {
-                bp: "ELG Compliance Monitoring Program",
-                origin: "Ponneri",
-                copies: [
-                  { plant: "Greater Noida (Ecotech 1)", date: "2025-02-18" },
-                  { plant: "Rajpura", date: "2025-03-05" },
-                  { plant: "Ranjangaon", date: "2025-05-26" },
-                ],
+                hasImage: true
               },
             ];
+            
+            // Use copySpread if it exists and has items with hasImage, otherwise use default
+            const allRows = (copySpread && copySpread.length > 0 && copySpread.some(row => row.hasImage))
+              ? copySpread
+              : defaultRows;
+            
+            // Filter to show only BPs with images and limit to 2 entries
+            const rows = allRows.filter(row => row.hasImage).slice(0, 2);
 
             return (
               <div className="overflow-x-auto">
@@ -460,7 +463,7 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
                     <tr className="text-left text-muted-foreground">
                       <th className="py-2">BP Name</th>
                       <th className="py-2">Origin Plant</th>
-                      <th className="py-2">Replicated to Plant (No's)</th>
+                      <th className="py-2">Horizontally Deployed (Nos)</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y">
@@ -567,13 +570,13 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
                       <CardContent className="p-4 text-center">
-                        <div className="text-2xl font-bold text-green-700">₹{currentMonth.costSavings}L</div>
+                        <div className="text-2xl font-bold text-green-700">{formatCurrency(currentMonth.costSavings, 0)}</div>
                         <p className="text-sm text-green-600">This Month Savings</p>
                       </CardContent>
                     </Card>
                     <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
                       <CardContent className="p-4 text-center">
-                        <div className="text-2xl font-bold text-blue-700">₹{ytdSavings.toFixed(1)}L</div>
+                        <div className="text-2xl font-bold text-blue-700">{formatCurrency(ytdSavings, 1)}</div>
                         <p className="text-sm text-blue-600">YTD Savings</p>
                       </CardContent>
                     </Card>
@@ -594,6 +597,16 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
                     className="h-[300px] w-full"
                   >
                     <BarChart data={monthlyData}>
+                      <defs>
+                        <linearGradient id="gradientCostSavings" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="hsl(var(--success))" stopOpacity={0.9} />
+                          <stop offset="100%" stopColor="hsl(var(--success))" stopOpacity={0.4} />
+                        </linearGradient>
+                        <linearGradient id="gradientStars" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="hsl(var(--warning))" stopOpacity={0.9} />
+                          <stop offset="100%" stopColor="hsl(var(--warning))" stopOpacity={0.4} />
+                        </linearGradient>
+                      </defs>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="month" />
                       <YAxis yAxisId="left" />
@@ -629,8 +642,8 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
                         }}
                       />
                       <ChartLegend content={<ChartLegendContent />} />
-                      <Bar yAxisId="left" dataKey="costSavings" fill="var(--color-costSavings)" />
-                      <Bar yAxisId="right" dataKey="stars" fill="var(--color-stars)" />
+                      <Bar yAxisId="left" dataKey="costSavings" fill="url(#gradientCostSavings)" radius={[8, 8, 0, 0]} />
+                      <Bar yAxisId="right" dataKey="stars" fill="url(#gradientStars)" radius={[8, 8, 0, 0]} />
                     </BarChart>
                   </ChartContainer>
                 </div>
@@ -653,33 +666,46 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
             <div className="space-y-4">
               {[
                 { 
-                  title: "Digital Production Control Tower", 
+                  title: "Smart Cart Movement & Management through AMR", 
                   plant: "Greater Noida (Ecotech 1)", 
-                  category: "Digitalisation", 
-                  benchmarked: "4 hours ago",
-                  savings: "₹1.6L monthly",
-                  problemStatement: "Fragmented data across production systems slowed response times to downtime events.",
-                  solution: "Deployed a centralized control tower integrating machine data, quality dashboards, and maintenance alerts for real-time decision making."
-                },
-                { 
-                  title: "Assembly Line Cobots", 
-                  plant: "Ranjangaon", 
                   category: "Automation", 
-                  benchmarked: "2 days ago",
-                  savings: "25% cycle time reduction",
-                  problemStatement: "Manual fastening tasks were causing ergonomic issues and inconsistent torque quality.",
-                  solution: "Implemented collaborative robots with vision guidance to execute fastening and inspection while operators focus on quality verification."
+                  benchmarked: "4 hours ago",
+                  savings: "₹3.2L annually",
+                  problemStatement: "Manual cart movement required multiple manpower for BOP transfer and resulted in inefficiency and human fatigue. Monitoring AMR efficiency was also manual.",
+                  solution: "Automated the cart movement and BOP feeding process using AMR, eliminating manual intervention. Added digitalization for real-time AMR efficiency monitoring.",
+                  hasImage: true
                 },
                 { 
-                  title: "ELG Compliance Monitoring Program", 
-                  plant: "Ponneri", 
-                  category: "ELG", 
+                  title: "Empty Cart Feeding System (Manual → Auto)", 
+                  plant: "Greater Noida (Ecotech 1)", 
+                  category: "Productivity", 
+                  benchmarked: "2 days ago",
+                  savings: "₹2L annually",
+                  problemStatement: "Assembly line stoppages occurred intermittently due to unavailability of empty carts at the assembly point, causing manpower idle time and production loss.",
+                  solution: "Implemented an auto empty cart feeding system with pneumatic cylinders for automatic locking/unlocking and added part-wise tracks to streamline empty cart return flow.",
+                  hasImage: true
+                },
+                { 
+                  title: "Smart Inbound Logistics through AGV", 
+                  plant: "Greater Noida (Ecotech 1)", 
+                  category: "Automation", 
                   benchmarked: "3 days ago",
-                  savings: "₹0.8L compliance cost reduction",
-                  problemStatement: "Manual compliance tracking risked missed deadlines and reactive responses to regulatory changes.",
-                  solution: "Rolled out an ELG framework with digital trackers, automated alerts, and centralized documentation workflows."
+                  savings: "₹1.8L annually",
+                  problemStatement: "Manual bin movement consumed time and manpower, causing congestion and handling delays between Molding and WIP.",
+                  solution: "Introduced AGVs for autonomous bin movement and optimized shop-floor layout for AGV routes, removing the need for manual handling.",
+                  hasImage: true
+                },
+                { 
+                  title: "Injection Machines Robotic Operation", 
+                  plant: "Greater Noida (Ecotech 1)", 
+                  category: "Automation", 
+                  benchmarked: "1 day ago",
+                  savings: "₹2.2L annually",
+                  problemStatement: "Manual ejection of molded parts required skilled manpower, led to inconsistent cycle times, and created potential safety risks.",
+                  solution: "Installed robotics for fully automated molded part ejection, reducing human touch points and delivering consistent cycle time and output.",
+                  hasImage: true
                 }
-              ].map((bp, index) => (
+              ].filter(bp => bp.hasImage).map((bp, index) => (
                 <div key={index} className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors">
                   <div className="flex-1">
                     <h4 className="font-medium">{bp.title}</h4>
@@ -740,10 +766,10 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
           <CardContent>
             <div className="space-y-4">
               {(recentSubmissions ?? [
-                { title: "Automated Quality Inspection System", category: "Quality", date: "2024-01-15", questions: 2, benchmarked: true },
-                { title: "Energy Efficient Cooling Process", category: "Cost", date: "2024-01-12", questions: 0, benchmarked: true },
-                { title: "Safety Protocol for Chemical Handling", category: "Safety", date: "2024-01-10", questions: 1, benchmarked: false },
-                { title: "Production Line Optimization", category: "Productivity", date: "2024-01-08", questions: 3, benchmarked: false }
+                { title: "Smart Cart Movement & Management through AMR", category: "Automation", date: "2025-01-15", questions: 0, benchmarked: true, hasImage: true },
+                { title: "Empty Cart Feeding System (Manual → Auto)", category: "Productivity", date: "2025-01-15", questions: 0, benchmarked: true, hasImage: true },
+                { title: "Smart Inbound Logistics through AGV", category: "Automation", date: "2025-01-15", questions: 0, benchmarked: true, hasImage: true },
+                { title: "Injection Machines Robotic Operation", category: "Automation", date: "2025-01-15", questions: 0, benchmarked: true, hasImage: true }
               ]).map((practice, index) => (
                 <div 
                   key={index} 

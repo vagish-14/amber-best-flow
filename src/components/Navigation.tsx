@@ -52,7 +52,7 @@ const Navigation = ({ userRole, currentView, onViewChange }: NavigationProps) =>
             className="text-sm"
           >
             <FileText className="h-4 w-4 mr-2" />
-            View Practices
+            View Best Practices
           </Button>
 
           {userRole === "plant" && (

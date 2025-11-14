@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { cn } from "@/lib/utils";
+import { cn, formatCurrency } from "@/lib/utils";
 import { useState, useMemo } from "react";
 import {
   AlertDialog,
@@ -109,7 +109,7 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
       totalPoints: 26, 
       breakdown: [
         { type: "Origin", points: 10, date: "2025-02-28", bpTitle: "Green Energy Dashboard" },
-        { type: "Copier", points: 5, date: "2025-03-22", bpTitle: "ELG Compliance Monitoring Program" },
+        { type: "Copier", points: 5, date: "2025-03-22", bpTitle: "ESG Compliance Monitoring Program" },
         { type: "Origin", points: 6, date: "2025-01-30", bpTitle: "Smart Inventory Tagging" },
         { type: "Copier", points: 5, date: "2025-04-18", bpTitle: "Assembly Line Cobots" }
       ]
@@ -139,14 +139,14 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
       breakdown: [
         { type: "Origin", points: 10, date: "2025-04-08", bpTitle: "Production Line Optimization" },
         { type: "Copier", points: 5, date: "2025-04-22", bpTitle: "Assembly Line Cobots" },
-        { type: "Copier", points: 4, date: "2025-05-26", bpTitle: "ELG Compliance Monitoring Program" }
+        { type: "Copier", points: 4, date: "2025-05-26", bpTitle: "ESG Compliance Monitoring Program" }
       ]
     },
     { 
       plant: "Ponneri", 
       totalPoints: 18, 
       breakdown: [
-        { type: "Origin", points: 10, date: "2025-02-09", bpTitle: "ELG Compliance Monitoring Program" },
+        { type: "Origin", points: 10, date: "2025-02-09", bpTitle: "ESG Compliance Monitoring Program" },
         { type: "Copier", points: 5, date: "2025-03-18", bpTitle: "Waste Reduction Initiative" },
         { type: "Copier", points: 3, date: "2025-05-12", bpTitle: "Safety Protocol for Chemical Handling" }
       ]
@@ -176,7 +176,7 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
     { name: "Ponneri", submitted: 0 }
   ];
 
-  // Demo dataset of benchmarked BPs (used for KPI count and drilldown)
+  // Demo dataset of benchmarked BPs (used for count and drilldown)
   const benchmarkedBPs = [
     {
       bp: "Digital Production Control Tower",
@@ -195,7 +195,7 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
       ],
     },
     {
-      bp: "ELG Compliance Monitoring Program",
+      bp: "ESG Compliance Monitoring Program",
       origin: "Ponneri",
       copies: [
         { plant: "Greater Noida (Ecotech 1)", date: "2025-02-18" },
@@ -213,7 +213,7 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
     },
   ];
 
-  // Submission-derived active plants KPI
+  // Submission-derived active plants
   const totalPlantCount = 7;
   const activeBySubmission = useMemo(() => plantData.filter((p) => p.submitted > 0), [plantData]);
   const activeBySubmissionCount = activeBySubmission.length;
@@ -276,7 +276,7 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-bold">HQ Admin Dashboard</h2>
+                <h2 className="text-2xl font-bold">Admin Dashboard</h2>
                 <p className="text-primary-foreground/80">Amber Group - Best Practices Overview</p>
               </div>
               <div className="flex items-center space-x-3">
@@ -402,7 +402,7 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
         </CardContent>
       </Card>
 
-      {/* New KPI: Total Benchmarked BPs */}
+      {/* Total Benchmarked BPs */}
       <Card className="shadow-card">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
@@ -547,7 +547,7 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
                 <div className="flex items-center space-x-3">
                   <LineChart className="h-8 w-8 text-emerald-500" />
                   <div>
-                    <p className="font-semibold text-emerald-600">ELG</p>
+                    <p className="font-semibold text-emerald-600">ESG</p>
                     <p className="text-2xl font-bold">28</p>
                   </div>
                 </div>
@@ -583,7 +583,7 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Building2 className="h-5 w-5 text-primary" />
-              <span>Plant-wise Performance KPI</span>
+              <span>Plant-wise Performance</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -598,6 +598,12 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
                 fullName: p.name,
                 submitted: p.submitted
               }))} margin={{ top: 24, right: 16, left: 0, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="gradientSubmitted" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="hsl(var(--success))" stopOpacity={0.9} />
+                    <stop offset="100%" stopColor="hsl(var(--success))" stopOpacity={0.4} />
+                  </linearGradient>
+                </defs>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="plant" />
                 <YAxis domain={[0, 'dataMax + 1']} allowDecimals={false} />
@@ -635,7 +641,7 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
                   }}
                 />
                 <ChartLegend content={<ChartLegendContent />} />
-                <Bar dataKey="submitted" fill="var(--color-submitted)">
+                <Bar dataKey="submitted" fill="url(#gradientSubmitted)" radius={[8, 8, 0, 0]}>
                   <LabelList dataKey="submitted" position="top" className="text-xs fill-current" />
                 </Bar>
               </BarChart>
@@ -688,6 +694,12 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
                       fullName: p.plant,
                       benchmarkedBPs: p.benchmarkedBPs 
                     }))} margin={{ top: 24, right: 16, left: 0, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="gradientBenchmarkedBPs" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.9} />
+                          <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0.4} />
+                        </linearGradient>
+                      </defs>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="plant" />
                       <YAxis domain={[0, 'dataMax + 1']} allowDecimals={false} />
@@ -725,7 +737,7 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
                         }}
                       />
                       <ChartLegend content={<ChartLegendContent />} />
-                    <Bar dataKey="benchmarkedBPs" fill="var(--color-benchmarkedBPs)">
+                    <Bar dataKey="benchmarkedBPs" fill="url(#gradientBenchmarkedBPs)" radius={[8, 8, 0, 0]}>
                       <LabelList dataKey="benchmarkedBPs" position="top" className="text-xs fill-current" />
                     </Bar>
                     </BarChart>
@@ -750,24 +762,34 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
             <div className="space-y-4">
               {[
                 { 
-                  title: "Digital Production Control Tower", 
+                  title: "Smart Cart Movement & Management through AMR", 
                   plant: "Greater Noida (Ecotech 1)", 
-                  category: "Digitalisation", 
-                  benchmarked: "4 hours ago"
-                },
-                { 
-                  title: "Assembly Line Cobots", 
-                  plant: "Ranjangaon", 
                   category: "Automation", 
-                  benchmarked: "2 days ago"
+                  benchmarked: "4 hours ago",
+                  hasImage: true
                 },
                 { 
-                  title: "ELG Compliance Monitoring Program", 
-                  plant: "Ponneri", 
-                  category: "ELG", 
-                  benchmarked: "3 days ago"
+                  title: "Empty Cart Feeding System (Manual → Auto)", 
+                  plant: "Greater Noida (Ecotech 1)", 
+                  category: "Productivity", 
+                  benchmarked: "2 days ago",
+                  hasImage: true
+                },
+                { 
+                  title: "Smart Inbound Logistics through AGV", 
+                  plant: "Greater Noida (Ecotech 1)", 
+                  category: "Automation", 
+                  benchmarked: "3 days ago",
+                  hasImage: true
+                },
+                { 
+                  title: "Injection Machines Robotic Operation", 
+                  plant: "Greater Noida (Ecotech 1)", 
+                  category: "Automation", 
+                  benchmarked: "1 day ago",
+                  hasImage: true
                 }
-              ].map((bp, index) => (
+              ].filter(bp => bp.hasImage).map((bp, index) => (
                 <div 
                   key={index} 
                   className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors"
@@ -887,8 +909,8 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
                           }}
                         >
                           <td className="py-2 font-medium">{r.name}</td>
-                          <td className="py-2">₹{r.monthly.toFixed(1)}L</td>
-                          <td className="py-2">₹{r.ytd.toFixed(1)}L</td>
+                          <td className="py-2">{formatCurrency(r.monthly, 1)}</td>
+                          <td className="py-2">{formatCurrency(r.ytd, 1)}</td>
                           <td className="py-2">{r.monthStars}</td>
                         </tr>
                       ))}
@@ -922,7 +944,7 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
                       {starDrillData.map((row) => (
                         <tr key={row.month}>
                           <td className="py-1">{row.month}</td>
-                          <td className="py-1">₹{row.savings.toFixed(1)}L</td>
+                          <td className="py-1">{formatCurrency(row.savings, 1)}</td>
                           <td className="py-1">{row.stars}</td>
                         </tr>
                       ))}
@@ -939,45 +961,46 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
         </Card>
       </div>
 
-      {/* KPI: BP Copy Spread */}
+      {/* BP Copy Spread */}
       <div className="lg:col-span-4">
         <Card className="shadow-card">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Target className="h-5 w-5 text-primary" />
-              <span>Benchmark BP Copy Spread</span>
+              <span>Horizontal Deployment Status</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
             {(() => {
-              // Demo dataset of benchmarked BPs, origin, and copies
-              const rows = copySpread ?? [
+              // Default dataset of benchmarked BPs with images - show 2 entries
+              const defaultRows = [
                 {
-                  bp: "Digital Production Control Tower",
+                  bp: "Smart Cart Movement & Management through AMR",
                   origin: "Greater Noida (Ecotech 1)",
                   copies: [
                     { plant: "Kanchipuram", date: "2025-02-18" },
                     { plant: "Shahjahanpur", date: "2025-02-24" },
                   ],
+                  hasImage: true
                 },
                 {
-                  bp: "Assembly Line Cobots",
-                  origin: "Ranjangaon",
+                  bp: "Empty Cart Feeding System (Manual → Auto)",
+                  origin: "Greater Noida (Ecotech 1)",
                   copies: [
                     { plant: "Greater Noida (Ecotech 1)", date: "2025-04-20" },
                     { plant: "Rajpura", date: "2025-04-28" },
                   ],
-                },
-                {
-                  bp: "ELG Compliance Monitoring Program",
-                  origin: "Ponneri",
-                  copies: [
-                    { plant: "Greater Noida (Ecotech 1)", date: "2025-02-18" },
-                    { plant: "Rajpura", date: "2025-03-05" },
-                    { plant: "Ranjangaon", date: "2025-05-26" },
-                  ],
+                  hasImage: true
                 },
               ];
+              
+              // Use copySpread if it exists and has items with hasImage, otherwise use default
+              const allRows = (copySpread && copySpread.length > 0 && copySpread.some(row => row.hasImage))
+                ? copySpread
+                : defaultRows;
+              
+              // Filter to show only BPs with images and limit to 2 entries
+              const rows = allRows.filter(row => row.hasImage).slice(0, 2);
 
               return (
                 <div className="overflow-x-auto">
@@ -986,7 +1009,7 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
                       <tr className="text-left text-muted-foreground">
                         <th className="py-2">BP Name</th>
                         <th className="py-2">Origin Plant</th>
-                        <th className="py-2">Replicated to Plant (No's)</th>
+                        <th className="py-2">Horizontally Deployed (Nos)</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y">
@@ -1093,7 +1116,7 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
                   totalPoints: 26, 
                   breakdown: [
                     { type: "Origin", points: 10, date: "2025-02-28", bpTitle: "Green Energy Dashboard" },
-                    { type: "Copier", points: 5, date: "2025-03-22", bpTitle: "ELG Compliance Monitoring Program" },
+                    { type: "Copier", points: 5, date: "2025-03-22", bpTitle: "ESG Compliance Monitoring Program" },
                     { type: "Origin", points: 6, date: "2025-01-30", bpTitle: "Smart Inventory Tagging" },
                     { type: "Copier", points: 5, date: "2025-04-18", bpTitle: "Assembly Line Cobots" }
                   ]
@@ -1319,27 +1342,27 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
             <div className="space-y-4">
               {[
                 { 
-                  title: "IoT Sensor Implementation for Predictive Maintenance", 
-                  plant: "Kanchipuram", 
-                  category: "Productivity", 
+                  title: "Smart Cart Movement & Management through AMR", 
+                  plant: "Greater Noida (Ecotech 1)", 
+                  category: "Automation", 
                   submitted: "2 hours ago"
                 },
                 { 
-                  title: "Waste Heat Recovery System", 
+                  title: "Empty Cart Feeding System (Manual → Auto)", 
                   plant: "Greater Noida (Ecotech 1)", 
-                  category: "Cost", 
+                  category: "Productivity", 
                   submitted: "4 hours ago"
                 },
                 { 
-                  title: "Updated Chemical Storage Protocols", 
-                  plant: "Supa", 
-                  category: "Safety", 
+                  title: "Smart Inbound Logistics through AGV", 
+                  plant: "Greater Noida (Ecotech 1)", 
+                  category: "Automation", 
                   submitted: "1 day ago"
                 },
                 { 
-                  title: "Quality Control Automation", 
-                  plant: "Rajpura", 
-                  category: "Quality", 
+                  title: "Injection Machines Robotic Operation", 
+                  plant: "Greater Noida (Ecotech 1)", 
+                  category: "Automation", 
                   submitted: "2 days ago"
                 }
               ].map((activity, index) => (

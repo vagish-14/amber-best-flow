@@ -2,6 +2,7 @@ import { useMemo, useState, type KeyboardEvent } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { BarChart3, TrendingUp, Factory, IndianRupee } from "lucide-react";
 import {
   AlertDialog,
@@ -20,7 +21,8 @@ import {
   ChartLegend,
   ChartLegendContent,
 } from "@/components/ui/chart";
-import { Pie, PieChart, Cell, BarChart, XAxis, YAxis, CartesianGrid, Bar, Label } from "recharts";
+import { Pie, PieChart, Cell, BarChart, XAxis, YAxis, CartesianGrid, Bar, Label, LabelList } from "recharts";
+import { formatCurrency } from "@/lib/utils";
 
 interface AnalyticsProps {
   userRole: "plant" | "hq";
@@ -57,27 +59,32 @@ const total = plantStats.reduce(
 const Analytics = ({ userRole, onBack }: AnalyticsProps) => {
 const plantsToShow = userRole === "plant" ? plantStats.filter(p => p.name === "Greater Noida (Ecotech 1)") : plantStats;
 
-  // Company-wide monthly data (demo). In real app, fetch/compute from API.
-  const monthlyData = [
-    { month: "Jan", submitted: 20 },
-    { month: "Feb", submitted: 22 },
-    { month: "Mar", submitted: 24 },
-    { month: "Apr", submitted: 26 },
-    { month: "May", submitted: 28 },
-    { month: "Jun", submitted: 25 },
-    { month: "Jul", submitted: 27 },
-    { month: "Aug", submitted: 29 },
-    { month: "Sep", submitted: 30 },
-    { month: "Oct", submitted: 32 },
-    { month: "Nov", submitted: 31 },
-    { month: "Dec", submitted: 33 },
+  // Toggle state for Yearly Analytics - only for HQ admin
+  const [yearlyViewMode, setYearlyViewMode] = useState<"yearly" | "currentMonth">("yearly");
+
+  // Yearly plant-wise data (total BPs submitted by each plant for the year)
+  const yearlyPlantData = plantStats.map(plant => ({
+    plant: plantShortLabel[plant.name] || plant.name,
+    fullName: plant.name,
+    submitted: plant.submitted
+  }));
+
+  // Current month plant-wise data (BPs submitted by each plant in current month)
+  const currentMonthPlantData = [
+    { plant: plantShortLabel["Greater Noida (Ecotech 1)"] || "Greater Noida", fullName: "Greater Noida (Ecotech 1)", submitted: 3 },
+    { plant: plantShortLabel["Kanchipuram"] || "Kanchipuram", fullName: "Kanchipuram", submitted: 2 },
+    { plant: plantShortLabel["Rajpura"] || "Rajpura", fullName: "Rajpura", submitted: 2 },
+    { plant: plantShortLabel["Shahjahanpur"] || "Shahjahanpur", fullName: "Shahjahanpur", submitted: 1 },
+    { plant: plantShortLabel["Supa"] || "Supa", fullName: "Supa", submitted: 1 },
+    { plant: plantShortLabel["Ranjangaon"] || "Ranjangaon", fullName: "Ranjangaon", submitted: 2 },
+    { plant: plantShortLabel["Ponneri"] || "Ponneri", fullName: "Ponneri", submitted: 1 },
   ];
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold flex items-center"><BarChart3 className="h-6 w-6 mr-2 text-primary" /> Analytics</h1>
+          <h1 className="text-3xl font-bold flex items-center"><BarChart3 className="h-6 w-6 mr-2 text-primary" /> Component Division Overview</h1>
           <p className="text-muted-foreground mt-1">
             {userRole === "plant" ? "Greater Noida (Ecotech 1) performance" : "Company-wide metrics and per-plant breakdown"}
           </p>
@@ -85,23 +92,31 @@ const plantsToShow = userRole === "plant" ? plantStats.filter(p => p.name === "G
         <Button variant="outline" onClick={onBack}>Back</Button>
       </div>
 
-      {/* Company Overview */}
-      {userRole === "hq" && (
-        <Card className="shadow-card">
-          <CardHeader>
-            <CardTitle className="flex items-center"><TrendingUp className="h-5 w-5 text-primary mr-2" /> Component Division Overview</CardTitle>
-          </CardHeader>
-          <CardContent className="grid grid-cols-1 md:grid-cols-1 gap-4">
-            <MetricCard label="Submitted" value={total.submitted} />
-          </CardContent>
-        </Card>
-      )}
-
-
       {/* Company-wide yearly bar chart */}
       <Card className="shadow-card">
         <CardHeader>
-          <CardTitle className="flex items-center"><BarChart3 className="h-5 w-5 text-primary mr-2" /> Yearly Analytics</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center"><BarChart3 className="h-5 w-5 text-primary mr-2" /> Yearly Analytics</CardTitle>
+            {userRole === "hq" && (
+              <ToggleGroup 
+                type="single" 
+                value={yearlyViewMode} 
+                onValueChange={(value) => {
+                  if (value === "yearly" || value === "currentMonth") {
+                    setYearlyViewMode(value);
+                  }
+                }}
+                className="border rounded-md"
+              >
+                <ToggleGroupItem value="yearly" aria-label="Yearly view" className="px-4">
+                  Yearly
+                </ToggleGroupItem>
+                <ToggleGroupItem value="currentMonth" aria-label="Current month view" className="px-4">
+                  Current Month
+                </ToggleGroupItem>
+              </ToggleGroup>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
           <ChartContainer
@@ -110,13 +125,45 @@ const plantsToShow = userRole === "plant" ? plantStats.filter(p => p.name === "G
             }}
             className="h-[300px] w-full"
           >
-            <BarChart data={monthlyData}>
+            <BarChart 
+              data={yearlyViewMode === "yearly" ? yearlyPlantData : currentMonthPlantData}
+              margin={{ top: 24, right: 16, left: 0, bottom: 0 }}
+            >
+              <defs>
+                <linearGradient id="gradientSubmitted" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.9} />
+                  <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0.4} />
+                </linearGradient>
+              </defs>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
-              <ChartTooltip content={<ChartTooltipContent />} />
+              <XAxis 
+                dataKey="plant" 
+                angle={-45}
+                textAnchor="end"
+                height={80}
+                tick={{ fontSize: 12 }}
+              />
+              <YAxis domain={[0, 'dataMax + 1']} allowDecimals={false} />
+              <ChartTooltip 
+                content={({ active, payload }) => {
+                  if (active && payload && payload.length) {
+                    const data = payload[0].payload;
+                    return (
+                      <div className="rounded-lg border bg-background p-3 shadow-md">
+                        <div className="font-semibold">{data.fullName || data.plant}</div>
+                        <div className="text-sm text-muted-foreground">
+                          BPs Submitted: <span className="font-medium text-foreground">{data.submitted}</span>
+                        </div>
+                      </div>
+                    );
+                  }
+                  return null;
+                }}
+              />
               <ChartLegend content={<ChartLegendContent />} />
-              <Bar dataKey="submitted" fill="var(--color-submitted)" />
+              <Bar dataKey="submitted" fill="url(#gradientSubmitted)" radius={[8, 8, 0, 0]}>
+                <LabelList dataKey="submitted" position="top" className="text-xs fill-current" />
+              </Bar>
             </BarChart>
           </ChartContainer>
         </CardContent>
@@ -144,7 +191,7 @@ const plantsToShow = userRole === "plant" ? plantStats.filter(p => p.name === "G
               <div className="space-y-4">
                 <div className="flex items-center justify-between text-sm text-muted-foreground">
                   <span>Plant-wise YTD savings • ₹ lakhs</span>
-                  <span className="font-medium text-foreground">Company YTD: ₹{totalYtd.toFixed(0)}L</span>
+                  <span className="font-medium text-foreground">Company YTD: {formatCurrency(totalYtd, 0)}</span>
                 </div>
                 <ChartContainer 
                   config={{ savings: { label: "YTD Savings", color: "hsl(var(--success))" } }}
@@ -155,35 +202,30 @@ const plantsToShow = userRole === "plant" ? plantStats.filter(p => p.name === "G
                     fullName: p.plant,
                     savings: p.savings 
                   }))}>
+                    <defs>
+                      <linearGradient id="gradientSavings" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="hsl(var(--success))" stopOpacity={0.9} />
+                        <stop offset="100%" stopColor="hsl(var(--success))" stopOpacity={0.4} />
+                      </linearGradient>
+                    </defs>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="plant" />
+                    <XAxis 
+                      dataKey="plant" 
+                      angle={-45}
+                      textAnchor="end"
+                      height={80}
+                      tick={{ fontSize: 12 }}
+                    />
                     <YAxis />
                     <ChartTooltip 
-                      content={({ active, payload, label }) => {
+                      content={({ active, payload }) => {
                         if (active && payload && payload.length) {
                           const data = payload[0].payload;
                           return (
-                            <div className="rounded-lg border bg-background p-2 shadow-md">
-                              <div className="grid gap-2">
-                                <div className="flex flex-col">
-                                  <span className="text-[0.70rem] uppercase text-muted-foreground">
-                                    {data.fullName || label}
-                                  </span>
-                                  <span className="font-bold text-muted-foreground">
-                                    {label}
-                                  </span>
-                                </div>
-                                {payload.map((entry, index) => (
-                                  <div key={index} className="flex items-center gap-2">
-                                    <div 
-                                      className="h-2 w-2 rounded-full" 
-                                      style={{ backgroundColor: entry.color }}
-                                    />
-                                    <span className="text-[0.70rem] text-muted-foreground">
-                                      {entry.dataKey}: {entry.value}
-                                    </span>
-                                  </div>
-                                ))}
+                            <div className="rounded-lg border bg-background p-3 shadow-md">
+                              <div className="font-semibold">{data.fullName || data.plant}</div>
+                              <div className="text-sm text-muted-foreground">
+                                YTD Savings: <span className="font-medium text-foreground">{formatCurrency(data.savings, 0)}</span>
                               </div>
                             </div>
                           );
@@ -192,7 +234,7 @@ const plantsToShow = userRole === "plant" ? plantStats.filter(p => p.name === "G
                       }}
                     />
                     <ChartLegend content={<ChartLegendContent />} />
-                    <Bar dataKey="savings" fill="var(--color-savings)" />
+                    <Bar dataKey="savings" fill="url(#gradientSavings)" radius={[8, 8, 0, 0]} />
                   </BarChart>
                 </ChartContainer>
               </div>
@@ -338,7 +380,7 @@ const plantMonthlySavings: Record<string, PlantMonthlyBreakdown[]> = {
       totalSavings: 15.2,
       practices: [
         { title: "Compressed Air Optimization", savings: 5.2 },
-        { title: "ELG Compliance Monitoring", savings: 4.6, benchmarked: true },
+        { title: "ESG Compliance Monitoring", savings: 4.6, benchmarked: true },
         { title: "Reflow Oven Efficiency", savings: 5.4 },
       ],
     },
@@ -375,7 +417,7 @@ const defaultMonthlyBreakdown: PlantMonthlyBreakdown[] = [
   },
 ];
 
-const formatLakh = (n: number) => `₹${n.toFixed(1)}L`;
+const formatLakh = (n: number) => formatCurrency(n, 1);
 const pctChange = (current: number, last: number) => (last === 0 ? 0 : ((current - last) / last) * 100);
 
 const CostAnalysis = ({ userRole }: { userRole: "plant" | "hq" }) => {
@@ -447,152 +489,343 @@ const CostAnalysis = ({ userRole }: { userRole: "plant" | "hq" }) => {
         <CardTitle>Cost Analysis (Savings)</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Plant-wise Pie Charts */}
+        {/* Plant-wise Donut Charts - Premium Modern Design */}
         {userRole === "hq" && (() => {
-          const COLORS = [
-            "hsl(var(--primary))",
-            "hsl(var(--success))",
-            "hsl(var(--warning))",
-            "hsl(var(--destructive))",
-            "hsl(217, 91%, 60%)",
-            "hsl(280, 70%, 50%)",
-            "hsl(142, 76%, 36%)"
+          // Premium soft muted color palette - gentle pastels that harmonize
+          const COLOR_PALETTE = [
+            { 
+              name: "Soft Teal",
+              base: "hsl(180, 40%, 55%)",      // Muted teal
+              light: "hsl(180, 35%, 70%)",     // Light teal
+              fade: "hsla(180, 40%, 55%, 0.3)" // Faded for gradient end
+            },
+            { 
+              name: "Warm Coral",
+              base: "hsl(15, 45%, 58%)",       // Soft coral
+              light: "hsl(15, 40%, 72%)",      // Light coral
+              fade: "hsla(15, 45%, 58%, 0.3)"
+            },
+            { 
+              name: "Golden Amber",
+              base: "hsl(38, 50%, 60%)",       // Gentle gold
+              light: "hsl(38, 45%, 75%)",     // Light gold
+              fade: "hsla(38, 50%, 60%, 0.3)"
+            },
+            { 
+              name: "Lavender Mist",
+              base: "hsl(270, 35%, 62%)",      // Soft lavender
+              light: "hsl(270, 30%, 75%)",    // Light lavender
+              fade: "hsla(270, 35%, 62%, 0.3)"
+            },
+            { 
+              name: "Sage Green",
+              base: "hsl(150, 35%, 55%)",      // Muted sage
+              light: "hsl(150, 30%, 70%)",     // Light sage
+              fade: "hsla(150, 35%, 55%, 0.3)"
+            },
+            { 
+              name: "Dusty Rose",
+              base: "hsl(340, 40%, 60%)",      // Soft rose
+              light: "hsl(340, 35%, 73%)",     // Light rose
+              fade: "hsla(340, 40%, 60%, 0.3)"
+            },
+            { 
+              name: "Sky Blue",
+              base: "hsl(200, 45%, 58%)",      // Gentle sky blue
+              light: "hsl(200, 40%, 72%)",     // Light sky blue
+              fade: "hsla(200, 45%, 58%, 0.3)"
+            }
           ];
 
-          const currentMonthData = plantCostData.map(p => ({
+          const currentMonthData = plantCostData.map((p, idx) => ({
             name: plantShortLabel[p.name] ?? p.name,
             fullName: p.name,
             value: p.currentMonth,
-            color: COLORS[plantCostData.indexOf(p) % COLORS.length]
+            colorIndex: idx % COLOR_PALETTE.length,
+            color: COLOR_PALETTE[idx % COLOR_PALETTE.length]
           }));
 
-          const lastMonthData = plantCostData.map(p => ({
+          const lastMonthData = plantCostData.map((p, idx) => ({
             name: plantShortLabel[p.name] ?? p.name,
             fullName: p.name,
             value: p.lastMonth,
-            color: COLORS[plantCostData.indexOf(p) % COLORS.length]
+            colorIndex: idx % COLOR_PALETTE.length,
+            color: COLOR_PALETTE[idx % COLOR_PALETTE.length]
           }));
 
-          const yearlyData = plantCostData.map(p => ({
+          const yearlyData = plantCostData.map((p, idx) => ({
             name: plantShortLabel[p.name] ?? p.name,
             fullName: p.name,
             value: p.ytdTillLastMonth,
-            color: COLORS[plantCostData.indexOf(p) % COLORS.length]
+            colorIndex: idx % COLOR_PALETTE.length,
+            color: COLOR_PALETTE[idx % COLOR_PALETTE.length]
           }));
 
           const currentMonthTotal = currentMonthData.reduce((sum, item) => sum + item.value, 0);
           const lastMonthTotal = lastMonthData.reduce((sum, item) => sum + item.value, 0);
           const yearlyTotal = yearlyData.reduce((sum, item) => sum + item.value, 0);
 
-          const renderPieChart = (data: typeof currentMonthData, total: number, title: string) => (
-            <ChartContainer
-              config={{
-                value: { label: "Savings", color: "hsl(var(--primary))" },
-              }}
-              className="h-[450px] w-full"
-            >
-              <PieChart>
-                <ChartTooltip
-                  content={({ active, payload }) => {
-                    if (active && payload && payload.length) {
-                      const data = payload[0].payload;
-                      const percent = ((data.value / total) * 100).toFixed(1);
-                      return (
-                        <div className="rounded-lg border bg-background p-4 shadow-lg backdrop-blur-sm">
-                          <div className="space-y-2">
-                            <div className="flex items-center gap-2">
-                              <div 
-                                className="w-3 h-3 rounded-full" 
-                                style={{ backgroundColor: data.color }}
-                              />
-                              <span className="font-semibold text-sm">{data.fullName || data.name}</span>
-                            </div>
-                            <div className="flex flex-col gap-1">
-                              <span className="text-2xl font-bold text-primary">
-                                {formatLakh(data.value)} ₹L
-                              </span>
-                              <span className="text-xs text-muted-foreground">
-                                {percent}% of total savings
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    }
-                    return null;
+          // Modular Premium Donut Chart Component
+          const renderDonutChart = (
+            data: typeof currentMonthData, 
+            total: number, 
+            title: string, 
+            chartId: string
+          ) => {
+            const [activeIndex, setActiveIndex] = useState<number | null>(null);
+
+            return (
+              <div className="relative w-full">
+                <ChartContainer
+                  config={{
+                    value: { label: "Savings", color: "hsl(var(--primary))" },
                   }}
-                />
-                <Pie
-                  data={data}
-                  cx="50%"
-                  cy="45%"
-                  labelLine={true}
-                  label={({ name, percent }) => {
-                    return `${(percent * 100).toFixed(1)}%`;
-                  }}
-                  outerRadius={140}
-                  innerRadius={70}
-                  paddingAngle={3}
-                  fill="#8884d8"
-                  dataKey="value"
-                  animationBegin={0}
-                  animationDuration={800}
-                  animationEasing="ease-out"
-                  isAnimationActive={true}
+                  className="h-[450px] w-full"
                 >
-                  {data.map((entry, index) => (
-                    <Cell 
-                      key={`cell-${index}`} 
-                      fill={entry.color}
-                      stroke={entry.color}
-                      strokeWidth={2}
-                      style={{
-                        filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
-                        transition: 'all 0.3s ease',
-                        cursor: 'pointer'
+                  <PieChart margin={{ top: 40, right: 40, bottom: 40, left: 40 }}>
+                    <defs>
+                      {/* Drop shadow filter for depth effect */}
+                      <filter id={`dropshadow-${chartId}`} x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
+                        <feOffset dx="0" dy="2" result="offsetblur" />
+                        <feComponentTransfer>
+                          <feFuncA type="linear" slope="0.3" />
+                        </feComponentTransfer>
+                        <feMerge>
+                          <feMergeNode />
+                          <feMergeNode in="SourceGraphic" />
+                        </feMerge>
+                      </filter>
+                      
+                      {/* Gradient definitions for each slice - faded from solid to transparent */}
+                      {data.map((entry, index) => {
+                        return (
+                          <linearGradient 
+                            key={`gradient-${chartId}-${index}`} 
+                            id={`gradient-${chartId}-${index}`} 
+                            x1="0%" 
+                            y1="0%" 
+                            x2="100%" 
+                            y2="100%"
+                          >
+                            <stop offset="0%" stopColor={entry.color.base} stopOpacity={1} />
+                            <stop offset="70%" stopColor={entry.color.light} stopOpacity={0.9} />
+                            <stop offset="100%" stopColor={entry.color.fade} stopOpacity={0.4} />
+                          </linearGradient>
+                        );
+                      })}
+                    </defs>
+                    
+                    {/* Premium styled tooltip */}
+                    <ChartTooltip
+                      content={({ active, payload }) => {
+                        if (active && payload && payload.length) {
+                          const data = payload[0].payload;
+                          const percent = ((data.value / total) * 100).toFixed(1);
+                          return (
+                            <div className="rounded-xl border border-border/50 bg-background/95 backdrop-blur-sm p-4 shadow-xl">
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-2.5">
+                                  <div 
+                                    className="w-3.5 h-3.5 rounded-full shadow-sm" 
+                                    style={{ backgroundColor: data.color.base }}
+                                  />
+                                  <span className="font-semibold text-sm text-foreground">
+                                    {data.fullName || data.name}
+                                  </span>
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                  <span className="text-2xl font-bold text-primary">
+                                    {formatLakh(data.value)}
+                                  </span>
+                                  <span className="text-xs font-medium text-muted-foreground">
+                                    {percent}% of total savings
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        }
+                        return null;
                       }}
                     />
-                  ))}
-                </Pie>
-                {/* Center label showing total */}
-                <text
-                  x="50%"
-                  y="42%"
-                  textAnchor="middle"
-                  fill="hsl(var(--foreground))"
-                  fontSize="24"
-                  fontWeight="bold"
-                  dominantBaseline="middle"
-                >
-                  {formatLakh(total)} ₹L
-                </text>
-                <text
-                  x="50%"
-                  y="48%"
-                  textAnchor="middle"
-                  fill="hsl(var(--muted-foreground))"
-                  fontSize="14"
-                  dominantBaseline="middle"
-                >
-                  {title}
-                </text>
-              </PieChart>
-            </ChartContainer>
-          );
+                    
+                    {/* Donut Pie with premium styling, labels, and center total */}
+                    <Pie
+                      data={data}
+                      cx="50%"
+                      cy="50%"
+                      label={({ percent, midAngle, innerRadius, outerRadius, cx, cy }) => {
+                        // Show percentage labels outside the donut chart
+                        if (percent < 0.03) return null; // Hide for very small slices
+                        
+                        const RADIAN = Math.PI / 180;
+                        const radius = outerRadius + 22; // Position labels further from the donut
+                        const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                        const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                        
+                        return (
+                          <text
+                            x={x}
+                            y={y}
+                            fill="hsl(var(--foreground))"
+                            textAnchor="middle"
+                            dominantBaseline="middle"
+                            fontSize="12"
+                            fontWeight="600"
+                            className="pointer-events-none"
+                            style={{
+                              textShadow: '0 1px 3px rgba(255,255,255,0.95), 0 0 1px rgba(0,0,0,0.1)'
+                            }}
+                          >
+                            {`${(percent * 100).toFixed(1)}%`}
+                          </text>
+                        );
+                      }}
+                      labelLine={false}
+                      outerRadius={110}
+                      innerRadius={70}
+                      paddingAngle={2}
+                      cornerRadius={4}
+                      fill="#8884d8"
+                      dataKey="value"
+                      animationBegin={0}
+                      animationDuration={800}
+                      animationEasing="ease-in-out"
+                      isAnimationActive={true}
+                      activeIndex={activeIndex ?? undefined}
+                      onMouseEnter={(_, index) => setActiveIndex(index)}
+                      onMouseLeave={() => setActiveIndex(null)}
+                    >
+                      {data.map((entry, index) => (
+                        <Cell 
+                          key={`cell-${index}`} 
+                          fill={`url(#gradient-${chartId}-${index})`}
+                          stroke="#ffffff"
+                          strokeWidth={2}
+                          style={{
+                            cursor: 'pointer',
+                            transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                            filter: `url(#dropshadow-${chartId})`,
+                            transform: activeIndex === index ? 'scale(1.1)' : 'scale(1)',
+                            transformOrigin: 'center',
+                            opacity: activeIndex !== null && activeIndex !== index ? 0.6 : 1
+                          }}
+                        />
+                      ))}
+                      {/* Centered label - Total INSIDE the donut hole - as child of Pie */}
+                      <Label
+                        position="center"
+                        content={(props: any) => {
+                          const { viewBox } = props;
+                          if (!viewBox || viewBox.cx === undefined || viewBox.cy === undefined) {
+                            return null;
+                          }
+                          const { cx, cy } = viewBox;
+                          
+                          return (
+                            <g>
+                              {/* Background circle - fits inside the donut hole (innerRadius is 70) */}
+                              <circle
+                                cx={cx}
+                                cy={cy}
+                                r="62"
+                                fill="hsl(var(--background))"
+                                opacity="0.98"
+                                stroke="hsl(var(--border))"
+                                strokeWidth="1.5"
+                              />
+                              {/* Total value - large and bold, perfectly centered */}
+                              <text
+                                x={cx}
+                                y={cy - 6}
+                                textAnchor="middle"
+                                dominantBaseline="middle"
+                                fill="hsl(var(--foreground))"
+                                fontSize="28"
+                                fontWeight="700"
+                                className="font-bold pointer-events-none"
+                              >
+                                {formatLakh(total)}
+                              </text>
+                              {/* Title below total */}
+                              <text
+                                x={cx}
+                                y={cy + 14}
+                                textAnchor="middle"
+                                dominantBaseline="middle"
+                                fill="hsl(var(--muted-foreground))"
+                                fontSize="13"
+                                fontWeight="500"
+                                className="font-medium pointer-events-none"
+                              >
+                                {title}
+                              </text>
+                            </g>
+                          );
+                        }}
+                      />
+                    </Pie>
+                    
+                  </PieChart>
+                </ChartContainer>
+              </div>
+            );
+          };
+
+          // Get unique plants with their colors for the shared legend
+          const uniquePlants = currentMonthData.map((entry, index) => ({
+            name: entry.fullName || entry.name,
+            shortName: entry.name,
+            color: entry.color
+          }));
 
           return (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div>
-                <h3 className="text-lg font-semibold mb-4 text-center">Current Month Savings</h3>
-                {renderPieChart(currentMonthData, currentMonthTotal, "Current Month")}
+            <div>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div>
+                  <h3 className="text-lg font-semibold mb-4 text-center">Current Month Savings</h3>
+                  {renderDonutChart(currentMonthData, currentMonthTotal, "Current Month", "current")}
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold mb-4 text-center">Last Month Savings</h3>
+                  {renderDonutChart(lastMonthData, lastMonthTotal, "Last Month", "last")}
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold mb-4 text-center">Yearly Savings (YTD)</h3>
+                  {renderDonutChart(yearlyData, yearlyTotal, "Yearly (YTD)", "yearly")}
+                </div>
               </div>
-              <div>
-                <h3 className="text-lg font-semibold mb-4 text-center">Last Month Savings</h3>
-                {renderPieChart(lastMonthData, lastMonthTotal, "Last Month")}
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold mb-4 text-center">Yearly Savings (YTD)</h3>
-                {renderPieChart(yearlyData, yearlyTotal, "Yearly (YTD)")}
+              
+              {/* Single shared legend - horizontal straight line, shown once with percentages */}
+              <div className="mt-8 flex justify-center">
+                <div className="bg-muted/30 rounded-lg p-5 border border-border/50">
+                  <div className="flex flex-wrap justify-center items-center gap-4">
+                    {uniquePlants.map((plant, index) => {
+                      // Calculate percentage from current month data
+                      const plantData = currentMonthData.find(p => (p.fullName || p.name) === plant.name);
+                      const percent = plantData ? ((plantData.value / currentMonthTotal) * 100).toFixed(1) : '0.0';
+                      
+                      return (
+                        <div
+                          key={index}
+                          className="flex items-center gap-2.5 px-4 py-2 rounded-lg hover:bg-background transition-colors"
+                        >
+                          <div
+                            className="w-3.5 h-3.5 rounded-full flex-shrink-0 shadow-sm border border-border/30"
+                            style={{ backgroundColor: plant.color.base }}
+                          />
+                          <span className="text-sm font-medium text-foreground whitespace-nowrap">
+                            {plant.shortName}
+                          </span>
+                          <span className="text-sm font-semibold text-muted-foreground whitespace-nowrap">
+                            ({percent}%)
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
             </div>
           );
@@ -702,7 +935,7 @@ const CostAnalysis = ({ userRole }: { userRole: "plant" | "hq" }) => {
                           year: "numeric",
                         })}
                       </td>
-                      <td className="py-2 pr-4">{entry.totalSavings.toFixed(1)}L</td>
+                      <td className="py-2 pr-4">{formatCurrency(entry.totalSavings, 1)}</td>
                       <td className="py-2 pr-4">
                         {entry.practices.length > 0 ? (
                           <div className="space-y-1">
@@ -717,7 +950,7 @@ const CostAnalysis = ({ userRole }: { userRole: "plant" | "hq" }) => {
                                       : "bg-muted/50 text-muted-foreground"
                                   }
                                 >
-                                  ₹{practice.savings.toFixed(1)}L{practice.benchmarked ? " • Benchmarked" : ""}
+                                  {formatCurrency(practice.savings, 1)}{practice.benchmarked ? " • Benchmarked" : ""}
                                 </Badge>
                               </div>
                             ))}

@@ -106,7 +106,7 @@ const BestPracticeDetail = ({ userRole, practice: propPractice, onBack, isBenchm
       <div className="flex items-center space-x-4">
         <Button variant="outline" size="sm" onClick={onBack}>
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Practices
+          Back to Best Practices
         </Button>
         
         <div className="flex-1">

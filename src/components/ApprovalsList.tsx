@@ -140,12 +140,12 @@ const ApprovalsList = ({ userRole, onViewPractice, onBack, isBenchmarked, onTogg
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Approvals</h1>
-          <p className="text-muted-foreground mt-1">
-            {userRole === "plant"
-              ? "Requests from Greater Noida (Ecotech 1) awaiting decision"
-              : "Review practices awaiting approval, rejection, or on hold"}
-          </p>
+          <h1 className="text-3xl font-bold">Benchmark Best Practice</h1>
+          {userRole === "plant" && (
+            <p className="text-muted-foreground mt-1">
+              Requests from Greater Noida (Ecotech 1) awaiting decision
+            </p>
+          )}
         </div>
         <Button variant="outline" onClick={onBack}>
           <FileText className="h-4 w-4 mr-2" />

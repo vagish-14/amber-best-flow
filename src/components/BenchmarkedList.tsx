@@ -48,7 +48,7 @@ const BenchmarkedList = ({ items, onViewPractice, onUnbenchmark, onBack, onCopyA
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Benchmarked Practices</h1>
-          <p className="text-muted-foreground mt-1">Practices you've benchmarked for later reference</p>
+          <p className="text-muted-foreground mt-1">Best Practices you've benchmarked for later reference</p>
         </div>
         <Button variant="outline" onClick={onBack}><FileText className="h-4 w-4 mr-2" />Back</Button>
       </div>

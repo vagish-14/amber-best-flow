@@ -67,8 +67,11 @@ const BenchmarkedList = ({ items, onViewPractice, onUnbenchmark, onBack, onCopyA
               <div className="text-center text-muted-foreground">No benchmarked practices yet.</div>
             )}
             {items.map((practice) => (
-              <div key={practice.id} className="flex items-center justify-between p-6 border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors group"
-                   onClick={() => onViewPractice(practice)}>
+              <div 
+                key={practice.id} 
+                className="flex items-center justify-between p-6 border rounded-xl hover:bg-accent/50 hover:border-primary/20 cursor-pointer transition-smooth group hover-lift"
+                onClick={() => onViewPractice(practice)}
+              >
                 <div className="flex-1">
                   <h3 className="font-semibold text-lg group-hover:text-primary transition-colors">{practice.title}</h3>
                   <p className="text-muted-foreground mt-1 line-clamp-2">{practice.description}</p>

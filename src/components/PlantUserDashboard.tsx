@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { KeyboardEvent, useMemo, useState } from "react";
 import { formatCurrency } from "@/lib/utils";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -85,6 +86,7 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
   } | null>(null);
   const [ytdDialogOpen, setYtdDialogOpen] = useState(false);
   const [monthlyProgressDialogOpen, setMonthlyProgressDialogOpen] = useState(false);
+  const [monthlySavingsFormat, setMonthlySavingsFormat] = useState<'lakhs' | 'crores'>('lakhs');
   
   // Get initial selected month (most recent month with practices, or current month)
   const getInitialMonth = () => {
@@ -761,10 +763,29 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
       <div className="lg:col-span-3">
         <Card className="shadow-soft hover:shadow-medium transition-smooth border border-border/50">
           <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <BarChart3 className="h-5 w-5 text-primary" />
-              <span>Monthly Cost Savings & Stars</span>
-            </CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center space-x-2">
+                <BarChart3 className="h-5 w-5 text-primary" />
+                <span>Monthly Cost Savings & Stars</span>
+              </CardTitle>
+              <ToggleGroup
+                type="single"
+                value={monthlySavingsFormat}
+                onValueChange={(value) => {
+                  if (value === 'lakhs' || value === 'crores') {
+                    setMonthlySavingsFormat(value);
+                  }
+                }}
+                className="border rounded-md"
+              >
+                <ToggleGroupItem value="lakhs" className="px-3 text-xs" aria-label="Lakhs">
+                  L
+                </ToggleGroupItem>
+                <ToggleGroupItem value="crores" className="px-3 text-xs" aria-label="Crores">
+                  Cr
+                </ToggleGroupItem>
+              </ToggleGroup>
+            </div>
           </CardHeader>
           <CardContent>
             {(() => {
@@ -794,20 +815,20 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
                       <CardContent className="p-4 text-center">
-                        <div className="text-2xl font-bold text-green-700">{formatCurrency(currentMonth.costSavings, 0)}</div>
+                        <div className="text-2xl font-bold text-green-700">{formatCurrency(currentMonth.costSavings, 1, monthlySavingsFormat)}</div>
                         <p className="text-sm text-green-600">This Month Savings</p>
                       </CardContent>
                     </Card>
                     <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
                       <CardContent className="p-4 text-center">
-                        <div className="text-2xl font-bold text-blue-700">{formatCurrency(ytdSavings, 1)}</div>
+                        <div className="text-2xl font-bold text-blue-700">{formatCurrency(ytdSavings, 1, monthlySavingsFormat)}</div>
                         <p className="text-sm text-blue-600">YTD Savings</p>
                       </CardContent>
                     </Card>
                     <Card className="bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200">
                       <CardContent className="p-4 text-center">
                         <div className="text-2xl font-bold text-yellow-700">{ytdStars}</div>
-                        <p className="text-sm text-yellow-600">Total Stars Earned</p>
+                        <p className="text-sm text-yellow-600">Total Stars ⭐</p>
                       </CardContent>
                     </Card>
                   </div>
@@ -815,8 +836,8 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
                   {/* Chart */}
                   <ChartContainer
                     config={{
-                      costSavings: { label: "Cost Savings (₹L)", color: "hsl(var(--success))" },
-                      stars: { label: "Stars Earned", color: "hsl(var(--warning))" },
+                      costSavings: { label: `Cost Savings (₹${monthlySavingsFormat === 'crores' ? 'Cr' : 'L'})`, color: "hsl(var(--success))" },
+                      stars: { label: "Stars ⭐", color: "hsl(var(--warning))" },
                     }}
                     className="h-[300px] w-full"
                   >
@@ -853,8 +874,10 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
                                         style={{ backgroundColor: entry.color }}
                                       />
                                       <span className="text-[0.70rem] text-muted-foreground">
-                                        {entry.dataKey === 'costSavings' ? 'Cost Savings' : 'Stars'}: {entry.value}
-                                        {entry.dataKey === 'costSavings' ? 'L' : ''}
+                                        {entry.dataKey === 'costSavings' 
+                                          ? `Cost Savings: ${formatCurrency(entry.value as number, 1, monthlySavingsFormat)}`
+                                          : `Stars: ${entry.value}`
+                                        }
                                       </span>
                                     </div>
                                   ))}
@@ -930,7 +953,21 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
                   hasImage: true
                 }
               ].filter(bp => bp.hasImage).map((bp, index) => (
-                <div key={index} className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors">
+                <div 
+                  key={index} 
+                  className="flex items-center justify-between p-4 border rounded-xl hover:bg-accent/50 hover:border-primary/20 cursor-pointer transition-smooth hover-lift"
+                  onClick={() => {
+                    if (onViewPractice) {
+                      onViewPractice({
+                        title: bp.title,
+                        category: bp.category,
+                        plant: bp.plant
+                      });
+                    } else {
+                      onViewChange("practice-list");
+                    }
+                  }}
+                >
                   <div className="flex-1">
                     <h4 className="font-medium">{bp.title}</h4>
                     <div className="flex items-center space-x-2 mt-1">
@@ -947,8 +984,9 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
                   <div className="flex items-center space-x-2">
                     <Button 
                       size="sm" 
-                      variant="outline" 
-                      onClick={() => {
+                      variant="outline"
+                      onClick={(e) => {
+                        e.stopPropagation();
                         if (onViewPractice) {
                           onViewPractice({
                             title: bp.title,
@@ -967,7 +1005,10 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
                     </Button>
                     <Button 
                       size="sm" 
-                      onClick={() => handleCopyImplement(bp)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleCopyImplement(bp);
+                      }}
                       className="bg-primary text-primary-foreground hover:bg-primary/90"
                     >
                       <Copy className="h-3 w-3 mr-1" />
@@ -989,47 +1030,51 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {(recentSubmissions ?? [
-                { title: "Smart Cart Movement & Management through AMR", category: "Automation", date: "2025-01-15", questions: 0, benchmarked: true, hasImage: true },
-                { title: "Empty Cart Feeding System (Manual → Auto)", category: "Productivity", date: "2025-03-15", questions: 0, benchmarked: true, hasImage: true },
-                { title: "Smart Inbound Logistics through AGV", category: "Automation", date: "2025-07-15", questions: 0, benchmarked: true, hasImage: true },
-                { title: "Injection Machines Robotic Operation", category: "Automation", date: "2025-11-15", questions: 0, benchmarked: true, hasImage: true }
-              ]).map((practice, index) => (
-                <div 
-                  key={index} 
-                  className="flex items-center justify-between p-4 border rounded-xl hover:bg-accent/50 hover:border-primary/20 cursor-pointer transition-smooth hover-lift"
-                  onClick={() => {
-                    if (onViewPractice) {
-                      onViewPractice({
-                        title: practice.title,
-                        category: practice.category,
-                        submittedDate: practice.date,
-                        questions: practice.questions,
-                        benchmarked: practice.benchmarked
-                      });
-                    } else {
-                      onViewChange("practice-list");
-                    }
-                  }}
-                >
-                  <div className="flex-1">
-                    <h4 className="font-medium">{practice.title}</h4>
-                    <div className="flex items-center space-x-2 mt-1">
-                      <Badge variant="outline" className="text-xs">
-                        {practice.category}
-                      </Badge>
-                      <span className="text-xs text-muted-foreground">{practice.date}</span>
+              {(() => {
+                // Get practices from allPracticesData for this plant user (same as View Best Practices)
+                const plantPractices = allPracticesData
+                  .filter(practice => practice.plant === "Greater Noida (Ecotech 1)")
+                  .filter(practice => practice.beforeImage || practice.afterImage) // Only show practices with images
+                  .sort((a, b) => {
+                    // Sort by submittedDate descending (newest first)
+                    return new Date(b.submittedDate).getTime() - new Date(a.submittedDate).getTime();
+                  });
+                
+                return plantPractices.length > 0 ? plantPractices.map((practice, index) => (
+                  <div 
+                    key={practice.id || index} 
+                    className="flex items-center justify-between p-4 border rounded-xl hover:bg-accent/50 hover:border-primary/20 cursor-pointer transition-smooth hover-lift"
+                    onClick={() => {
+                      if (onViewPractice) {
+                        onViewPractice(practice);
+                      } else {
+                        onViewChange("practice-list");
+                      }
+                    }}
+                  >
+                    <div className="flex-1">
+                      <h4 className="font-medium">{practice.title}</h4>
+                      <div className="flex items-center space-x-2 mt-1">
+                        <Badge variant="outline" className="text-xs">
+                          {practice.category}
+                        </Badge>
+                        <span className="text-xs text-muted-foreground">{practice.submittedDate}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      {(practice.questions ?? 0) > 0 && (
+                        <Badge variant="outline" className="bg-primary/10 text-primary">
+                          {practice.questions} Q&A
+                        </Badge>
+                      )}
                     </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    {practice.questions && practice.questions > 0 && (
-                      <Badge variant="outline" className="bg-primary/10 text-primary">
-                        {practice.questions} Q&A
-                      </Badge>
-                    )}
+                )) : (
+                  <div className="text-center text-muted-foreground py-4">
+                    No submissions with images available.
                   </div>
-                </div>
-              ))}
+                );
+              })()}
             </div>
           </CardContent>
         </Card>
@@ -1056,14 +1101,31 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
                     <table className="w-full text-xs">
                       <thead>
                         <tr className="text-left text-muted-foreground">
-                          <th className="py-1">Rank</th>
+                          <th className="py-1">Serial Number</th>
                           <th className="py-1">Plant</th>
                           <th className="py-1 text-center pl-2">Total Points</th>
+                          <th className="py-1 text-center pl-1">Rank</th>
                           <th className="py-1 text-center pl-1">Breakdown</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y">
-                        {leaderboardData.map((entry, index) => (
+                        {leaderboardData.map((entry, index) => {
+                          // Calculate rank based on total points (same points = same rank)
+                          // Since data is sorted by totalPoints descending, rank is based on position
+                          let rank = index + 1;
+                          // If same points as previous entry, use the same rank
+                          if (index > 0 && leaderboardData[index - 1].totalPoints === entry.totalPoints) {
+                            // Find the first entry with these points to get the correct rank
+                            for (let i = index - 1; i >= 0; i--) {
+                              if (leaderboardData[i].totalPoints !== entry.totalPoints) {
+                                rank = i + 2;
+                                break;
+                              }
+                              rank = i + 1;
+                            }
+                          }
+                          
+                          return (
                           <tr
                             key={entry.plant}
                             className="hover:bg-accent/50 hover:border-l-4 hover:border-l-primary cursor-pointer transition-smooth"
@@ -1096,17 +1158,20 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
                               setLbDrillOpen(true);
                             }}
                           >
-                            <td className="py-1 font-medium">
-                              {index === 0 && <Badge variant="outline" className="bg-primary/10 text-primary text-xs px-1 py-0">#1</Badge>}
-                              {index === 1 && <Badge variant="outline" className="bg-secondary/10 text-secondary text-xs px-1 py-0">#2</Badge>}
-                              {index === 2 && <Badge variant="outline" className="bg-accent/10 text-accent-foreground text-xs px-1 py-0">#3</Badge>}
-                              {index > 2 && <span className="text-muted-foreground text-xs">#{index + 1}</span>}
+                            <td className="py-1 font-medium text-xs">
+                              {index + 1}
                             </td>
                             <td className="py-1 font-medium text-xs">{entry.plant}</td>
                             <td className="py-1 text-center pl-2">
                               <Badge variant="outline" className="bg-primary/10 text-primary border-primary text-xs px-1 py-0">
                                 {entry.totalPoints}
                               </Badge>
+                            </td>
+                            <td className="py-1 text-center pl-1">
+                              {rank === 1 && <Badge variant="outline" className="bg-primary/10 text-primary text-xs px-1 py-0">#1</Badge>}
+                              {rank === 2 && <Badge variant="outline" className="bg-secondary/10 text-secondary text-xs px-1 py-0">#2</Badge>}
+                              {rank === 3 && <Badge variant="outline" className="bg-accent/10 text-accent-foreground text-xs px-1 py-0">#3</Badge>}
+                              {rank > 3 && <span className="text-muted-foreground text-xs">#{rank}</span>}
                             </td>
                             <td className="py-1 text-center pl-1">
                               <div className="text-xs text-muted-foreground">
@@ -1133,7 +1198,8 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
                               </div>
                             </td>
                           </tr>
-                        ))}
+                          );
+                        })}
                       </tbody>
                     </table>
                   </div>

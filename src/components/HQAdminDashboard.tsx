@@ -82,6 +82,8 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
   const [starDrillOpen, setStarDrillOpen] = useState(false);
   const [starDrillPlant, setStarDrillPlant] = useState<string | null>(null);
   const [starDrillData, setStarDrillData] = useState<{ month: string; savings: number; stars: number }[]>([]);
+  const [starRatingsFormat, setStarRatingsFormat] = useState<'lakhs' | 'crores'>('lakhs');
+  const [leaderboardFormat, setLeaderboardFormat] = useState<'lakhs' | 'crores'>('lakhs');
 
   // Base leaderboard to keep table sizable; merge dynamic updates
   const baseLeaderboard = useMemo(() => ([
@@ -288,8 +290,8 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-bold">Admin Dashboard</h2>
-                <p className="text-primary-foreground/80">Amber Group - Best Practices Overview</p>
+                <h2 className="text-2xl font-bold">Component Division Overview</h2>
+                <p className="text-primary-foreground/80">Amber Best Practice & Benchmarking Portal</p>
               </div>
               <div className="flex items-center space-x-3">
                 <Button 
@@ -373,62 +375,70 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
       )}
 
       {/* Key Metrics */}
-      <Card className="shadow-card">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <BarChart3 className="h-5 w-5 text-primary" />
-            <span>Total Submissions</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 gap-4 text-center">
-            <div>
-              <div className="text-3xl font-bold text-primary">{thisMonthTotal ?? 187}</div>
-              <p className="text-sm text-muted-foreground">in {new Date().toLocaleString('default', { month: 'long' })}</p>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-primary">{ytdTotal ?? ytdSubmissions}</div>
-              <p className="text-sm text-muted-foreground">This Year</p>
-            </div>
-          </div>
-          <div className="mt-2 text-center">
-            <Badge variant="outline" className="bg-success/10 text-success">
-              <TrendingUp className="h-3 w-3 mr-1" />
-              +23% vs last month
-            </Badge>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="lg:col-span-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card className="shadow-card">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <BarChart3 className="h-5 w-5 text-primary" />
+                <span>Total Submissions</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-4 text-center">
+                <div>
+                  <div className="text-3xl font-bold text-primary">{thisMonthTotal ?? 187}</div>
+                  <p className="text-sm text-muted-foreground">in {new Date().toLocaleString('default', { month: 'long' })}</p>
+                </div>
+                <div>
+                  <div className="text-3xl font-bold text-primary">{ytdTotal ?? ytdSubmissions}</div>
+                  <p className="text-sm text-muted-foreground">This Year</p>
+                </div>
+              </div>
+              <div className="mt-2 text-center">
+                <Badge variant="outline" className="bg-success/10 text-success">
+                  <TrendingUp className="h-3 w-3 mr-1" />
+                  +23% vs last month
+                </Badge>
+              </div>
+            </CardContent>
+          </Card>
 
-      <Card className="shadow-card">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <CheckCircle className="h-5 w-5 text-success" />
-            <span>Submission Rate</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="text-center">
-          <div className="text-3xl font-bold text-success">89%</div>
-          <p className="text-sm text-muted-foreground">Average Across Plants</p>
-          <Progress value={89} className="mt-3" />
-        </CardContent>
-      </Card>
+          {/* Total Benchmarked BPs */}
+          <Card className="shadow-card">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Star className="h-5 w-5 text-primary" />
+                <span>Total Benchmarked BPs</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="text-center">
+              <div className="text-3xl font-bold text-primary cursor-pointer" onClick={() => setBenchmarkedOpen(true)}>
+                150
+              </div>
+              <p className="text-sm text-muted-foreground">Tap to view details</p>
+            </CardContent>
+          </Card>
 
-      {/* Total Benchmarked BPs */}
-      <Card className="shadow-card">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Star className="h-5 w-5 text-primary" />
-            <span>Total Benchmarked BPs</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="text-center">
-          <div className="text-3xl font-bold text-primary cursor-pointer" onClick={() => setBenchmarkedOpen(true)}>
-            150
-          </div>
-          <p className="text-sm text-muted-foreground">Tap to view details</p>
-        </CardContent>
-      </Card>
+          <Card className="shadow-card">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Users className="h-5 w-5 text-primary" />
+                <span>Active Plants</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="text-center">
+              <div className="text-3xl font-bold text-primary">{activeBySubmissionCount}/{totalPlantCount} plants</div>
+              <p className="text-sm text-muted-foreground">Contributing this month (submission-based)</p>
+              <div className="mt-2">
+                <Badge variant="outline" className="bg-primary/10 text-primary">
+                  {totalPlantCount > 0 ? Math.round((activeBySubmissionCount / totalPlantCount) * 100) : 0}% Participation
+                </Badge>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
 
       {/* Drilldown: Benchmarked BPs */}
       <AlertDialog open={benchmarkedOpen} onOpenChange={setBenchmarkedOpen}>
@@ -478,24 +488,6 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-
-      <Card className="shadow-card">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Users className="h-5 w-5 text-primary" />
-            <span>Active Plants</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="text-center">
-          <div className="text-3xl font-bold text-primary">{activeBySubmissionCount}/{totalPlantCount} plants</div>
-          <p className="text-sm text-muted-foreground">Contributing this month (submission-based)</p>
-          <div className="mt-2">
-            <Badge variant="outline" className="bg-primary/10 text-primary">
-              100% Participation
-            </Badge>
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Category Breakdown - Group Wide */}
       <div className="lg:col-span-4">
@@ -596,7 +588,7 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
             <div className="flex items-center justify-between gap-4">
               <CardTitle className="flex items-center space-x-2">
                 <Building2 className="h-5 w-5 text-primary" />
-                <span>Plant-wise Performance</span>
+                <span>Plant-wise Performance(Uploaded BP's)</span>
               </CardTitle>
               <ToggleGroup
                 type="single"
@@ -880,10 +872,29 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
       <div className="lg:col-span-4">
         <Card className="shadow-card">
           <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Star className="h-5 w-5 text-primary" />
-              <span>Star Ratings (Savings)</span>
-            </CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center space-x-2">
+                <Star className="h-5 w-5 text-primary" />
+                <span>Star Ratings (Savings)</span>
+              </CardTitle>
+              <ToggleGroup
+                type="single"
+                value={starRatingsFormat}
+                onValueChange={(value) => {
+                  if (value === 'lakhs' || value === 'crores') {
+                    setStarRatingsFormat(value);
+                  }
+                }}
+                className="border rounded-md"
+              >
+                <ToggleGroupItem value="lakhs" className="px-3 text-xs" aria-label="Lakhs">
+                  L
+                </ToggleGroupItem>
+                <ToggleGroupItem value="crores" className="px-3 text-xs" aria-label="Crores">
+                  Cr
+                </ToggleGroupItem>
+              </ToggleGroup>
+            </div>
           </CardHeader>
           <CardContent>
             {(() => {
@@ -943,8 +954,8 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
                           }}
                         >
                           <td className="py-2 font-medium">{r.name}</td>
-                          <td className="py-2">{formatCurrency(r.monthly, 1)}</td>
-                          <td className="py-2">{formatCurrency(r.ytd, 1)}</td>
+                          <td className="py-2">{formatCurrency(r.monthly, 1, starRatingsFormat)}</td>
+                          <td className="py-2">{formatCurrency(r.ytd, 1, starRatingsFormat)}</td>
                           <td className="py-2">{r.monthStars}</td>
                         </tr>
                       ))}
@@ -962,7 +973,7 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
                     {starDrillPlant ? `${starDrillPlant} - Monthly Savings & Stars` : "Monthly Savings & Stars"}
                   </AlertDialogTitle>
                   <AlertDialogDescription>
-                    Savings are in ₹ lakhs; stars are computed per monthly savings criteria.
+                    Savings are in ₹ {starRatingsFormat === 'crores' ? 'crores' : 'lakhs'}; stars are computed per monthly savings criteria.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <div className="overflow-x-auto">
@@ -970,7 +981,7 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
                     <thead>
                       <tr className="text-left text-muted-foreground">
                         <th className="py-1">Month</th>
-                        <th className="py-1">Savings (₹L)</th>
+                        <th className="py-1">Savings (₹{starRatingsFormat === 'crores' ? 'Cr' : 'L'})</th>
                         <th className="py-1">Stars</th>
                       </tr>
                     </thead>
@@ -978,7 +989,7 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
                       {starDrillData.map((row) => (
                         <tr key={row.month}>
                           <td className="py-1">{row.month}</td>
-                          <td className="py-1">{formatCurrency(row.savings, 1)}</td>
+                          <td className="py-1">{formatCurrency(row.savings, 1, starRatingsFormat)}</td>
                           <td className="py-1">{row.stars}</td>
                         </tr>
                       ))}
@@ -1113,7 +1124,7 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
 
       {/* Benchmark BP Leaderboard */}
       <div className="lg:col-span-4">
-        <Card className="shadow-card">
+        <Card className="shadow-soft hover:shadow-medium transition-smooth border border-border/50">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Target className="h-5 w-5 text-primary" />
@@ -1185,19 +1196,35 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
                     <table className="w-full text-xs">
                       <thead>
                         <tr className="text-left text-muted-foreground">
-                          <th className="py-1">Rank</th>
+                          <th className="py-1">Serial Number</th>
                           <th className="py-1">Plant</th>
                           <th className="py-1 text-center pl-2">Total Points</th>
+                          <th className="py-1 text-center pl-1">Rank</th>
                           <th className="py-1 text-center pl-1">Breakdown</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y">
-                        {leaderboardData.map((entry, index) => (
+                        {leaderboardData.map((entry, index) => {
+                          // Calculate rank based on total points (same points = same rank)
+                          // Since data is sorted by totalPoints descending, rank is based on position
+                          let rank = index + 1;
+                          // If same points as previous entry, use the same rank
+                          if (index > 0 && leaderboardData[index - 1].totalPoints === entry.totalPoints) {
+                            // Find the first entry with these points to get the correct rank
+                            for (let i = index - 1; i >= 0; i--) {
+                              if (leaderboardData[i].totalPoints !== entry.totalPoints) {
+                                rank = i + 2;
+                                break;
+                              }
+                              rank = i + 1;
+                            }
+                          }
+                          
+                          return (
                           <tr
                             key={entry.plant}
                             className="hover:bg-accent/50 hover:border-l-4 hover:border-l-primary cursor-pointer transition-smooth"
                             onClick={() => {
-                              // Aggregate both copier and origin sides (only benchmarked BPs can be copied)
                               const asCopier = entry.breakdown.filter((b) => b.type === "Copier");
                               const copiedCount = asCopier.length;
                               const copiedPoints = asCopier.reduce((s, b) => s + (b.points || 0), 0);
@@ -1226,19 +1253,20 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
                               setLbDrillOpen(true);
                             }}
                           >
-                            <td className="py-1 font-medium">
-                              {index === 0 && <Badge variant="outline" className="bg-primary/10 text-primary text-xs px-1 py-0">#1</Badge>}
-                              {index === 1 && <Badge variant="outline" className="bg-secondary/10 text-secondary text-xs px-1 py-0">#2</Badge>}
-                              {index === 2 && <Badge variant="outline" className="bg-accent/10 text-accent-foreground text-xs px-1 py-0">#3</Badge>}
-                              {index > 2 && <span className="text-muted-foreground text-xs">#{index + 1}</span>}
-                            </td>
                             <td className="py-1 font-medium text-xs">
-                              {entry.plant}
+                              {index + 1}
                             </td>
+                            <td className="py-1 font-medium text-xs">{entry.plant}</td>
                             <td className="py-1 text-center pl-2">
                               <Badge variant="outline" className="bg-primary/10 text-primary border-primary text-xs px-1 py-0">
                                 {entry.totalPoints}
                               </Badge>
+                            </td>
+                            <td className="py-1 text-center pl-1">
+                              {rank === 1 && <Badge variant="outline" className="bg-primary/10 text-primary text-xs px-1 py-0">#1</Badge>}
+                              {rank === 2 && <Badge variant="outline" className="bg-secondary/10 text-secondary text-xs px-1 py-0">#2</Badge>}
+                              {rank === 3 && <Badge variant="outline" className="bg-accent/10 text-accent-foreground text-xs px-1 py-0">#3</Badge>}
+                              {rank > 3 && <span className="text-muted-foreground text-xs">#{rank}</span>}
                             </td>
                             <td className="py-1 text-center pl-1">
                               <div className="text-xs text-muted-foreground">
@@ -1265,7 +1293,8 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
                               </div>
                             </td>
                           </tr>
-                        ))}
+                          );
+                        })}
                       </tbody>
                     </table>
                   </div>

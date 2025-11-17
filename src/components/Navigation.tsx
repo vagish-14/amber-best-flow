@@ -93,14 +93,6 @@ const Navigation = ({ userRole, currentView, onViewChange }: NavigationProps) =>
         </div>
 
         <div className="flex items-center space-x-3">
-          {userRole === "hq" && (
-            <div className="flex items-center space-x-2 text-sm">
-              <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30 px-3 py-1.5 font-medium shadow-soft">
-                <Users className="h-3.5 w-3.5 mr-1.5" />
-                4 Plants Active
-              </Badge>
-            </div>
-          )}
         </div>
       </div>
     </div>

@@ -61,6 +61,9 @@ const plantsToShow = userRole === "plant" ? plantStats.filter(p => p.name === "G
 
   // Toggle state for Yearly Analytics - only for HQ admin
   const [yearlyViewMode, setYearlyViewMode] = useState<"yearly" | "currentMonth">("yearly");
+  // Toggle state for Yearly Cost Savings
+  const [yearlyCostSavingsViewMode, setYearlyCostSavingsViewMode] = useState<"yearly" | "currentMonth">("yearly");
+  const [yearlyCostSavingsFormat, setYearlyCostSavingsFormat] = useState<'lakhs' | 'crores'>('lakhs');
 
   // Yearly plant-wise data (total BPs submitted by each plant for the year)
   const yearlyPlantData = plantStats.map(plant => ({
@@ -175,29 +178,83 @@ const plantsToShow = userRole === "plant" ? plantStats.filter(p => p.name === "G
       {/* Yearly Cost Savings (Company-wide) */}
       <Card className="shadow-soft hover:shadow-medium transition-smooth border border-border/50">
         <CardHeader>
-          <CardTitle className="flex items-center"><IndianRupee className="h-5 w-5 text-primary mr-2" /> Yearly Cost Savings</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center">
+              <IndianRupee className="h-5 w-5 text-primary mr-2" />
+              {yearlyCostSavingsViewMode === "yearly" ? "Yearly Cost Savings" : "Monthly Cost Savings"}
+            </CardTitle>
+            <div className="flex items-center gap-2">
+              <ToggleGroup 
+                type="single" 
+                value={yearlyCostSavingsViewMode} 
+                onValueChange={(value) => {
+                  if (value === "yearly" || value === "currentMonth") {
+                    setYearlyCostSavingsViewMode(value);
+                  }
+                }}
+                className="border rounded-md"
+              >
+                <ToggleGroupItem value="yearly" aria-label="Yearly view" className="px-4">
+                  Yearly
+                </ToggleGroupItem>
+                <ToggleGroupItem value="currentMonth" aria-label="Current month view" className="px-4">
+                  Current Month
+                </ToggleGroupItem>
+              </ToggleGroup>
+              <ToggleGroup
+                type="single"
+                value={yearlyCostSavingsFormat}
+                onValueChange={(value) => {
+                  if (value === 'lakhs' || value === 'crores') {
+                    setYearlyCostSavingsFormat(value);
+                  }
+                }}
+                className="border rounded-md"
+              >
+                <ToggleGroupItem value="lakhs" className="px-3 text-xs" aria-label="Lakhs">
+                  L
+                </ToggleGroupItem>
+                <ToggleGroupItem value="crores" className="px-3 text-xs" aria-label="Crores">
+                  Cr
+                </ToggleGroupItem>
+              </ToggleGroup>
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
           {(() => {
-            // Plant-wise YTD savings (in ₹ lakhs) - demo values for all 15 plants
-            const plantSavings = [
-  { plant: "Greater Noida (Ecotech 1)", savings: 196 },
-  { plant: "Kanchipuram", savings: 148 },
-  { plant: "Rajpura", savings: 132 },
-  { plant: "Shahjahanpur", savings: 104 },
-  { plant: "Supa", savings: 96 },
-  { plant: "Ranjangaon", savings: 118 },
-  { plant: "Ponneri", savings: 107 },
+            // Plant-wise YTD savings (in ₹ lakhs) - demo values for all plants
+            const yearlyPlantSavings = [
+              { plant: "Greater Noida (Ecotech 1)", savings: 196 },
+              { plant: "Kanchipuram", savings: 148 },
+              { plant: "Rajpura", savings: 132 },
+              { plant: "Shahjahanpur", savings: 104 },
+              { plant: "Supa", savings: 96 },
+              { plant: "Ranjangaon", savings: 118 },
+              { plant: "Ponneri", savings: 107 },
             ];
-            const totalYtd = plantSavings.reduce((a, b) => a + b.savings, 0);
+            
+            // Current month plant-wise savings
+            const currentMonthPlantSavings = [
+              { plant: "Greater Noida (Ecotech 1)", savings: 18.5 },
+              { plant: "Kanchipuram", savings: 14.2 },
+              { plant: "Rajpura", savings: 12.8 },
+              { plant: "Shahjahanpur", savings: 10.1 },
+              { plant: "Supa", savings: 9.2 },
+              { plant: "Ranjangaon", savings: 11.5 },
+              { plant: "Ponneri", savings: 10.3 },
+            ];
+            
+            const plantSavings = yearlyCostSavingsViewMode === "yearly" ? yearlyPlantSavings : currentMonthPlantSavings;
+            const total = plantSavings.reduce((a, b) => a + b.savings, 0);
             return (
               <div className="space-y-4">
                 <div className="flex items-center justify-between text-sm text-muted-foreground">
-                  <span>Plant-wise YTD savings • ₹ lakhs</span>
-                  <span className="font-medium text-foreground">Company YTD: {formatCurrency(totalYtd, 0)}</span>
+                  <span>Plant-wise {yearlyCostSavingsViewMode === "yearly" ? "YTD" : "Monthly"} savings • ₹ {yearlyCostSavingsFormat === 'crores' ? 'Cr' : 'L'}</span>
+                  <span className="font-medium text-foreground">Company {yearlyCostSavingsViewMode === "yearly" ? "YTD" : "Monthly"}: {formatCurrency(total, 1, yearlyCostSavingsFormat)}</span>
                 </div>
                 <ChartContainer 
-                  config={{ savings: { label: "YTD Savings", color: "hsl(var(--success))" } }}
+                  config={{ savings: { label: yearlyCostSavingsViewMode === "yearly" ? "YTD Savings" : "Monthly Savings", color: "hsl(var(--success))" } }}
                   className="h-[300px] w-full"
                 >
                   <BarChart data={plantSavings.map(p => ({ 
@@ -228,7 +285,7 @@ const plantsToShow = userRole === "plant" ? plantStats.filter(p => p.name === "G
                             <div className="rounded-lg border bg-background p-3 shadow-md">
                               <div className="font-semibold">{data.fullName || data.plant}</div>
                               <div className="text-sm text-muted-foreground">
-                                YTD Savings: <span className="font-medium text-foreground">{formatCurrency(data.savings, 0)}</span>
+                                {yearlyCostSavingsViewMode === "yearly" ? "YTD" : "Monthly"} Savings: <span className="font-medium text-foreground">{formatCurrency(data.savings, 1, yearlyCostSavingsFormat)}</span>
                               </div>
                             </div>
                           );
@@ -424,6 +481,7 @@ const formatLakh = (n: number) => formatCurrency(n, 1);
 const pctChange = (current: number, last: number) => (last === 0 ? 0 : ((current - last) / last) * 100);
 
 const CostAnalysis = ({ userRole }: { userRole: "plant" | "hq" }) => {
+  const [costAnalysisFormat, setCostAnalysisFormat] = useState<'lakhs' | 'crores'>('lakhs');
   // Filter by role (plant users see only their plant's savings)
   const visible = userRole === "plant" ? plantCostData.filter(p => p.name === "Greater Noida (Ecotech 1)") : plantCostData;
 
@@ -489,7 +547,26 @@ const CostAnalysis = ({ userRole }: { userRole: "plant" | "hq" }) => {
   return (
     <Card className="shadow-card">
       <CardHeader>
-        <CardTitle>Cost Analysis (Savings)</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle>Cost Analysis (Savings)</CardTitle>
+          <ToggleGroup
+            type="single"
+            value={costAnalysisFormat}
+            onValueChange={(value) => {
+              if (value === 'lakhs' || value === 'crores') {
+                setCostAnalysisFormat(value);
+              }
+            }}
+            className="border rounded-md"
+          >
+            <ToggleGroupItem value="lakhs" className="px-3 text-xs" aria-label="Lakhs">
+              L
+            </ToggleGroupItem>
+            <ToggleGroupItem value="crores" className="px-3 text-xs" aria-label="Crores">
+              Cr
+            </ToggleGroupItem>
+          </ToggleGroup>
+        </div>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Plant-wise Donut Charts - Premium Modern Design */}
@@ -639,7 +716,7 @@ const CostAnalysis = ({ userRole }: { userRole: "plant" | "hq" }) => {
                                 </div>
                                 <div className="flex flex-col gap-1">
                                   <span className="text-2xl font-bold text-primary">
-                                    {formatLakh(data.value)}
+                                    {formatCurrency(data.value, 1, costAnalysisFormat)}
                                   </span>
                                   <span className="text-xs font-medium text-muted-foreground">
                                     {percent}% of total savings
@@ -749,7 +826,7 @@ const CostAnalysis = ({ userRole }: { userRole: "plant" | "hq" }) => {
                                 fontWeight="700"
                                 className="font-bold pointer-events-none"
                               >
-                                {formatLakh(total)}
+                                {formatCurrency(total, 1, costAnalysisFormat)}
                               </text>
                               {/* Title below total */}
                               <text
@@ -849,15 +926,15 @@ const CostAnalysis = ({ userRole }: { userRole: "plant" | "hq" }) => {
               <tbody className="divide-y">
                 <tr className="hover:bg-accent/50">
                   <td className="py-2 font-medium">Component</td>
-                  <td className="py-2">{formatLakh(componentTotals.lastMonth)}</td>
-                  <td className="py-2">{formatLakh(componentTotals.currentMonth)}</td>
-                  <td className="py-2">{formatLakh(componentTotals.ytdTillLastMonth)}</td>
+                  <td className="py-2">{formatCurrency(componentTotals.lastMonth, 1, costAnalysisFormat)}</td>
+                  <td className="py-2">{formatCurrency(componentTotals.currentMonth, 1, costAnalysisFormat)}</td>
+                  <td className="py-2">{formatCurrency(componentTotals.ytdTillLastMonth, 1, costAnalysisFormat)}</td>
                 </tr>
                 <tr className="hover:bg-accent/50">
                   <td className="py-2 font-medium">Total</td>
-                  <td className="py-2">{formatLakh(companyTotals.lastMonth)}</td>
-                  <td className="py-2">{formatLakh(companyTotals.currentMonth)}</td>
-                  <td className="py-2">{formatLakh(companyTotals.ytdTillLastMonth)}</td>
+                  <td className="py-2">{formatCurrency(companyTotals.lastMonth, 1, costAnalysisFormat)}</td>
+                  <td className="py-2">{formatCurrency(companyTotals.currentMonth, 1, costAnalysisFormat)}</td>
+                  <td className="py-2">{formatCurrency(companyTotals.ytdTillLastMonth, 1, costAnalysisFormat)}</td>
                 </tr>
               </tbody>
             </table>
@@ -889,9 +966,9 @@ const CostAnalysis = ({ userRole }: { userRole: "plant" | "hq" }) => {
               >
                 <td className="py-2 font-medium">{p.name}</td>
                 {userRole === "hq" && <td className="py-2">{p.division}</td>}
-                <td className="py-2">{formatLakh(p.lastMonth)}</td>
-                <td className="py-2">{formatLakh(p.currentMonth)}</td>
-                <td className="py-2">{formatLakh(p.ytdTillLastMonth)}</td>
+                <td className="py-2">{formatCurrency(p.lastMonth, 1, costAnalysisFormat)}</td>
+                <td className="py-2">{formatCurrency(p.currentMonth, 1, costAnalysisFormat)}</td>
+                <td className="py-2">{formatCurrency(p.ytdTillLastMonth, 1, costAnalysisFormat)}</td>
                 <td className="py-2">
                   <Badge
                     variant="outline"
@@ -917,7 +994,7 @@ const CostAnalysis = ({ userRole }: { userRole: "plant" | "hq" }) => {
                 {selectedPlant ? `${selectedPlant.name} – Monthly Savings & BPs` : "Plant Savings Details"}
               </AlertDialogTitle>
               <AlertDialogDescription>
-                Breakdown of best practices uploaded each month and their contribution to savings (₹L).
+                Breakdown of best practices uploaded each month and their contribution to savings (₹{costAnalysisFormat === 'crores' ? 'Cr' : 'L'}).
               </AlertDialogDescription>
             </AlertDialogHeader>
             <div className="overflow-x-auto">
@@ -925,7 +1002,7 @@ const CostAnalysis = ({ userRole }: { userRole: "plant" | "hq" }) => {
                 <thead>
                   <tr className="text-left text-muted-foreground">
                     <th className="py-2 pr-4">Month</th>
-                    <th className="py-2 pr-4">Total Savings (₹L)</th>
+                    <th className="py-2 pr-4">Total Savings (₹{costAnalysisFormat === 'crores' ? 'Cr' : 'L'})</th>
                     <th className="py-2 pr-4">Best Practices</th>
                   </tr>
                 </thead>
@@ -938,7 +1015,7 @@ const CostAnalysis = ({ userRole }: { userRole: "plant" | "hq" }) => {
                           year: "numeric",
                         })}
                       </td>
-                      <td className="py-2 pr-4">{formatCurrency(entry.totalSavings, 1)}</td>
+                      <td className="py-2 pr-4">{formatCurrency(entry.totalSavings, 1, costAnalysisFormat)}</td>
                       <td className="py-2 pr-4">
                         {entry.practices.length > 0 ? (
                           <div className="space-y-1">
@@ -953,7 +1030,7 @@ const CostAnalysis = ({ userRole }: { userRole: "plant" | "hq" }) => {
                                       : "bg-muted/50 text-muted-foreground"
                                   }
                                 >
-                                  {formatCurrency(practice.savings, 1)}{practice.benchmarked ? " • Benchmarked" : ""}
+                                  {formatCurrency(practice.savings, 1, costAnalysisFormat)}{practice.benchmarked ? " • Benchmarked" : ""}
                                 </Badge>
                               </div>
                             ))}

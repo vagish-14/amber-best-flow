@@ -789,7 +789,7 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Star className="h-5 w-5 text-primary" />
-              <span>Recent Benchmark BPs</span>
+              <span>Latest Benchmark BPs</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -1370,7 +1370,7 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
       <div className="lg:col-span-4">
         <Card className="shadow-card">
           <CardHeader>
-            <CardTitle>Recent Activity - Requiring Action</CardTitle>
+            <CardTitle>Latest Activity - Requiring Action</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">

@@ -95,7 +95,7 @@ const Index = () => {
 
   // Dynamic updates for submissions and copies
   const userPlant = "Greater Noida (Ecotech 1)";
-  const [plantMonthlyCount, setPlantMonthlyCount] = useState<number>(8);
+  const [plantMonthlyCount, setPlantMonthlyCount] = useState<number>(1);
   const [plantYtdCount, setPlantYtdCount] = useState<number>(53);
   const [recentSubmissions, setRecentSubmissions] = useState<{ title: string; category: string; date: string; questions?: number; benchmarked?: boolean }[]>([
     { title: "Automated Quality Inspection System", category: "Quality", date: "2025-01-15", questions: 2, benchmarked: true },
@@ -290,7 +290,7 @@ const Index = () => {
                 <h1 className="text-xl font-bold text-foreground">
                   Amber Enterprises India Limited
                 </h1>
-                <p className="text-sm text-muted-foreground">Best Practices Portal</p>
+                <p className="text-sm text-muted-foreground">Amber Best Practice & Benchmarking Portal</p>
               </div>
             </div>
             {userRole && (
@@ -316,10 +316,10 @@ const Index = () => {
             <Card className="shadow-medium hover:shadow-strong transition-smooth border border-border/50">
               <CardHeader className="text-center">
                 <h2 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-                  Portal Access
+                  InnoSphere Access
                 </h2>
                 <p className="text-muted-foreground">
-                  Select your wireframe view to explore the portal interface
+                  A sphere of innovation, sharing, benchmarking, and cross-learning.
                 </p>
               </CardHeader>
               <CardContent>

@@ -33,6 +33,20 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
@@ -40,6 +54,7 @@ import {
   ChartLegendContent,
 } from "@/components/ui/chart";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
+import { allPracticesData } from "@/components/PracticeList";
 
 interface PlantUserDashboardProps {
   onViewChange: (view: string) => void;
@@ -69,6 +84,33 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
     originatedPoints: number;
   } | null>(null);
   const [ytdDialogOpen, setYtdDialogOpen] = useState(false);
+  const [monthlyProgressDialogOpen, setMonthlyProgressDialogOpen] = useState(false);
+  
+  // Get initial selected month (most recent month with practices, or current month)
+  const getInitialMonth = () => {
+    const now = new Date();
+    const currentMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    
+    // Filter practices by plant
+    const plantPractices = allPracticesData.filter(practice => 
+      practice.plant === "Greater Noida (Ecotech 1)"
+    );
+    
+    if (plantPractices.length === 0) {
+      return currentMonthKey;
+    }
+    
+    // Find the most recent month with practices
+    const monthKeys = plantPractices.map(practice => {
+      const practiceDate = new Date(practice.submittedDate);
+      return `${practiceDate.getFullYear()}-${String(practiceDate.getMonth() + 1).padStart(2, '0')}`;
+    });
+    
+    const uniqueMonths = [...new Set(monthKeys)].sort((a, b) => b.localeCompare(a));
+    return uniqueMonths[0] || currentMonthKey;
+  };
+  
+  const [selectedMonth, setSelectedMonth] = useState<string>(getInitialMonth());
 
   const ytdPractices = useMemo(() => {
     const fallbackPractices = [
@@ -88,6 +130,102 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
       setYtdDialogOpen(true);
+    }
+  };
+
+  // Generate monthly data from actual practices
+  const getMonthlyData = useMemo(() => {
+    const monthlyData: Record<string, { count: number; practices: any[] }> = {};
+    
+    // Filter practices by plant (for plant users, show only their plant's practices)
+    const plantPractices = allPracticesData.filter(practice => 
+      practice.plant === "Greater Noida (Ecotech 1)"
+    );
+    
+    // Create a map of benchmarked practice IDs from recentSubmissions
+    const benchmarkedMap = new Map<string, boolean>();
+    if (recentSubmissions) {
+      recentSubmissions.forEach(sub => {
+        const practice = allPracticesData.find(p => p.title === sub.title);
+        if (practice) {
+          benchmarkedMap.set(practice.id, sub.benchmarked ?? false);
+        }
+      });
+    }
+    
+    // Group practices by month
+    plantPractices.forEach(practice => {
+      const practiceDate = new Date(practice.submittedDate);
+      const monthKey = `${practiceDate.getFullYear()}-${String(practiceDate.getMonth() + 1).padStart(2, '0')}`;
+      
+      if (!monthlyData[monthKey]) {
+        monthlyData[monthKey] = {
+          count: 0,
+          practices: []
+        };
+      }
+      
+      // Check if practice is benchmarked (from recentSubmissions or default to false)
+      const isBenchmarked = benchmarkedMap.get(practice.id) ?? false;
+      
+      monthlyData[monthKey].practices.push({
+        ...practice,
+        benchmarked: isBenchmarked
+      });
+      monthlyData[monthKey].count = monthlyData[monthKey].practices.length;
+    });
+    
+    // Sort practices within each month by date (newest first)
+    Object.keys(monthlyData).forEach(monthKey => {
+      monthlyData[monthKey].practices.sort((a, b) => {
+        return new Date(b.submittedDate).getTime() - new Date(a.submittedDate).getTime();
+      });
+    });
+    
+    return monthlyData;
+  }, [recentSubmissions]);
+
+  const selectedMonthData = getMonthlyData[selectedMonth] || { count: 0, practices: [] };
+
+  // Generate list of available months (only months with practices)
+  const availableMonths = useMemo(() => {
+    const months: { value: string; label: string }[] = [];
+    const monthKeys = Object.keys(getMonthlyData).sort((a, b) => {
+      // Sort by date descending (newest first)
+      return b.localeCompare(a);
+    });
+    
+    monthKeys.forEach(monthKey => {
+      const [year, month] = monthKey.split('-');
+      const date = new Date(parseInt(year), parseInt(month) - 1, 1);
+      const label = date.toLocaleString('default', { month: 'long', year: 'numeric' });
+      months.push({ value: monthKey, label });
+    });
+    
+    // If no practices exist, at least show current month
+    if (months.length === 0) {
+      const now = new Date();
+      const value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+      const label = now.toLocaleString('default', { month: 'long', year: 'numeric' });
+      months.push({ value, label });
+    }
+    
+    return months;
+  }, [getMonthlyData]);
+
+  const handleOpenMonthlyProgressDialog = () => {
+    // Reset to most recent month with practices when opening
+    const monthKeys = Object.keys(getMonthlyData).sort((a, b) => b.localeCompare(a));
+    if (monthKeys.length > 0) {
+      setSelectedMonth(monthKeys[0]);
+    }
+    setMonthlyProgressDialogOpen(true);
+  };
+
+  const handleMonthlyProgressCardKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      handleOpenMonthlyProgressDialog();
     }
   };
 
@@ -206,7 +344,7 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-bold">Greater Noida (Ecotech 1)</h2>
-                <p className="text-primary-foreground/80">Manufacturing Excellence Portal</p>
+                <p className="text-primary-foreground/80">Amber Best Practice & Benchmarking Portal</p>
               </div>
               <Button 
                 size="lg" 
@@ -226,7 +364,13 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
 
       {/* Statistics Overview */}
       <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-6">
-      <Card className="shadow-soft hover:shadow-medium transition-smooth border border-border/50">
+      <Card 
+        className="shadow-soft hover:shadow-medium transition-smooth border border-border/50 cursor-pointer hover-lift focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary"
+        role="button"
+        tabIndex={0}
+        onClick={handleOpenMonthlyProgressDialog}
+        onKeyDown={handleMonthlyProgressCardKeyDown}
+      >
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <TrendingUp className="h-5 w-5 text-primary" />
@@ -235,13 +379,11 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
         </CardHeader>
         <CardContent className="space-y-3 p-4">
           <div className="flex items-baseline justify-between">
-            <div className="text-4xl font-bold text-primary">{monthlyCount ?? 8}</div>
+            <div className="text-4xl font-bold text-primary">{monthlyCount ?? 1}</div>
             <p className="text-sm text-muted-foreground">Best Practices in {new Date().toLocaleString('default', { month: 'long' })}</p>
           </div>
           <Progress value={66} className="w-full mt-2" />
-          <div className="flex justify-end">
-            <p className="text-xs text-muted-foreground">Target: 12 practices/month</p>
-          </div>
+          <p className="text-xs text-muted-foreground mt-2 text-center">Click to view the monthly breakdown of BP's</p>
         </CardContent>
       </Card>
 
@@ -362,43 +504,43 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
       </div>
 
       <AlertDialog open={ytdDialogOpen} onOpenChange={setYtdDialogOpen}>
-        <AlertDialogContent className="max-w-3xl">
-          <AlertDialogHeader>
-            <AlertDialogTitle>Year-to-Date Best Practices</AlertDialogTitle>
-            <AlertDialogDescription>
+        <AlertDialogContent className="max-w-3xl max-h-[85vh] flex flex-col p-4">
+          <AlertDialogHeader className="pb-3">
+            <AlertDialogTitle className="text-lg">Year-to-Date Best Practices</AlertDialogTitle>
+            <AlertDialogDescription className="text-xs">
               Overview of all practices submitted this year and their benchmark status.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto flex-1 min-h-0 -mx-2 px-2">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left text-muted-foreground">
-                  <th className="py-2 pr-4">Practice</th>
-                  <th className="py-2 pr-4">Category</th>
-                  <th className="py-2 pr-4">Date</th>
-                  <th className="py-2 pr-4 text-center">Benchmark</th>
-                  <th className="py-2 pr-4 text-center">Q&A</th>
+                <tr className="text-left text-muted-foreground border-b">
+                  <th className="py-1.5 px-3 font-medium text-xs">Practice</th>
+                  <th className="py-1.5 px-3 font-medium text-xs">Category</th>
+                  <th className="py-1.5 px-3 font-medium text-xs">Date</th>
+                  <th className="py-1.5 px-3 font-medium text-xs text-center">Benchmark</th>
+                  <th className="py-1.5 px-3 font-medium text-xs text-center">Q&A</th>
                 </tr>
               </thead>
               <tbody className="divide-y">
                 {ytdPractices.map((practice, index) => (
-                  <tr key={`${practice.title}-${index}`} className="hover:bg-accent/50">
-                    <td className="py-2 pr-4 font-medium">{practice.title}</td>
-                    <td className="py-2 pr-4">{practice.category}</td>
-                    <td className="py-2 pr-4">{practice.date}</td>
-                    <td className="py-2 pr-4 text-center">
+                  <tr key={`${practice.title}-${index}`} className="hover:bg-accent/50 transition-colors">
+                    <td className="py-2 px-3 font-medium text-xs">{practice.title}</td>
+                    <td className="py-2 px-3 text-xs">{practice.category}</td>
+                    <td className="py-2 px-3 text-xs">{practice.date}</td>
+                    <td className="py-2 px-3 text-center">
                       <Badge
                         variant="outline"
                         className={
                           practice.benchmarked
-                            ? "bg-success/10 text-success border-success"
-                            : "bg-muted/50 text-muted-foreground"
+                            ? "bg-success/10 text-success border-success text-xs px-2 py-0.5"
+                            : "bg-muted/50 text-muted-foreground text-xs px-2 py-0.5"
                         }
                       >
                         {practice.benchmarked ? "Benchmarked" : "Not Benchmarked"}
                       </Badge>
                     </td>
-                    <td className="py-2 pr-4 text-center">
+                    <td className="py-2 px-3 text-center text-xs">
                       {practice.questions ?? 0}
                     </td>
                   </tr>
@@ -406,14 +548,96 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
               </tbody>
             </table>
           </div>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Close</AlertDialogCancel>
-            <AlertDialogAction onClick={() => setYtdDialogOpen(false)}>
-              Done
-            </AlertDialogAction>
+          <AlertDialogFooter className="pt-3 mt-2 border-t">
+            <AlertDialogCancel className="text-sm">Close</AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Monthly Progress Dialog */}
+      <Dialog open={monthlyProgressDialogOpen} onOpenChange={setMonthlyProgressDialogOpen}>
+        <DialogContent className="max-w-3xl max-h-[85vh] flex flex-col p-4">
+          <DialogHeader className="pb-3">
+            <DialogTitle className="text-lg">Monthly Progress Summary</DialogTitle>
+            <DialogDescription className="text-xs">
+              View best practices submitted for any month
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex items-center gap-3 pb-4 border-b">
+            <label className="text-sm font-medium whitespace-nowrap">Select Month:</label>
+            <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+              <SelectTrigger className="w-[200px] h-9">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {availableMonths.map((month) => (
+                  <SelectItem key={month.value} value={month.value}>
+                    {month.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex-1 min-h-0 overflow-y-auto -mx-2 px-2">
+            <div className="space-y-4 py-2">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-muted/30 p-4 rounded-lg border">
+                  <p className="text-xs text-muted-foreground mb-1">Total Practices</p>
+                  <p className="text-3xl font-bold text-primary">{selectedMonthData.count}</p>
+                </div>
+                <div className="bg-muted/30 p-4 rounded-lg border">
+                  <p className="text-xs text-muted-foreground mb-1">Benchmarked</p>
+                  <p className="text-3xl font-bold text-success">
+                    {selectedMonthData.practices.filter(p => p.benchmarked).length}
+                  </p>
+                </div>
+              </div>
+              {selectedMonthData.practices.length > 0 ? (
+                <div>
+                  <h4 className="text-sm font-semibold mb-3">Best Practices List</h4>
+                  <div className="space-y-2">
+                    {selectedMonthData.practices.map((practice, index) => (
+                      <div
+                        key={`${practice.id || practice.title}-${index}`}
+                        className="flex items-center justify-between p-3 rounded-lg border hover:bg-accent/50 hover:border-primary/20 cursor-pointer transition-colors"
+                        onClick={() => {
+                          if (onViewPractice) {
+                            setMonthlyProgressDialogOpen(false);
+                            onViewPractice(practice);
+                          }
+                        }}
+                      >
+                        <div className="flex-1">
+                          <p className="font-medium text-sm">{practice.title}</p>
+                          <div className="flex items-center gap-3 mt-1">
+                            <span className="text-xs text-muted-foreground">{practice.category}</span>
+                            <span className="text-xs text-muted-foreground">•</span>
+                            <span className="text-xs text-muted-foreground">{practice.submittedDate || practice.date}</span>
+                          </div>
+                        </div>
+                        <Badge
+                          variant="outline"
+                          className={
+                            practice.benchmarked
+                              ? "bg-success/10 text-success border-success text-xs px-2 py-0.5"
+                              : "bg-muted/50 text-muted-foreground text-xs px-2 py-0.5"
+                          }
+                        >
+                          {practice.benchmarked ? "Benchmarked" : "Not Benchmarked"}
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  <p className="text-sm">No practices submitted for this month</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
     {/* BP Copy Spread */}
     <div className="lg:col-span-3">
@@ -659,7 +883,7 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Star className="h-5 w-5 text-primary" />
-              <span>Recent Benchmark BPs</span>
+              <span>Latest Benchmark BPs</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -761,15 +985,15 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
       <div className="lg:col-span-3">
         <Card className="shadow-soft hover:shadow-medium transition-smooth border border-border/50">
           <CardHeader>
-            <CardTitle>Your Recent Submissions</CardTitle>
+            <CardTitle>Your Latest Submissions</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {(recentSubmissions ?? [
                 { title: "Smart Cart Movement & Management through AMR", category: "Automation", date: "2025-01-15", questions: 0, benchmarked: true, hasImage: true },
-                { title: "Empty Cart Feeding System (Manual → Auto)", category: "Productivity", date: "2025-01-15", questions: 0, benchmarked: true, hasImage: true },
-                { title: "Smart Inbound Logistics through AGV", category: "Automation", date: "2025-01-15", questions: 0, benchmarked: true, hasImage: true },
-                { title: "Injection Machines Robotic Operation", category: "Automation", date: "2025-01-15", questions: 0, benchmarked: true, hasImage: true }
+                { title: "Empty Cart Feeding System (Manual → Auto)", category: "Productivity", date: "2025-03-15", questions: 0, benchmarked: true, hasImage: true },
+                { title: "Smart Inbound Logistics through AGV", category: "Automation", date: "2025-07-15", questions: 0, benchmarked: true, hasImage: true },
+                { title: "Injection Machines Robotic Operation", category: "Automation", date: "2025-11-15", questions: 0, benchmarked: true, hasImage: true }
               ]).map((practice, index) => (
                 <div 
                   key={index} 

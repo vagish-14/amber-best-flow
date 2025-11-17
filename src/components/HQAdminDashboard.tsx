@@ -1399,7 +1399,7 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
       <div className="lg:col-span-4">
         <Card className="shadow-card">
           <CardHeader>
-            <CardTitle>Latest Activity - Requiring Action</CardTitle>
+            <CardTitle>Latest Best Practices</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">

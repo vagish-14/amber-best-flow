@@ -1,4 +1,4 @@
-import { useMemo, useState, type KeyboardEvent } from "react";
+import { useMemo, useState, Fragment, type KeyboardEvent } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -23,10 +23,12 @@ import {
 } from "@/components/ui/chart";
 import { Pie, PieChart, Cell, BarChart, XAxis, YAxis, CartesianGrid, Bar, Label, LabelList } from "recharts";
 import { formatCurrency } from "@/lib/utils";
+import { allPracticesData } from "@/components/PracticeList";
 
 interface AnalyticsProps {
   userRole: "plant" | "hq";
   onBack: () => void;
+  onViewPractice?: (practice: any) => void;
 }
 
 const plantStats = [
@@ -56,7 +58,7 @@ const total = plantStats.reduce(
   { submitted: 0 }
 );
 
-const Analytics = ({ userRole, onBack }: AnalyticsProps) => {
+const Analytics = ({ userRole, onBack, onViewPractice }: AnalyticsProps) => {
 const plantsToShow = userRole === "plant" ? plantStats.filter(p => p.name === "Greater Noida (Ecotech 1)") : plantStats;
 
   // Toggle state for Yearly Analytics - only for HQ admin
@@ -304,7 +306,7 @@ const plantsToShow = userRole === "plant" ? plantStats.filter(p => p.name === "G
       </Card>
 
       {/* Cost Analysis - Savings (not profit) */}
-      <CostAnalysis userRole={userRole} />
+      <CostAnalysis userRole={userRole} onViewPractice={onViewPractice} />
     </div>
   );
 };
@@ -375,112 +377,106 @@ const monthsOfYear = Array.from(
   (_, index) => `${currentYear}-${String(index + 1).padStart(2, "0")}`
 );
 
-const plantMonthlySavings: Record<string, PlantMonthlyBreakdown[]> = {
-  "Greater Noida (Ecotech 1)": [
-    {
-      month: `${currentYear}-01`,
-      totalSavings: 14.0,
-      practices: [
-        { title: "Energy Efficient Cooling Process", savings: 5.2, benchmarked: true },
-        { title: "Waste Reduction Initiative", savings: 3.8, benchmarked: true },
-        { title: "Automated Quality Inspection System", savings: 5.0, benchmarked: false },
-      ],
-    },
-    {
-      month: `${currentYear}-02`,
-      totalSavings: 12.5,
-      practices: [
-        { title: "Heat Exchanger Optimization", savings: 4.5 },
-        { title: "Packaging Automation Upgrade", savings: 3.0 },
-        { title: "Compressed Air Leak Fix Program", savings: 5.0, benchmarked: true },
-      ],
-    },
-    {
-      month: `${currentYear}-03`,
-      totalSavings: 11.8,
-      practices: [
-        { title: "Paint Booth Recirculation", savings: 4.8 },
-        { title: "Digital Maintenance Alerts", savings: 3.2 },
-        { title: "Lean Warehouse Layout", savings: 3.8 },
-      ],
-    },
-  ],
-  "Kanchipuram": [
-    {
-      month: `${currentYear}-01`,
-      totalSavings: 9.8,
-      practices: [
-        { title: "Digital Production Control Tower", savings: 4.1, benchmarked: true },
-        { title: "Kaizen Idea Harvesting", savings: 2.7 },
-        { title: "Waste Segregation & Recycling", savings: 3.0 },
-      ],
-    },
-    {
-      month: `${currentYear}-02`,
-      totalSavings: 9.0,
-      practices: [
-        { title: "Boiler Condensate Recovery", savings: 3.5 },
-        { title: "Inventory Accuracy Drive", savings: 2.4 },
-        { title: "Assembly Line Ergonomics", savings: 3.1 },
-      ],
-    },
-  ],
-  "Rajpura": [
-    {
-      month: `${currentYear}-01`,
-      totalSavings: 16.0,
-      practices: [
-        { title: "Assembly Line Cobots", savings: 6.3, benchmarked: true },
-        { title: "Predictive Maintenance Analytics", savings: 4.9 },
-        { title: "Green Packaging Initiative", savings: 4.8 },
-      ],
-    },
-    {
-      month: `${currentYear}-02`,
-      totalSavings: 15.2,
-      practices: [
-        { title: "Compressed Air Optimization", savings: 5.2 },
-        { title: "ESG Compliance Monitoring", savings: 4.6, benchmarked: true },
-        { title: "Reflow Oven Efficiency", savings: 5.4 },
-      ],
-    },
-  ],
+// Helper function to extract savings amount from string like "₹3.2L annually" -> 3.2
+const extractSavingsAmount = (savingsStr: string | undefined): number => {
+  if (!savingsStr) return 0;
+  // Match numbers with optional decimals before "L" or "Cr"
+  const match = savingsStr.match(/₹?([\d.]+)\s*(L|Cr)/i);
+  if (match) {
+    const amount = parseFloat(match[1]);
+    // Convert crores to lakhs (1 crore = 100 lakhs)
+    return match[2].toLowerCase() === 'cr' ? amount * 100 : amount;
+  }
+  return 0;
 };
 
-const defaultMonthlyBreakdown: PlantMonthlyBreakdown[] = [
-  {
-    month: `${currentYear}-01`,
-    totalSavings: 9.2,
-    practices: [
-      { title: "Continuous Improvement Blitz", savings: 3.0 },
-      { title: "Utility Load Balancing", savings: 2.4 },
-      { title: "Training Effectiveness Program", savings: 3.8 },
-    ],
-  },
-  {
-    month: `${currentYear}-02`,
-    totalSavings: 8.6,
-    practices: [
-      { title: "Logistics Route Optimization", savings: 3.1 },
-      { title: "Smart Lighting Retrofit", savings: 2.0 },
-      { title: "Tooling Life Extension", savings: 3.5 },
-    ],
-  },
-  {
-    month: `${currentYear}-03`,
-    totalSavings: 9.4,
-    practices: [
-      { title: "Energy Dashboard Upgrade", savings: 4.2, benchmarked: true },
-      { title: "Supplier Collaboration Program", savings: 2.1 },
-      { title: "Warehouse Slotting Optimization", savings: 3.1 },
-    ],
-  },
-];
+// Generate plantMonthlySavings from allPracticesData
+const generatePlantMonthlySavings = (): Record<string, PlantMonthlyBreakdown[]> => {
+  const result: Record<string, PlantMonthlyBreakdown[]> = {};
+  
+  // Group practices by plant
+  const practicesByPlant = new Map<string, typeof allPracticesData>();
+  allPracticesData.forEach(practice => {
+    if (!practicesByPlant.has(practice.plant)) {
+      practicesByPlant.set(practice.plant, []);
+    }
+    practicesByPlant.get(practice.plant)!.push(practice);
+  });
+  
+  // Process each plant
+  practicesByPlant.forEach((practices, plantName) => {
+    // Group practices by month
+    const practicesByMonth = new Map<string, typeof practices>();
+    
+    practices.forEach(practice => {
+      if (practice.submittedDate) {
+        const date = new Date(practice.submittedDate);
+        const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+        
+        if (!practicesByMonth.has(monthKey)) {
+          practicesByMonth.set(monthKey, []);
+        }
+        practicesByMonth.get(monthKey)!.push(practice);
+      }
+    });
+    
+    // Convert to PlantMonthlyBreakdown format
+    const monthlyBreakdowns: PlantMonthlyBreakdown[] = [];
+    
+    practicesByMonth.forEach((monthPractices, monthKey) => {
+      // Limit to max 2 practices per month, take first 2
+      const limitedPractices = monthPractices.slice(0, 2).map(p => ({
+        title: p.title,
+        savings: extractSavingsAmount(p.savings),
+        benchmarked: false // Will be determined by checking if practice exists in benchmarked list
+      }));
+      
+      const totalSavings = limitedPractices.reduce((sum, p) => sum + p.savings, 0);
+      
+      monthlyBreakdowns.push({
+        month: monthKey,
+        totalSavings,
+        practices: limitedPractices
+      });
+    });
+    
+    // Sort by month
+    monthlyBreakdowns.sort((a, b) => a.month.localeCompare(b.month));
+    
+    if (monthlyBreakdowns.length > 0) {
+      result[plantName] = monthlyBreakdowns;
+    }
+  });
+  
+  return result;
+};
+
+const plantMonthlySavings = generatePlantMonthlySavings();
+
+// Default breakdown for plants without practices - use first practice from allPracticesData
+const defaultMonthlyBreakdown: PlantMonthlyBreakdown[] = (() => {
+  if (allPracticesData.length === 0) return [];
+  
+  // Use the first practice as default
+  const firstPractice = allPracticesData[0];
+  const date = new Date(firstPractice.submittedDate || `${currentYear}-01-01`);
+  const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+  
+  return [{
+    month: monthKey,
+    totalSavings: extractSavingsAmount(firstPractice.savings),
+    practices: [{
+      title: firstPractice.title,
+      savings: extractSavingsAmount(firstPractice.savings),
+      benchmarked: false
+    }]
+  }];
+})();
 
 const formatLakh = (n: number) => formatCurrency(n, 1);
 const pctChange = (current: number, last: number) => (last === 0 ? 0 : ((current - last) / last) * 100);
 
-const CostAnalysis = ({ userRole }: { userRole: "plant" | "hq" }) => {
+const CostAnalysis = ({ userRole, onViewPractice }: { userRole: "plant" | "hq"; onViewPractice?: (practice: any) => void }) => {
   const [costAnalysisFormat, setCostAnalysisFormat] = useState<'lakhs' | 'crores'>('lakhs');
   // Filter by role (plant users see only their plant's savings)
   const visible = userRole === "plant" ? plantCostData.filter(p => p.name === "Greater Noida (Ecotech 1)") : plantCostData;
@@ -508,6 +504,8 @@ const CostAnalysis = ({ userRole }: { userRole: "plant" | "hq" }) => {
 
   const [plantDetailOpen, setPlantDetailOpen] = useState(false);
   const [selectedPlant, setSelectedPlant] = useState<PlantCost | null>(null);
+  const [practicesDialogOpen, setPracticesDialogOpen] = useState(false);
+  const [selectedMonthPractices, setSelectedMonthPractices] = useState<{ month: string; practices: { title: string; savings: number; benchmarked?: boolean }[] } | null>(null);
 
   const selectedPlantBreakdown = useMemo<PlantMonthlyBreakdown[]>(() => {
     const fillMissingMonths = (entries: PlantMonthlyBreakdown[]): PlantMonthlyBreakdown[] => {
@@ -528,7 +526,30 @@ const CostAnalysis = ({ userRole }: { userRole: "plant" | "hq" }) => {
       return fillMissingMonths(defaultMonthlyBreakdown);
     }
 
-    const plantEntries = plantMonthlySavings[selectedPlant.name] ?? defaultMonthlyBreakdown;
+    // Get plant entries, or create default from first practice of that plant
+    let plantEntries = plantMonthlySavings[selectedPlant.name];
+    
+    // If plant has no practices, find first practice from that plant in allPracticesData
+    if (!plantEntries || plantEntries.length === 0) {
+      const plantPractice = allPracticesData.find(p => p.plant === selectedPlant.name);
+      if (plantPractice) {
+        const date = new Date(plantPractice.submittedDate || `${currentYear}-01-01`);
+        const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+        plantEntries = [{
+          month: monthKey,
+          totalSavings: extractSavingsAmount(plantPractice.savings),
+          practices: [{
+            title: plantPractice.title,
+            savings: extractSavingsAmount(plantPractice.savings),
+            benchmarked: false
+          }]
+        }];
+      } else {
+        // Fallback to default
+        plantEntries = defaultMonthlyBreakdown;
+      }
+    }
+    
     return fillMissingMonths(plantEntries);
   }, [selectedPlant]);
 
@@ -1007,40 +1028,47 @@ const CostAnalysis = ({ userRole }: { userRole: "plant" | "hq" }) => {
                   </tr>
                 </thead>
                 <tbody className="divide-y">
-                  {selectedPlantBreakdown.map((entry) => (
-                    <tr key={entry.month}>
-                      <td className="py-2 pr-4 font-medium">
-                        {new Date(entry.month + "-01").toLocaleDateString("en-IN", {
-                          month: "short",
-                          year: "numeric",
-                        })}
-                      </td>
-                      <td className="py-2 pr-4">{formatCurrency(entry.totalSavings, 1, costAnalysisFormat)}</td>
-                      <td className="py-2 pr-4">
-                        {entry.practices.length > 0 ? (
-                          <div className="space-y-1">
-                            {entry.practices.map((practice, idx) => (
-                              <div key={`${entry.month}-${idx}`} className="flex items-center justify-between">
-                                <span>{practice.title}</span>
-                                <Badge
-                                  variant="outline"
-                                  className={
-                                    practice.benchmarked
-                                      ? "bg-primary/10 text-primary border-primary"
-                                      : "bg-muted/50 text-muted-foreground"
-                                  }
-                                >
-                                  {formatCurrency(practice.savings, 1, costAnalysisFormat)}{practice.benchmarked ? " • Benchmarked" : ""}
-                                </Badge>
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <span className="text-xs text-muted-foreground">No best practices recorded.</span>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
+                  {selectedPlantBreakdown.map((entry) => {
+                    const hasPractices = entry.practices.length > 0;
+                    const monthLabel = new Date(entry.month + "-01").toLocaleDateString("en-IN", {
+                      month: "short",
+                      year: "numeric",
+                    });
+                    
+                    return (
+                      <tr key={entry.month}>
+                        <td className="py-2 pr-4 font-medium">
+                          {monthLabel}
+                        </td>
+                        <td className="py-2 pr-4">{formatCurrency(entry.totalSavings, 1, costAnalysisFormat)}</td>
+                        <td className="py-2 pr-4">
+                          {hasPractices ? (
+                            <div className="flex items-center justify-between gap-3">
+                              <span className="text-sm font-medium">
+                                {entry.practices.length} {entry.practices.length === 1 ? 'Best Practice' : 'Best Practices'}
+                              </span>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                  setSelectedMonthPractices({
+                                    month: entry.month,
+                                    practices: entry.practices
+                                  });
+                                  setPracticesDialogOpen(true);
+                                }}
+                                className="h-7 px-3 text-xs"
+                              >
+                                View More
+                              </Button>
+                            </div>
+                          ) : (
+                            <span className="text-xs text-muted-foreground">No best practices recorded.</span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
                   {selectedPlantBreakdown.length === 0 && (
                     <tr>
                       <td className="py-4 text-muted-foreground" colSpan={3}>
@@ -1054,6 +1082,91 @@ const CostAnalysis = ({ userRole }: { userRole: "plant" | "hq" }) => {
             <AlertDialogFooter>
               <AlertDialogCancel>Close</AlertDialogCancel>
               <AlertDialogAction onClick={() => setPlantDetailOpen(false)}>
+                Done
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        {/* Best Practices Detail Dialog */}
+        <AlertDialog open={practicesDialogOpen} onOpenChange={setPracticesDialogOpen}>
+          <AlertDialogContent className="max-w-2xl">
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                {selectedMonthPractices && selectedPlant
+                  ? `${selectedPlant.name} – Best Practices for ${new Date(selectedMonthPractices.month + "-01").toLocaleDateString("en-IN", { month: "long", year: "numeric" })}`
+                  : "Best Practices Details"}
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                All best practices and their savings for this month (₹{costAnalysisFormat === 'crores' ? 'Cr' : 'L'}).
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <div className="space-y-3 max-h-[60vh] overflow-y-auto">
+              {selectedMonthPractices && selectedMonthPractices.practices.length > 0 ? (
+                selectedMonthPractices.practices.map((practice, idx) => {
+                  // Find the full practice data from allPracticesData
+                  const fullPractice = allPracticesData.find(
+                    (p) => p.title === practice.title && selectedPlant && p.plant === selectedPlant.name
+                  ) || allPracticesData.find((p) => p.title === practice.title);
+                  
+                  // Format date - use practice submittedDate if available, otherwise use month
+                  const practiceDate = fullPractice?.submittedDate 
+                    ? new Date(fullPractice.submittedDate).toLocaleDateString("en-IN", { 
+                        day: "numeric", 
+                        month: "short", 
+                        year: "numeric" 
+                      })
+                    : new Date(selectedMonthPractices.month + "-01").toLocaleDateString("en-IN", { 
+                        month: "short", 
+                        year: "numeric" 
+                      });
+
+                  return (
+                    <div
+                      key={idx}
+                      className="flex items-center justify-between p-4 rounded-lg border border-border/50 bg-card hover:bg-accent/50 hover:border-primary/30 cursor-pointer transition-colors"
+                      onClick={() => {
+                        if (onViewPractice && fullPractice) {
+                          setPracticesDialogOpen(false);
+                          onViewPractice(fullPractice);
+                        }
+                      }}
+                    >
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-base mb-1">{practice.title}</h4>
+                        <div className="flex items-center gap-3 mt-2 flex-wrap">
+                          <span className="text-xs text-muted-foreground">
+                            Added: {practiceDate}
+                          </span>
+                          <Badge
+                            variant="outline"
+                            className={
+                              practice.benchmarked
+                                ? "bg-primary/10 text-primary border-primary"
+                                : "bg-muted/50 text-muted-foreground"
+                            }
+                          >
+                            {formatCurrency(practice.savings, 1, costAnalysisFormat)}
+                          </Badge>
+                          {practice.benchmarked && (
+                            <Badge variant="outline" className="bg-primary/10 text-primary border-primary">
+                              Benchmarked
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  No best practices found for this month.
+                </div>
+              )}
+            </div>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Close</AlertDialogCancel>
+              <AlertDialogAction onClick={() => setPracticesDialogOpen(false)}>
                 Done
               </AlertDialogAction>
             </AlertDialogFooter>

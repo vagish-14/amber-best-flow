@@ -1026,7 +1026,7 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
       <div className="lg:col-span-3">
         <Card className="shadow-soft hover:shadow-medium transition-smooth border border-border/50">
           <CardHeader>
-            <CardTitle>Your Latest Submissions</CardTitle>
+            <CardTitle>Latest Best Practices</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">

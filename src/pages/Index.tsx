@@ -448,6 +448,11 @@ const Index = () => {
             <Analytics
               userRole={userRole!}
               onBack={() => setCurrentView("dashboard")}
+              onViewPractice={(practice) => {
+                setPreviousView("analytics");
+                setSelectedPractice(practice);
+                setCurrentView("practice-detail");
+              }}
             />
           </div>
         )}

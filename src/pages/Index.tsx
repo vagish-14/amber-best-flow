@@ -277,14 +277,18 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-accent to-muted">
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background via-accent/30 to-secondary/5">
       {/* Header */}
       <div className="border-b bg-card shadow-card">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="bg-gradient-primary p-2 rounded-lg">
-                <Building2 className="h-6 w-6 text-primary-foreground" />
+              <div className="flex items-center justify-center">
+                <img 
+                  src="/images/amberlogo.png" 
+                  alt="Amber Logo" 
+                  className="h-12 w-auto object-contain"
+                />
               </div>
               <div>
                 <h1 className="text-xl font-bold text-foreground">
@@ -310,22 +314,29 @@ const Index = () => {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8">
+      <div className="min-h-[calc(100vh-5rem)]">
         {currentView === "login" && (
-          <div className="max-w-md mx-auto">
-            <Card className="shadow-medium hover:shadow-strong transition-smooth border border-border/50">
-              <CardHeader className="text-center">
-                <h2 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-                  InnoSphere Access
-                </h2>
-                <p className="text-muted-foreground">
-                  A sphere of innovation, sharing, benchmarking, and cross-learning.
-                </p>
-              </CardHeader>
-              <CardContent>
-                <LoginForm onLogin={handleLogin} />
-              </CardContent>
-            </Card>
+          <div className="min-h-[calc(100vh-5rem)] flex items-center justify-center p-4 md:p-8">
+            <div className="w-full max-w-6xl mx-auto">
+              {/* Glass Card Container */}
+              <div className="relative bg-white/70 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 overflow-hidden">
+                <div className="grid md:grid-cols-2 gap-0">
+                  {/* Left Side - Hero/Illustration */}
+                  <div className="relative overflow-hidden min-h-[200px] md:min-h-full">
+                    <img 
+                      src="/images/login page.png" 
+                      alt="Login illustration" 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+
+                  {/* Right Side - Login Form */}
+                  <div className="p-6 md:p-8 lg:p-12">
+                    <LoginForm onLogin={handleLogin} />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
@@ -337,27 +348,29 @@ const Index = () => {
               onViewChange={handleViewChange}
             />
             
-            {userRole === "plant" ? (
-              <PlantUserDashboard 
-                onViewChange={handleViewChange} 
-                onCopyAndImplement={handleCopyAndImplement}
-                onViewPractice={handleViewPractice}
-                monthlyCount={plantMonthlyCount}
-                ytdCount={plantYtdCount}
-                recentSubmissions={recentSubmissions}
-                leaderboard={leaderboard}
-                copySpread={copySpread}
-              />
-            ) : (
-              <HQAdminDashboard 
-                onViewChange={handleViewChange} 
-                onViewPractice={handleViewPractice}
-                thisMonthTotal={hqThisMonthTotal}
-                ytdTotal={hqYtdTotal}
-                leaderboard={leaderboard}
-                copySpread={copySpread}
-              />
-            )}
+            <div className="w-[90%] max-w-[90%] mx-auto">
+              {userRole === "plant" ? (
+                <PlantUserDashboard 
+                  onViewChange={handleViewChange} 
+                  onCopyAndImplement={handleCopyAndImplement}
+                  onViewPractice={handleViewPractice}
+                  monthlyCount={plantMonthlyCount}
+                  ytdCount={plantYtdCount}
+                  recentSubmissions={recentSubmissions}
+                  leaderboard={leaderboard}
+                  copySpread={copySpread}
+                />
+              ) : (
+                <HQAdminDashboard 
+                  onViewChange={handleViewChange} 
+                  onViewPractice={handleViewPractice}
+                  thisMonthTotal={hqThisMonthTotal}
+                  ytdTotal={hqYtdTotal}
+                  leaderboard={leaderboard}
+                  copySpread={copySpread}
+                />
+              )}
+            </div>
           </div>
         )}
 

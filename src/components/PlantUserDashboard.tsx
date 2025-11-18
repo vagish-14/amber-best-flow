@@ -373,19 +373,18 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
         onClick={handleOpenMonthlyProgressDialog}
         onKeyDown={handleMonthlyProgressCardKeyDown}
       >
-        <CardHeader>
+        <CardHeader className="pb-3">
           <CardTitle className="flex items-center space-x-2">
             <TrendingUp className="h-5 w-5 text-primary" />
             <span>Monthly Progress (Uploaded BP's)</span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3 p-4">
-          <div className="flex items-baseline justify-between">
+        <CardContent className="space-y-3 p-4 pt-2">
+          <div className="flex items-center justify-between gap-4">
             <div className="text-4xl font-bold text-primary">{monthlyCount ?? 1}</div>
-            <p className="text-sm text-muted-foreground">Best Practices in {new Date().toLocaleString('default', { month: 'long' })}</p>
+            <p className="text-sm text-muted-foreground text-right flex-shrink-0">Best Practices in {new Date().toLocaleString('default', { month: 'long' })}</p>
           </div>
-          <Progress value={66} className="w-full mt-2" />
-          <p className="text-xs text-muted-foreground mt-2 text-center">Click to view the monthly breakdown of BP's</p>
+          <p className="text-xs text-muted-foreground text-center pt-1">Click to view the monthly breakdown of BP's</p>
         </CardContent>
       </Card>
 
@@ -397,18 +396,18 @@ const PlantUserDashboard = ({ onViewChange, onCopyAndImplement, onViewPractice, 
         onKeyDown={handleYtdCardKeyDown}
         aria-label="View year-to-date best practices"
       >
-        <CardHeader>
+        <CardHeader className="pb-3">
           <CardTitle className="flex items-center space-x-2">
             <CheckCircle className="h-5 w-5 text-success" />
             <span>YTD Summary</span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3 p-4">
-          <div className="flex items-baseline justify-between">
+        <CardContent className="space-y-3 p-4 pt-2">
+          <div className="flex items-center justify-between gap-4">
             <div className="text-3xl font-bold text-primary">{ytdCount ?? 53}</div>
-            <p className="text-sm text-muted-foreground">Total Submitted (YTD)</p>
+            <p className="text-sm text-muted-foreground text-right flex-shrink-0">Total Submitted (YTD)</p>
           </div>
-          <p className="text-xs text-muted-foreground mt-2">Click to view the yearly breakdown of BP's</p>
+          <p className="text-xs text-muted-foreground text-center pt-1">Click to view the yearly breakdown of BP's</p>
         </CardContent>
       </Card>
       </div>

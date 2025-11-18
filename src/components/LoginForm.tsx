@@ -24,7 +24,7 @@ const LoginForm = ({ onLogin }: LoginFormProps) => {
 
       {/* Desktop-only small headline */}
       <div className="hidden md:block mb-8">
-        <h3 className="text-3xl md:text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent leading-tight">InnoSphere Access</h3>
+        <h3 className="text-3xl md:text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent leading-tight">Welcome to InnoSphere</h3>
         <p className="text-sm md:text-base text-muted-foreground mt-2 leading-relaxed">A sphere of innovation, sharing, benchmarking, and cross-learning.</p>
       </div>
 

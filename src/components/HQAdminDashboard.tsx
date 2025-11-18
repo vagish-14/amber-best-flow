@@ -84,6 +84,7 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
   const [starDrillData, setStarDrillData] = useState<{ month: string; savings: number; stars: number }[]>([]);
   const [starRatingsFormat, setStarRatingsFormat] = useState<'lakhs' | 'crores'>('lakhs');
   const [leaderboardFormat, setLeaderboardFormat] = useState<'lakhs' | 'crores'>('lakhs');
+  const [activePlantsDialogOpen, setActivePlantsDialogOpen] = useState(false);
 
   // Base leaderboard to keep table sizable; merge dynamic updates
   const baseLeaderboard = useMemo(() => ([
@@ -420,7 +421,10 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
             </CardContent>
           </Card>
 
-          <Card className="shadow-card">
+          <Card 
+            className="shadow-card cursor-pointer hover:shadow-medium transition-smooth"
+            onClick={() => setActivePlantsDialogOpen(true)}
+          >
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <Users className="h-5 w-5 text-primary" />
@@ -435,6 +439,7 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
                   {totalPlantCount > 0 ? Math.round((activeBySubmissionCount / totalPlantCount) * 100) : 0}% Participation
                 </Badge>
               </div>
+              <p className="text-xs text-muted-foreground mt-2">Click to view details</p>
             </CardContent>
           </Card>
         </div>
@@ -1480,6 +1485,77 @@ const HQAdminDashboard = ({ onViewChange, onViewPractice, thisMonthTotal, ytdTot
           </CardContent>
         </Card>
       </div>
+
+      {/* Active Plants Dialog */}
+      <AlertDialog open={activePlantsDialogOpen} onOpenChange={setActivePlantsDialogOpen}>
+        <AlertDialogContent className="max-w-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Active Plants Status</AlertDialogTitle>
+            <AlertDialogDescription>
+              View which plants are active (have submitted best practices) and which are inactive this month.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="space-y-4">
+            {/* Active Plants */}
+            <div>
+              <h4 className="font-semibold text-sm mb-3 flex items-center gap-2">
+                <CheckCircle className="h-4 w-4 text-success" />
+                Active Plants ({activeBySubmission.length})
+              </h4>
+              <div className="space-y-2">
+                {activeBySubmission.map((plant) => (
+                  <div
+                    key={plant.name}
+                    className="flex items-center justify-between p-3 rounded-lg border border-success/20 bg-success/5 hover:bg-success/10 transition-colors"
+                  >
+                    <span className="font-medium text-sm">{plant.name}</span>
+                    <div className="flex items-center gap-3">
+                      <span className="text-xs text-muted-foreground">{plant.submitted} submissions</span>
+                      <Badge variant="outline" className="bg-success/10 text-success border-success">
+                        Active
+                      </Badge>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Inactive Plants */}
+            {plantData.filter((p) => p.submitted === 0).length > 0 && (
+              <div>
+                <h4 className="font-semibold text-sm mb-3 flex items-center gap-2">
+                  <XCircle className="h-4 w-4 text-destructive" />
+                  Inactive Plants ({plantData.filter((p) => p.submitted === 0).length})
+                </h4>
+                <div className="space-y-2">
+                  {plantData
+                    .filter((p) => p.submitted === 0)
+                    .map((plant) => (
+                      <div
+                        key={plant.name}
+                        className="flex items-center justify-between p-3 rounded-lg border border-destructive/20 bg-destructive/5 hover:bg-destructive/10 transition-colors"
+                      >
+                        <span className="font-medium text-sm">{plant.name}</span>
+                        <div className="flex items-center gap-3">
+                          <span className="text-xs text-muted-foreground">0 submissions</span>
+                          <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive">
+                            Inactive
+                          </Badge>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            )}
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Close</AlertDialogCancel>
+            <AlertDialogAction onClick={() => setActivePlantsDialogOpen(false)}>
+              Done
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

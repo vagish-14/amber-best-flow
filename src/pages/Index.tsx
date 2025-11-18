@@ -324,7 +324,7 @@ const Index = () => {
                   {/* Left Side - Hero/Illustration */}
                   <div className="relative overflow-hidden min-h-[200px] md:min-h-full">
                     <img 
-                      src="/images/login page.png" 
+                      src="/images/login.png" 
                       alt="Login illustration" 
                       className="w-full h-full object-cover"
                     />

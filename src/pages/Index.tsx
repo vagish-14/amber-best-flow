@@ -278,61 +278,70 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background via-accent/30 to-secondary/5">
-      {/* Header */}
-      <div className="border-b bg-card shadow-card">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="flex items-center justify-center">
-                <img 
-                  src="/images/amberlogo.png" 
-                  alt="Amber Logo" 
-                  className="h-12 w-auto object-contain"
-                />
+      {/* Header - Hidden on login page */}
+      {currentView !== "login" && (
+        <div className="border-b bg-card shadow-card">
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="flex items-center justify-center">
+                  <img 
+                    src="/images/amberlogo.png" 
+                    alt="Amber Logo" 
+                    className="h-12 w-auto object-contain"
+                  />
+                </div>
+                <div>
+                  <h1 className="text-xl font-bold text-foreground">
+                    Amber Enterprises India Limited
+                  </h1>
+                  <p className="text-sm text-muted-foreground">Amber Best Practice & Benchmarking Portal</p>
+                </div>
               </div>
-              <div>
-                <h1 className="text-xl font-bold text-foreground">
-                  Amber Enterprises India Limited
-                </h1>
-                <p className="text-sm text-muted-foreground">Amber Best Practice & Benchmarking Portal</p>
-              </div>
+              {userRole && (
+                <div className="flex items-center space-x-4">
+                  <Badge variant="outline" className="flex items-center space-x-1">
+                    <Shield className="h-3 w-3" />
+                    <span>{userRole === "plant" ? "Plant User" : "HQ Admin"}</span>
+                  </Badge>
+                  <Button variant="outline" onClick={handleLogout}>
+                    <LogIn className="h-4 w-4 mr-2" />
+                    Logout
+                  </Button>
+                </div>
+              )}
             </div>
-            {userRole && (
-              <div className="flex items-center space-x-4">
-                <Badge variant="outline" className="flex items-center space-x-1">
-                  <Shield className="h-3 w-3" />
-                  <span>{userRole === "plant" ? "Plant User" : "HQ Admin"}</span>
-                </Badge>
-                <Button variant="outline" onClick={handleLogout}>
-                  <LogIn className="h-4 w-4 mr-2" />
-                  Logout
-                </Button>
-              </div>
-            )}
           </div>
         </div>
-      </div>
+      )}
 
       {/* Main Content */}
-      <div className="min-h-[calc(100vh-5rem)]">
+      <div className={currentView === "login" ? "min-h-screen" : "min-h-[calc(100vh-5rem)]"}>
         {currentView === "login" && (
-          <div className="min-h-[calc(100vh-5rem)] flex items-center justify-center p-4 md:p-8">
-            <div className="w-full max-w-6xl mx-auto">
-              {/* Glass Card Container */}
-              <div className="relative bg-white/70 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 overflow-hidden">
+          <div className="min-h-screen flex items-center justify-center p-4 md:p-6 bg-gradient-to-br from-blue-300 via-sky-200 to-blue-100 relative overflow-hidden">
+            {/* Animated Pulsing Orbs */}
+            <div className="absolute top-[-10%] left-[-5%] w-80 h-80 bg-blue-400/30 rounded-full blur-3xl animate-pulse-glow"></div>
+            <div className="absolute bottom-[-10%] right-[-5%] w-80 h-80 bg-sky-400/30 rounded-full blur-3xl animate-pulse-glow" style={{ animationDelay: '1s' }}></div>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-300/20 rounded-full blur-3xl animate-pulse-glow" style={{ animationDelay: '2s' }}></div>
+            
+            <div className="w-full max-w-5xl mx-auto relative z-10 animate-fade-in">
+              {/* Glass Card Container - Slimmer */}
+              <div className="glass-card rounded-[24px] shadow-2xl overflow-hidden">
                 <div className="grid md:grid-cols-2 gap-0">
                   {/* Left Side - Hero/Illustration */}
-                  <div className="relative overflow-hidden min-h-[200px] md:min-h-full">
+                  <div className="relative overflow-hidden bg-gradient-to-br from-blue-100/60 via-sky-50/40 to-blue-50/60 hidden md:block">
                     <img 
-                      src="/images/login.png" 
-                      alt="Login illustration" 
+                      src="/images/login page.png" 
+                      alt="InnoSphere - Innovation, Sharing, Benchmarking, Cross-learning" 
                       className="w-full h-full object-cover"
                     />
                   </div>
 
                   {/* Right Side - Login Form */}
-                  <div className="p-6 md:p-8 lg:p-12">
-                    <LoginForm onLogin={handleLogin} />
+                  <div className="flex items-center justify-center p-6 md:p-8 lg:p-10 bg-gradient-to-br from-white/40 via-white/30 to-white/20">
+                    <div className="w-full max-w-sm">
+                      <LoginForm onLogin={handleLogin} />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -492,8 +501,8 @@ const Index = () => {
         )}
       </div>
 
-      {/* Wireframe Demo Tabs */}
-      <div className="fixed bottom-4 right-4">
+      {/* Wireframe Demo Tabs - Hidden on login page */}
+      <div className={`fixed bottom-4 right-4 ${currentView === "login" ? "hidden" : ""}`}>
         <Card className="bg-card/90 backdrop-blur">
           <CardContent className="p-4">
             <Tabs defaultValue="overview" className="w-80">

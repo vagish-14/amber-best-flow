@@ -183,4 +183,115 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
+
+  /* Glass morphism effects */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(28px);
+    -webkit-backdrop-filter: blur(28px);
+    border: 1.5px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 25px 70px 0 rgba(31, 38, 135, 0.3),
+                0 10px 40px 0 rgba(59, 130, 246, 0.2),
+                0 0 0 1px rgba(255, 255, 255, 0.3) inset;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .glass-card:hover {
+    box-shadow: 0 30px 80px 0 rgba(31, 38, 135, 0.35),
+                0 12px 45px 0 rgba(59, 130, 246, 0.25),
+                0 0 0 1px rgba(255, 255, 255, 0.4) inset;
+    transform: translateY(-2px);
+  }
+
+  .glass-input-light {
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.1), 
+                0 2px 8px -1px rgba(0, 0, 0, 0.06),
+                0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .glass-input-light:hover {
+    background: rgba(255, 255, 255, 0.85);
+    border-color: rgba(59, 130, 246, 0.3);
+    box-shadow: 0 6px 20px -2px rgba(59, 130, 246, 0.15),
+                0 2px 8px -1px rgba(0, 0, 0, 0.08),
+                0 0 0 1px rgba(255, 255, 255, 0.6) inset;
+    transform: translateY(-1px);
+  }
+
+  .glass-input-light:focus {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: rgba(59, 130, 246, 0.5);
+    box-shadow: 0 8px 24px -2px rgba(59, 130, 246, 0.25),
+                0 0 0 3px rgba(59, 130, 246, 0.1),
+                0 0 0 1px rgba(255, 255, 255, 0.7) inset;
+    transform: translateY(-1px);
+  }
+
+  .glass-form-bg {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  /* Floating animation for orbs */
+  @keyframes float {
+    0%, 100% {
+      transform: translate(0, 0) scale(1);
+    }
+    33% {
+      transform: translate(30px, -30px) scale(1.1);
+    }
+    66% {
+      transform: translate(-20px, 20px) scale(0.9);
+    }
+  }
+
+  .animate-float {
+    animation: float 20s ease-in-out infinite;
+  }
+
+  /* Smooth pulse with glow */
+  @keyframes pulse-glow {
+    0%, 100% {
+      opacity: 0.4;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.6;
+      transform: scale(1.05);
+    }
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 4s ease-in-out infinite;
+  }
+
+  /* Fade in animations */
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.7s ease-out;
+  }
+
+  .animate-fade-in-delay {
+    animation: fade-in 0.7s ease-out 0.1s both;
+  }
+
+  .animate-fade-in-delay-2 {
+    animation: fade-in 0.7s ease-out 0.2s both;
+  }
 }

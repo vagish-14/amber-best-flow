@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { User, Lock } from "lucide-react";
+import { User, Lock, ArrowRight } from "lucide-react";
 import { useState } from "react";
 
 interface LoginFormProps {
@@ -13,6 +13,7 @@ const LoginForm = ({ onLogin }: LoginFormProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  const [focusedField, setFocusedField] = useState<string | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,109 +21,121 @@ const LoginForm = ({ onLogin }: LoginFormProps) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-
-      {/* Desktop-only small headline */}
-      <div className="hidden md:block mb-8">
-        <h3 className="text-3xl md:text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent leading-tight">Welcome to InnoSphere</h3>
-        <p className="text-sm md:text-base text-muted-foreground mt-2 leading-relaxed">A sphere of innovation, sharing, benchmarking, and cross-learning.</p>
-      </div>
-
-      {/* Email Input */}
-      <div className="space-y-2">
-        <Label htmlFor="email" className="text-sm font-medium text-foreground sr-only">
-          Email / Employee ID
-        </Label>
+    <div className="flex flex-col justify-center">
+      {/* Logo */}
+      <div className="flex justify-center mb-4 animate-fade-in">
         <div className="relative">
-          <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-          <Input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email / Employee ID"
-            className="w-full h-11 pl-10 pr-4 bg-white/50 backdrop-blur-sm border-border/50 focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all duration-200 outline-none"
-            aria-label="Email or Employee ID"
-            required
+          <img 
+            src="/images/amberlogo.png" 
+            alt="Amber Logo" 
+            className="h-14 w-auto object-contain drop-shadow-lg"
           />
         </div>
       </div>
 
-      {/* Password Input */}
-      <div className="space-y-2">
-        <Label htmlFor="password" className="text-sm font-medium text-foreground sr-only">
-          Password
-        </Label>
-        <div className="relative">
-          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-          <Input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Password"
-            className="w-full h-11 pl-10 pr-4 bg-white/50 backdrop-blur-sm border-border/50 focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all duration-200 outline-none"
-            aria-label="Password"
-            required
-          />
+      {/* Welcome Header - Compact */}
+      <div className="text-center mb-6 animate-fade-in-delay">
+        <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 via-blue-500 to-sky-500 bg-clip-text text-transparent leading-tight mb-2">
+          Welcome to<br />InnoSphere
+        </h2>
+        <div className="flex items-center justify-center gap-2 text-xs text-gray-500 font-medium">
+          <div className="h-px w-8 bg-gradient-to-r from-transparent to-blue-400"></div>
+          <span>Innovation • Sharing • Benchmarking • Cross-learning</span>
+          <div className="h-px w-8 bg-gradient-to-l from-transparent to-blue-400"></div>
         </div>
       </div>
 
-      {/* Remember Me & Forgot Password Row */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
+      <form onSubmit={handleSubmit} className="space-y-4 animate-fade-in-delay-2">
+        {/* Email Input */}
+        <div className="space-y-1.5">
+          <Label htmlFor="email" className="text-[11px] font-semibold text-gray-600 uppercase tracking-wider ml-1">
+            Email / Employee ID
+          </Label>
+          <div className="relative group">
+            <div className={`absolute left-2.5 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center rounded-lg border transition-all duration-300 ${
+              focusedField === 'email' 
+                ? 'bg-gradient-to-br from-blue-500/20 to-sky-500/20 border-blue-400/50' 
+                : 'bg-gradient-to-br from-blue-500/10 to-sky-500/10 border-blue-200/30 group-hover:border-blue-300/50'
+            }`}>
+              <User className={`h-4 w-4 transition-colors duration-300 ${
+                focusedField === 'email' ? 'text-blue-600' : 'text-blue-500'
+              }`} />
+            </div>
+            <Input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              onFocus={() => setFocusedField('email')}
+              onBlur={() => setFocusedField(null)}
+              placeholder="Enter your email or employee ID"
+              className="glass-input-light w-full h-11 pl-12 pr-4 rounded-xl text-sm text-gray-800 placeholder:text-gray-400"
+              aria-label="Email or Employee ID"
+              required
+            />
+          </div>
+        </div>
+
+        {/* Password Input */}
+        <div className="space-y-1.5">
+          <Label htmlFor="password" className="text-[11px] font-semibold text-gray-600 uppercase tracking-wider ml-1">
+            Password
+          </Label>
+          <div className="relative group">
+            <div className={`absolute left-2.5 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center rounded-lg border transition-all duration-300 ${
+              focusedField === 'password' 
+                ? 'bg-gradient-to-br from-blue-500/20 to-sky-500/20 border-blue-400/50' 
+                : 'bg-gradient-to-br from-blue-500/10 to-sky-500/10 border-blue-200/30 group-hover:border-blue-300/50'
+            }`}>
+              <Lock className={`h-4 w-4 transition-colors duration-300 ${
+                focusedField === 'password' ? 'text-blue-600' : 'text-blue-500'
+              }`} />
+            </div>
+            <Input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              onFocus={() => setFocusedField('password')}
+              onBlur={() => setFocusedField(null)}
+              placeholder="Enter your password"
+              className="glass-input-light w-full h-11 pl-12 pr-4 rounded-xl text-sm text-gray-800 placeholder:text-gray-400"
+              aria-label="Password"
+              required
+            />
+          </div>
+        </div>
+
+        {/* Remember Me */}
+        <div className="flex items-center space-x-2 pt-1">
           <Checkbox
             id="remember"
             checked={rememberMe}
             onCheckedChange={(checked) => setRememberMe(checked === true)}
-            className="border-border/50 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+            className="border-gray-300 data-[state=checked]:bg-gradient-to-br data-[state=checked]:from-blue-600 data-[state=checked]:to-sky-500 data-[state=checked]:border-transparent rounded"
           />
           <Label
             htmlFor="remember"
-            className="text-sm text-muted-foreground cursor-pointer select-none"
+            className="text-sm text-gray-600 cursor-pointer select-none"
           >
-            Remember me
+            Keep me signed in
           </Label>
         </div>
-        <a
-          href="#"
-          className="text-sm text-primary hover:text-primary/80 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:ring-offset-2 rounded px-1"
+
+        {/* Sign In Button */}
+        <Button
+          type="submit"
+          className="w-full h-11 bg-gradient-to-r from-blue-600 via-blue-500 to-sky-500 hover:from-blue-700 hover:via-blue-600 hover:to-sky-600 text-white text-sm font-bold rounded-full shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2 group"
           onClick={(e) => {
             e.preventDefault();
-            // Handle forgot password
+            onLogin("plant");
           }}
         >
-          Forgot password?
-        </a>
-      </div>
-
-      {/* Primary CTA Button */}
-      <Button
-        type="submit"
-        className="w-full h-11 bg-gradient-primary hover:bg-gradient-primary/90 text-base font-medium shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2"
-        onClick={(e) => {
-          e.preventDefault();
-          // For demo, auto-login as plant user
-          onLogin("plant");
-        }}
-      >
-        Sign In to Portal
-      </Button>
-
-      {/* Secondary Link */}
-      <div className="text-center">
-        <a
-          href="#"
-          className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:ring-offset-2 rounded px-2 py-1"
-          onClick={(e) => {
-            e.preventDefault();
-            // Handle secondary action
-          }}
-        >
-          Need help? Contact IT Support
-        </a>
-      </div>
-    </form>
+          <span>Sign In to Portal</span>
+          <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+        </Button>
+      </form>
+    </div>
   );
 };
 

@@ -331,7 +331,7 @@ const Index = () => {
                   {/* Left Side - Hero/Illustration */}
                   <div className="relative overflow-hidden bg-gradient-to-br from-blue-100/60 via-sky-50/40 to-blue-50/60 hidden md:block">
                     <img 
-                      src="/images/login page.png" 
+                      src="/images/login.png" 
                       alt="InnoSphere - Innovation, Sharing, Benchmarking, Cross-learning" 
                       className="w-full h-full object-cover"
                     />
